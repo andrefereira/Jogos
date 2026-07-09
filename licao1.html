@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>No Mundo da Lógica — Lição I</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a3a2a 0%, #0d4f3c 40%, #1a5c4a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      color: #fff;
+    }
+
+    .screen { display: none; width: 100%; max-width: 480px; }
+    .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+    /* ── START SCREEN ─────────────────────────────── */
+    #screen-start {
+      text-align: center;
+      gap: 20px;
+    }
+
+    .badge {
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,215,0,0.4);
+      border-radius: 50px;
+      padding: 6px 18px;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffd700;
+    }
+
+    .title {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1.1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+
+    .title span { color: #7effd4; }
+
+    .subtitle {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+      max-width: 340px;
+    }
+
+    .mascot { font-size: 5rem; animation: float 3s ease-in-out infinite; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    .rules-box {
+      background: rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 16px 20px;
+      width: 100%;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .rules-box h3 {
+      color: #ffd700;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .rules-box ul { list-style: none; }
+
+    .rules-box li {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.85);
+      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rules-box li::before { content: '▸'; color: #7effd4; }
+
+    .btn-start {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: #1a3a2a;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255,215,0,0.4);
+      transition: transform 0.1s, box-shadow 0.1s;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-start:active { transform: scale(0.97); box-shadow: 0 2px 10px rgba(255,215,0,0.3); }
+
+    /* ── GAME SCREEN ──────────────────────────────── */
+    #screen-game { gap: 14px; }
+
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .counter {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .score-display {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffd700;
+    }
+
+    .timer-wrap {
+      width: 100%;
+      height: 10px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #timer-bar {
+      height: 100%;
+      width: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #7effd4, #ffd700);
+      transition: width 0.1s linear;
+    }
+
+    #timer-bar.danger { background: linear-gradient(90deg, #ff6b6b, #ff3333); }
+
+    .question-card {
+      width: 100%;
+      background: rgba(255,255,255,0.95);
+      color: #1a3a2a;
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.5;
+      color: #1a3a2a;
+    }
+
+    .answer-row {
+      width: 100%;
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn-answer {
+      flex: 1;
+      padding: 18px 10px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: transform 0.1s, box-shadow 0.1s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn-answer:active { transform: scale(0.95); }
+
+    #btn-true {
+      background: linear-gradient(135deg, #00c87a, #00a862);
+      color: #fff;
+    }
+
+    #btn-false {
+      background: linear-gradient(135deg, #ff6b6b, #e0303a);
+      color: #fff;
+    }
+
+    .btn-answer .face { font-size: 2.6rem; }
+    .btn-answer .label { font-size: 0.85rem; letter-spacing: 0.5px; }
+
+    /* ── FEEDBACK OVERLAY ─────────────────────────── */
+    #feedback {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #feedback.show { display: flex; }
+
+    .feedback-card {
+      background: #fff;
+      color: #1a3a2a;
+      border-radius: 24px;
+      padding: 30px 24px;
+      text-align: center;
+      max-width: 340px;
+      width: 100%;
+      animation: popIn 0.2s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .feedback-icon { font-size: 4rem; }
+
+    .feedback-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin: 8px 0 4px;
+    }
+
+    .feedback-title.correct { color: #00a862; }
+    .feedback-title.wrong   { color: #e0303a; }
+
+    .feedback-pts {
+      font-size: 0.95rem;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+    .feedback-pts strong { color: #1a3a2a; }
+
+    .feedback-exp {
+      font-size: 0.82rem;
+      color: #555;
+      line-height: 1.5;
+      background: #f5f5f5;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    /* ── RESULT SCREEN ────────────────────────────── */
+    #screen-result {
+      text-align: center;
+      gap: 18px;
+    }
+
+    .result-header { font-size: 1.8rem; font-weight: 800; line-height: 1.2; }
+    .result-header span { color: #7effd4; }
+
+    .result-score-box {
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,215,0,0.4);
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+    }
+
+    .result-score-box .big-score {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #ffd700;
+      line-height: 1;
+    }
+
+    .result-score-box .max-score {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.55);
+      margin-top: 4px;
+    }
+
+    .result-stars { font-size: 2.5rem; }
+
+    .result-msg {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.5;
+      max-width: 340px;
+    }
+
+    .summary-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .summary-item {
+      background: rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .summary-item .val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #7effd4;
+    }
+
+    .summary-item .lbl {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+
+    .btn-restart {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: #1a3a2a;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ TELA INICIAL ══════════════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">No Mundo da Lógica · Lição I</div>
+  <div class="mascot">🌍</div>
+  <div class="title">Bem-vindo a<br><span>Proposia!</span></div>
+  <p class="subtitle">
+    Cada frase abaixo é uma proposição. Você sabe dizer se ela é
+    <strong>verdadeira</strong> ou <strong>falsa</strong>?
+  </p>
+  <div class="rules-box">
+    <h3>Como jogar</h3>
+    <ul>
+      <li>Leia a proposição com atenção</li>
+      <li>Clique em 😊 se for <strong>verdadeira</strong></li>
+      <li>Clique em 😢 se for <strong>falsa</strong></li>
+      <li>Cada proposição tem <strong>10 segundos</strong></li>
+      <li>Resposta rápida = mais pontos!</li>
+    </ul>
+  </div>
+  <button class="btn-start" onclick="startGame()">Entrar em Proposia ▶</button>
+</div>
+
+<!-- ══════════════════ TELA DO JOGO ═══════════════════ -->
+<div id="screen-game" class="screen">
+  <div class="top-bar">
+    <span class="counter" id="counter">1 / 10</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+  </div>
+
+  <div class="timer-wrap">
+    <div id="timer-bar"></div>
+  </div>
+
+  <div class="question-card">
+    <p id="question-text"></p>
+  </div>
+
+  <div class="answer-row">
+    <button class="btn-answer" id="btn-true"  onclick="answer(true)">
+      <span class="face">😊</span>
+      <span class="label">VERDADEIRA</span>
+    </button>
+    <button class="btn-answer" id="btn-false" onclick="answer(false)">
+      <span class="face">😢</span>
+      <span class="label">FALSA</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════ FEEDBACK OVERLAY ═══════════════ -->
+<div id="feedback">
+  <div class="feedback-card">
+    <div class="feedback-icon" id="fb-icon"></div>
+    <div class="feedback-title" id="fb-title"></div>
+    <div class="feedback-pts"  id="fb-pts"></div>
+    <div class="feedback-exp"  id="fb-exp"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ TELA DE RESULTADO ═════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-header">Jogo<br><span>concluído!</span></div>
+  <div class="result-stars" id="result-stars"></div>
+  <div class="result-score-box">
+    <div class="big-score" id="final-score">0</div>
+    <div class="max-score">de 1000 pontos</div>
+  </div>
+  <p class="result-msg" id="result-msg"></p>
+  <div class="summary-grid">
+    <div class="summary-item">
+      <div class="val" id="res-correct">0</div>
+      <div class="lbl">Acertos</div>
+    </div>
+    <div class="summary-item">
+      <div class="val" id="res-wrong">0</div>
+      <div class="lbl">Erros / Tempo</div>
+    </div>
+    <div class="summary-item">
+      <div class="val" id="res-best">—</div>
+      <div class="lbl">Melhor tempo</div>
+    </div>
+    <div class="summary-item">
+      <div class="val" id="res-avg">—</div>
+      <div class="lbl">Tempo médio</div>
+    </div>
+  </div>
+  <button class="btn-restart" onclick="restartGame()">Jogar novamente 🔄</button>
+</div>
+
+<script>
+  /* ── QUESTÕES ─────────────────────────────────────── */
+  const QUESTIONS = [
+    {
+      text: "Jesus Cristo é o Filho de Deus.",
+      answer: true,
+      explanation: "Verdade central da fé cristã. João 3:16 confirma que Deus enviou Seu Filho unigênito ao mundo."
+    },
+    {
+      text: "A soma dos ângulos internos de um triângulo é 90°.",
+      answer: false,
+      explanation: "A soma dos ângulos internos de qualquer triângulo é sempre 180°, não 90°."
+    },
+    {
+      text: "O valor de 2³ é igual a 8.",
+      answer: true,
+      explanation: "2³ = 2 × 2 × 2 = 8. Correto!"
+    },
+    {
+      text: "A Bíblia Cristã é dividida em Antigo e Novo Testamento.",
+      answer: true,
+      explanation: "Sim! O Antigo Testamento tem 39 livros e o Novo Testamento tem 27 livros."
+    },
+    {
+      text: "5 × 3 − 10 = 0",
+      answer: false,
+      explanation: "5 × 3 = 15, e 15 − 10 = 5, não 0."
+    },
+    {
+      text: "A raiz quadrada de 144 é 12.",
+      answer: true,
+      explanation: "12 × 12 = 144. Correto!"
+    },
+    {
+      text: "Jesus nasceu na cidade de Roma.",
+      answer: false,
+      explanation: "Jesus nasceu em Belém, conforme os Evangelhos de Mateus e Lucas."
+    },
+    {
+      text: "Jesus Cristo ressuscitou.",
+      answer: true,
+      explanation: "A ressurreição de Cristo é o coração do Evangelho (1 Coríntios 15:3–4)."
+    },
+    {
+      text: "O resultado de 15 × 3 é 45.",
+      answer: true,
+      explanation: "15 × 3 = 45. Correto!"
+    },
+    {
+      text: "O triângulo equilátero possui todos os lados com medidas diferentes.",
+      answer: false,
+      explanation: "No triângulo equilátero todos os três lados são iguais. Lados diferentes caracterizam o triângulo escaleno."
+    }
+  ];
+
+  /* ── ESTADO ──────────────────────────────────────── */
+  const TIME_PER_Q = 10;   // segundos por questão
+  const MAX_PTS    = 100;  // pontos máximos por questão
+
+  let currentQ, score, timerInterval, qStart;
+  let correctCount, wrongCount, times;
+
+  /* ── UTILITÁRIOS ─────────────────────────────────── */
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ── JOGO ────────────────────────────────────────── */
+  let questions;
+
+  function startGame() {
+    questions    = shuffle(QUESTIONS);
+    currentQ     = 0;
+    score        = 0;
+    correctCount = 0;
+    wrongCount   = 0;
+    times        = [];
+    showScreen('screen-game');
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    if (currentQ >= questions.length) { endGame(); return; }
+
+    const q = questions[currentQ];
+    document.getElementById('question-text').textContent = q.text;
+    document.getElementById('counter').textContent = `${currentQ + 1} / ${questions.length}`;
+    document.getElementById('live-score').textContent = score;
+
+    // Enable buttons
+    document.getElementById('btn-true').disabled  = false;
+    document.getElementById('btn-false').disabled = false;
+
+    // Timer bar
+    const bar = document.getElementById('timer-bar');
+    bar.style.width = '100%';
+    bar.classList.remove('danger');
+
+    qStart = Date.now();
+    let elapsed = 0;
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      elapsed = (Date.now() - qStart) / 1000;
+      const pct = Math.max(0, 1 - elapsed / TIME_PER_Q);
+      bar.style.width = (pct * 100) + '%';
+      if (pct < 0.3) bar.classList.add('danger');
+      else            bar.classList.remove('danger');
+
+      if (elapsed >= TIME_PER_Q) {
+        clearInterval(timerInterval);
+        answer(null); // timeout
+      }
+    }, 80);
+  }
+
+  function answer(userAnswer) {
+    clearInterval(timerInterval);
+    const elapsed = (Date.now() - qStart) / 1000;
+    times.push(elapsed);
+
+    document.getElementById('btn-true').disabled  = true;
+    document.getElementById('btn-false').disabled = true;
+
+    const q       = questions[currentQ];
+    const correct = (userAnswer === q.answer);
+    const timeout = (userAnswer === null);
+
+    let pts = 0;
+    if (correct) {
+      pts = Math.max(20, Math.round(MAX_PTS - (elapsed / TIME_PER_Q) * (MAX_PTS - 20)));
+      score += pts;
+      correctCount++;
+    } else {
+      wrongCount++;
+    }
+
+    showFeedback(correct, timeout, pts, q.explanation, elapsed);
+  }
+
+  function showFeedback(correct, timeout, pts, explanation, elapsed) {
+    const overlay = document.getElementById('feedback');
+    const icon    = document.getElementById('fb-icon');
+    const title   = document.getElementById('fb-title');
+    const ptsEl   = document.getElementById('fb-pts');
+    const expEl   = document.getElementById('fb-exp');
+
+    if (timeout) {
+      icon.textContent  = '⏱️';
+      title.textContent = 'Tempo esgotado!';
+      title.className   = 'feedback-title wrong';
+      ptsEl.innerHTML   = '<strong>+0 pontos</strong>';
+    } else if (correct) {
+      icon.textContent  = '😊';
+      title.textContent = 'Correto!';
+      title.className   = 'feedback-title correct';
+      ptsEl.innerHTML   = `+<strong>${pts} pontos</strong> (${elapsed.toFixed(1)}s)`;
+    } else {
+      icon.textContent  = '😢';
+      title.textContent = 'Errado!';
+      title.className   = 'feedback-title wrong';
+      ptsEl.innerHTML   = '<strong>+0 pontos</strong>';
+    }
+
+    expEl.textContent = explanation;
+    overlay.classList.add('show');
+
+    // Auto-advance após 2s
+    setTimeout(() => {
+      overlay.classList.remove('show');
+      currentQ++;
+      loadQuestion();
+    }, 2200);
+  }
+
+  /* ── FIM DE JOGO ─────────────────────────────────── */
+  function endGame() {
+    showScreen('screen-result');
+    document.getElementById('final-score').textContent = score;
+    document.getElementById('res-correct').textContent = correctCount;
+    document.getElementById('res-wrong').textContent   = wrongCount;
+
+    const validTimes = times.filter(t => t < TIME_PER_Q);
+    if (validTimes.length) {
+      const best = Math.min(...validTimes);
+      const avg  = validTimes.reduce((a, b) => a + b, 0) / validTimes.length;
+      document.getElementById('res-best').textContent = best.toFixed(1) + 's';
+      document.getElementById('res-avg').textContent  = avg.toFixed(1) + 's';
+    }
+
+    // Stars
+    const pct = score / (QUESTIONS.length * MAX_PTS);
+    let stars = '⭐';
+    let msg   = 'Continue estudando! Você consegue melhorar. 💪';
+    if (pct >= 0.9) {
+      stars = '⭐⭐⭐';
+      msg   = 'Incrível! Você é um verdadeiro cidadão de Proposia! 🏆';
+    } else if (pct >= 0.7) {
+      stars = '⭐⭐';
+      msg   = 'Muito bom! Mais um pouco de treino e você chega lá. 😊';
+    } else if (pct >= 0.5) {
+      stars = '⭐½';
+      msg   = 'Bom esforço! Revise a Lição I e tente de novo. 📖';
+    }
+
+    document.getElementById('result-stars').textContent = stars;
+    document.getElementById('result-msg').textContent   = msg;
+  }
+
+  function restartGame() { startGame(); }
+</script>
+</body>
+</html>

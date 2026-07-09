@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No Mundo da Lógica — Jogos</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a3a2a 0%, #0d4f3c 40%, #1a5c4a 100%);
+      min-height: 100vh;
+      padding: 24px 16px 40px;
+      color: #fff;
+    }
+
+    .container { max-width: 480px; margin: 0 auto; }
+
+    /* ── HEADER ─────────────────────────────────── */
+    .header { text-align: center; margin-bottom: 32px; }
+
+    .globe { font-size: 4rem; animation: float 3s ease-in-out infinite; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,215,0,0.4);
+      border-radius: 50px;
+      padding: 5px 16px;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffd700;
+      margin: 12px 0 8px;
+    }
+
+    .title {
+      font-size: 1.9rem;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .title span { color: #7effd4; }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.65);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* ── GRID DE LIÇÕES ─────────────────────────── */
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 18px;
+      padding: 18px 14px;
+      text-decoration: none;
+      color: #fff;
+      transition: background 0.2s, transform 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:active { transform: scale(0.97); }
+
+    .card.available {
+      background: rgba(126,255,212,0.12);
+      border-color: rgba(126,255,212,0.3);
+      cursor: pointer;
+    }
+
+    .card.available:hover {
+      background: rgba(126,255,212,0.2);
+    }
+
+    .card.locked {
+      opacity: 0.45;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .card-num {
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .tag-play {
+      background: rgba(126,255,212,0.25);
+      color: #7effd4;
+    }
+
+    .tag-soon {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.4);
+    }
+
+    .card-icon {
+      position: absolute;
+      bottom: -6px;
+      right: 8px;
+      font-size: 2.4rem;
+      opacity: 0.25;
+    }
+
+    /* ── FOOTER ─────────────────────────────────── */
+    .footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="globe">🌍</div>
+    <div class="badge">Apostila Interativa</div>
+    <h1 class="title">No Mundo<br>da <span>Lógica</span></h1>
+    <p class="subtitle">Escolha uma lição e jogue!<br>Cada jogo treina o que você aprendeu.</p>
+  </div>
+
+  <p class="section-label">Lições disponíveis</p>
+
+  <div class="grid">
+
+    <a href="licao1.html" class="card available">
+      <div class="card-num">Lição I</div>
+      <div class="card-title">Verdadeiro ou Falso?</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">😊</span>
+    </a>
+
+    <a href="licao2.html" class="card available">
+      <div class="card-num">Lição II</div>
+      <div class="card-title">Portão de Proposia</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">🚪</span>
+    </a>
+
+    <a href="licao3.html" class="card available">
+      <div class="card-num">Lição III</div>
+      <div class="card-title">Triagem Dupla</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">🔍</span>
+    </a>
+
+    <a href="licao4.html" class="card available">
+      <div class="card-num">Lição IV</div>
+      <div class="card-title">Vale do Espelho</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">🪞</span>
+    </a>
+
+    <a href="licao5.html" class="card available">
+      <div class="card-num">Lição V</div>
+      <div class="card-title">Caça ao Conectivo</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">🔗</span>
+    </a>
+
+    <a href="licao6.html" class="card available">
+      <div class="card-num">Lição VI</div>
+      <div class="card-title">Bolhas do General E</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">🫧</span>
+    </a>
+
+    <a href="licao7.html" class="card available">
+      <div class="card-num">Lição VII</div>
+      <div class="card-title">Praia de Proposia</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">🏖️</span>
+    </a>
+
+    <a href="licao8.html" class="card available">
+      <div class="card-num">Lição VIII</div>
+      <div class="card-title">A Promessa de Pedro</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">🤝</span>
+    </a>
+
+    <a href="licao9.html" class="card available">
+      <div class="card-num">Lição IX</div>
+      <div class="card-title">Salão dos Espelhos</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">💫</span>
+    </a>
+
+    <a href="licao10.html" class="card available">
+      <div class="card-num">Lição X</div>
+      <div class="card-title">Construindo a Tabela</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">📊</span>
+    </a>
+
+    <a href="licao11.html" class="card available">
+      <div class="card-num">Lição XI</div>
+      <div class="card-title">Fila Urgente</div>
+      <span class="card-tag tag-play">▶ Jogar</span>
+      <span class="card-icon">⚡</span>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    No Mundo da Lógica · André Ferreira Pereira<br>
+    Lógica Matemática com viés cristão clássico
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>No Mundo da Lógica — Lição V</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#2a1a3a,#3a0d4f,#4a1a5c);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
+    .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
+    .screen.active{display:flex}
+    .badge{background:rgba(255,255,255,.12);border:1px solid rgba(220,180,255,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#ddb6ff}
+    .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
+    .title span{color:#e8aaff}
+    .subtitle{font-size:.9rem;color:rgba(255,255,255,.7);text-align:center;line-height:1.5;max-width:340px}
+    .rules-box{background:rgba(255,255,255,.1);border-radius:16px;padding:16px 20px;width:100%;border:1px solid rgba(255,255,255,.15)}
+    .rules-box h3{color:#ddb6ff;font-size:.85rem;margin-bottom:8px;text-transform:uppercase}
+    .rules-box li{font-size:.85rem;color:rgba(255,255,255,.85);padding:3px 0;list-style:none;display:flex;gap:8px}
+    .rules-box li::before{content:'▸';color:#e8aaff}
+    .btn-primary{width:100%;padding:16px;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,#ddb6ff,#aa66ee);color:#1a0a2a;border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 20px rgba(200,100,255,.4)}
+    .btn-primary:active{transform:scale(.97)}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+    /* GAME */
+    .top-bar{width:100%;display:flex;justify-content:space-between;align-items:center}
+    .counter{font-size:.82rem;color:rgba(255,255,255,.6);background:rgba(255,255,255,.1);padding:4px 12px;border-radius:20px}
+    .score-display{font-size:.95rem;font-weight:700;color:#ddb6ff}
+    .timer-wrap{width:100%;height:8px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden}
+    #timer-bar{height:100%;width:100%;background:linear-gradient(90deg,#e8aaff,#ddb6ff);transition:width .1s linear;border-radius:10px}
+    #timer-bar.danger{background:linear-gradient(90deg,#ff6b6b,#ff3333)}
+
+    .prop-display{width:100%;background:rgba(255,255,255,.95);color:#1a0a2a;border-radius:18px;padding:20px;min-height:110px;display:flex;flex-direction:column;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+    .prop-text{font-size:.95rem;font-weight:600;line-height:1.5;color:#1a0a2a}
+    .prop-text .highlight{background:#fff3cd;padding:0 4px;border-radius:4px;color:#b45309;font-weight:700}
+    .slot-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .slot-label{font-size:.8rem;color:#666}
+    .slot-box{display:inline-flex;align-items:center;justify-content:center;width:52px;height:38px;background:#f0e8ff;border:2px dashed #aa66ee;border-radius:10px;font-size:1.2rem;font-weight:700;color:#aa66ee}
+    .slot-box.filled{background:#aa66ee;border:2px solid #aa66ee;color:#fff}
+
+    .symbols-grid{width:100%;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+    .sym-btn{padding:14px 4px;background:rgba(255,255,255,.12);border:2px solid rgba(220,180,255,.3);border-radius:14px;color:#fff;font-size:1.4rem;font-weight:700;cursor:pointer;transition:background .15s,transform .1s;display:flex;flex-direction:column;align-items:center;gap:3px}
+    .sym-btn span.name{font-size:.58rem;color:rgba(255,255,255,.6);font-weight:400;letter-spacing:.3px}
+    .sym-btn:active{transform:scale(.93)}
+    .sym-btn.correct{background:rgba(0,200,120,.3);border-color:#00c878}
+    .sym-btn.wrong{background:rgba(255,80,80,.3);border-color:#ff5050;animation:wobble .35s ease}
+    @keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+
+    /* FEEDBACK */
+    #feedback{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;padding:20px}
+    #feedback.show{display:flex}
+    .fb-card{background:#fff;color:#1a0a2a;border-radius:22px;padding:26px 22px;text-align:center;max-width:320px;width:100%;animation:popIn .2s ease-out}
+    @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+    .fb-icon{font-size:3.5rem}.fb-title{font-size:1.3rem;font-weight:800;margin:8px 0 4px}
+    .fb-title.ok{color:#00a862}.fb-title.no{color:#e0303a}
+    .fb-info{font-size:.82rem;color:#555;background:#f5f0ff;border-radius:10px;padding:10px;margin-top:8px;line-height:1.5}
+
+    /* RESULT */
+    #screen-result{text-align:center}
+    .result-header{font-size:1.8rem;font-weight:800}
+    .result-header span{color:#e8aaff}
+    .score-box{background:rgba(255,255,255,.12);border:2px solid rgba(220,180,255,.4);border-radius:20px;padding:24px;width:100%}
+    .big-score{font-size:3.5rem;font-weight:900;color:#ddb6ff}
+    .max-score{font-size:.9rem;color:rgba(255,255,255,.5);margin-top:4px}
+    .result-msg{font-size:1rem;color:rgba(255,255,255,.8);line-height:1.5;max-width:340px}
+    .sum-grid{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .sum-item{background:rgba(255,255,255,.1);border-radius:14px;padding:14px}
+    .sum-item .val{font-size:1.8rem;font-weight:800;color:#e8aaff}
+    .sum-item .lbl{font-size:.75rem;color:rgba(255,255,255,.6);margin-top:2px}
+  </style>
+</head>
+<body>
+
+<div id="screen-start" class="screen active">
+  <div class="badge">No Mundo da Lógica · Lição V</div>
+  <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🔗</div>
+  <div class="title">Caça ao<br><span>Conectivo</span></div>
+  <p class="subtitle">As proposições compostas chegaram em Proposia, mas seus conectivos estão escondidos! Identifique o símbolo correto.</p>
+  <div class="rules-box">
+    <h3>Como jogar</h3>
+    <ul>
+      <li>Leia a proposição composta</li>
+      <li>A palavra-chave está marcada em amarelo</li>
+      <li>Toque no símbolo correto dentre os cinco</li>
+      <li>Cada questão tem 8 segundos</li>
+    </ul>
+  </div>
+  <button class="btn-primary" onclick="startGame()">Iniciar Caça ▶</button>
+</div>
+
+<div id="screen-game" class="screen">
+  <div class="top-bar">
+    <span class="counter" id="counter">1 / 10</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+  </div>
+  <div class="timer-wrap"><div id="timer-bar"></div></div>
+  <div class="prop-display">
+    <div class="prop-text" id="prop-text"></div>
+    <div class="slot-row">
+      <span class="slot-label">Conectivo:</span>
+      <div class="slot-box" id="slot-box">?</div>
+      <span id="conn-name" style="font-size:.8rem;color:#666"></span>
+    </div>
+  </div>
+  <div class="symbols-grid" id="symbols-grid">
+    <button class="sym-btn" onclick="answer('∧','Conjunção')"><span>∧</span><span class="name">conjunção</span></button>
+    <button class="sym-btn" onclick="answer('∨','Disjunção')"><span>∨</span><span class="name">disjunção</span></button>
+    <button class="sym-btn" onclick="answer('→','Condicional')"><span>→</span><span class="name">condicional</span></button>
+    <button class="sym-btn" onclick="answer('↔','Bicondicional')"><span>↔</span><span class="name">bicondicional</span></button>
+    <button class="sym-btn" onclick="answer('¬','Negação')"><span>¬</span><span class="name">negação</span></button>
+  </div>
+</div>
+
+<div id="feedback" onclick="nextQ()">
+  <div class="fb-card">
+    <div class="fb-icon" id="fb-icon"></div>
+    <div class="fb-title" id="fb-title"></div>
+    <div class="fb-info"  id="fb-info"></div>
+    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+  </div>
+</div>
+
+<div id="screen-result" class="screen">
+  <div class="result-header">Conectivos<br><span>revelados!</span></div>
+  <div style="font-size:2.2rem" id="result-stars"></div>
+  <div class="score-box">
+    <div class="big-score" id="final-score">0</div>
+    <div class="max-score">de 1000 pontos</div>
+  </div>
+  <p class="result-msg" id="result-msg"></p>
+  <div class="sum-grid">
+    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl">Acertos</div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros/Tempo</div></div>
+  </div>
+  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+</div>
+
+<script>
+// text: HTML with <span class="highlight">keyword</span>
+const QUESTIONS = [
+  {text:'O céu proclama a glória de Deus <span class="highlight">e</span> o firmamento anuncia as obras de Suas mãos.',sym:'∧',name:'Conjunção',info:'A palavra "e" indica conjunção (∧). Ambas as partes precisam ser verdadeiras.'},
+  {text:'<span class="highlight">Se</span> o número é par, <span class="highlight">então</span> ele é divisível por dois.',sym:'→',name:'Condicional',info:'"Se... então..." é o conectivo condicional (→).'},
+  {text:'Iremos à igreja <span class="highlight">ou</span> ficaremos em casa estudando a Bíblia.',sym:'∨',name:'Disjunção',info:'A palavra "ou" indica disjunção (∨). Basta uma das partes ser verdadeira.'},
+  {text:'Um polígono é um triângulo <span class="highlight">se, e somente se,</span> possui três lados.',sym:'↔',name:'Bicondicional',info:'"Se e somente se" é a bicondicional (↔). As duas partes precisam ter o mesmo valor.'},
+  {text:'<span class="highlight">Não</span> é verdade que 2 + 2 = 5.',sym:'¬',name:'Negação',info:'"Não é verdade que..." indica negação (¬). Inverte o valor de verdade.'},
+  {text:'O Senhor é bom <span class="highlight">e</span> a Sua misericórdia dura para sempre.',sym:'∧',name:'Conjunção',info:'A palavra "e" indica conjunção (∧). Salmos 100:5!'},
+  {text:'<span class="highlight">Se</span> confessarmos os nossos pecados, <span class="highlight">então</span> Ele é fiel e justo para perdoar.',sym:'→',name:'Condicional',info:'"Se... então..." é o conectivo condicional (→). 1 João 1:9!'},
+  {text:'Você crê em Jesus <span class="highlight">ou</span> você está condenado.',sym:'∨',name:'Disjunção',info:'A palavra "ou" indica disjunção (∨).'},
+  {text:'5 × 4 = 20 <span class="highlight">se, e somente se,</span> 5 × 2 = 10.',sym:'↔',name:'Bicondicional',info:'"Se e somente se" é a bicondicional (↔). Ambas as partes são verdadeiras, então ↔ é V!'},
+  {text:'<span class="highlight">Se</span> somos filhos, <span class="highlight">então</span> somos também herdeiros.',sym:'→',name:'Condicional',info:'"Se... então..." é a condicional (→). Romanos 8:17!'},
+];
+
+const TIME=8;
+let questions,current,score,correctCount,wrongCount,timer;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+function startGame(){questions=shuffle(QUESTIONS);current=0;score=0;correctCount=0;wrongCount=0;show('screen-game');loadQ()}
+
+let qStart;
+function loadQ(){
+  if(current>=questions.length){endGame();return}
+  const q=questions[current];
+  document.getElementById('prop-text').innerHTML=q.text;
+  document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
+  document.getElementById('live-score').textContent=score;
+  document.getElementById('slot-box').textContent='?';
+  document.getElementById('slot-box').className='slot-box';
+  document.getElementById('conn-name').textContent='';
+  document.querySelectorAll('.sym-btn').forEach(b=>{b.className='sym-btn';b.disabled=false});
+  const bar=document.getElementById('timer-bar');
+  bar.style.width='100%';bar.classList.remove('danger');
+  qStart=Date.now();
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    const e=(Date.now()-qStart)/1000;
+    const pct=Math.max(0,1-e/TIME);
+    bar.style.width=(pct*100)+'%';
+    if(pct<.3)bar.classList.add('danger');
+    if(e>=TIME){clearInterval(timer);answer(null,null)}
+  },80);
+}
+
+function answer(sym,name){
+  clearInterval(timer);
+  document.querySelectorAll('.sym-btn').forEach(b=>b.disabled=true);
+  const q=questions[current];
+  const elapsed=(Date.now()-qStart)/1000;
+  const ok=(sym===q.sym);
+  const timeout=(sym===null);
+  let pts=0;
+  if(ok){pts=Math.max(20,Math.round(100-elapsed/TIME*80));score+=pts;correctCount++}
+  else{wrongCount++}
+  // Highlight button
+  document.querySelectorAll('.sym-btn').forEach(b=>{
+    if(b.textContent.trim().startsWith(q.sym))b.classList.add('correct');
+    else if(sym&&b.textContent.trim().startsWith(sym))b.classList.add('wrong');
+  });
+  // Fill slot
+  const slot=document.getElementById('slot-box');
+  slot.textContent=q.sym;slot.className='slot-box filled';
+  document.getElementById('conn-name').textContent=q.name;
+  setTimeout(()=>{
+    document.getElementById('fb-icon').textContent=ok?'🔗✨':timeout?'⏱️':'❌';
+    document.getElementById('fb-title').textContent=ok?'Correto! +'+pts+' pts':timeout?'Tempo esgotado!':'Errado!';
+    document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
+    document.getElementById('fb-info').textContent=q.info;
+    document.getElementById('feedback').classList.add('show');
+  },400);
+}
+
+function nextQ(){document.getElementById('feedback').classList.remove('show');current++;setTimeout(loadQ,100)}
+
+function endGame(){
+  show('screen-result');
+  document.getElementById('final-score').textContent=score;
+  document.getElementById('r-correct').textContent=correctCount;
+  document.getElementById('r-wrong').textContent=wrongCount;
+  const pct=score/(QUESTIONS.length*100);
+  let stars='⭐',msg='Continue praticando os conectivos! 📖';
+  if(pct>=.9){stars='⭐⭐⭐';msg='Caçador de conectivos mestre! 🏆'}
+  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você conhece bem os conectivos! 😊'}
+  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Revise a tabela de conectivos da Lição V. 💪'}
+  document.getElementById('result-stars').textContent=stars;
+  document.getElementById('result-msg').textContent=msg;
+}
+function restartGame(){startGame()}
+</script>
+</body>
+</html>
