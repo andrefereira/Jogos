@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>No Mundo da Lógica — Lição III</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a3a2a,#0d4f3c,#1a5c4a);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
+    .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
+    .screen.active{display:flex}
+    .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,215,0,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#ffd700}
+    .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
+    .title span{color:#7effd4}
+    .subtitle{font-size:.9rem;color:rgba(255,255,255,.7);text-align:center;line-height:1.5;max-width:340px}
+    .rules-box{background:rgba(255,255,255,.1);border-radius:16px;padding:16px 20px;width:100%;border:1px solid rgba(255,255,255,.15)}
+    .rules-box h3{color:#ffd700;font-size:.85rem;margin-bottom:8px;text-transform:uppercase}
+    .rules-box li{font-size:.85rem;color:rgba(255,255,255,.85);padding:3px 0;list-style:none;display:flex;gap:8px}
+    .rules-box li::before{content:'▸';color:#7effd4}
+    .btn-primary{width:100%;padding:16px;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a3a2a;border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 20px rgba(255,215,0,.4)}
+    .btn-primary:active{transform:scale(.97)}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+    /* GAME */
+    .top-bar{width:100%;display:flex;justify-content:space-between;align-items:center}
+    .counter{font-size:.82rem;color:rgba(255,255,255,.6);background:rgba(255,255,255,.1);padding:4px 12px;border-radius:20px}
+    .score-display{font-size:.95rem;font-weight:700;color:#ffd700}
+
+    .step-indicator{display:flex;gap:8px;align-items:center}
+    .step-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .3s}
+    .step-dot.active{background:#ffd700}
+    .step-dot.done{background:#7effd4}
+
+    .sentence-card{width:100%;background:#fff;color:#1a3a2a;border-radius:20px;padding:22px 18px;text-align:center;font-size:.98rem;font-weight:600;line-height:1.5;box-shadow:0 8px 30px rgba(0,0,0,.3);min-height:100px;display:flex;align-items:center;justify-content:center}
+    .step-label{font-size:.9rem;color:rgba(255,255,255,.7);text-align:center}
+    .step-label strong{color:#ffd700}
+
+    .answer-row{width:100%;display:flex;gap:14px}
+    .btn-answer{flex:1;padding:15px 10px;border:none;border-radius:18px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font-weight:700;font-size:.85rem;transition:transform .1s;box-shadow:0 4px 15px rgba(0,0,0,.2)}
+    .btn-answer:active{transform:scale(.95)}
+    .btn-answer .icon{font-size:2rem}
+    .btn-green{background:linear-gradient(135deg,#00c87a,#00a862);color:#fff}
+    .btn-red{background:linear-gradient(135deg,#ff6b6b,#e0303a);color:#fff}
+    .btn-blue{background:linear-gradient(135deg,#4a9eff,#1a6fe0);color:#fff}
+
+    /* FEEDBACK */
+    #feedback{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;padding:20px}
+    #feedback.show{display:flex}
+    .fb-card{background:#fff;color:#1a3a2a;border-radius:22px;padding:26px 22px;text-align:center;max-width:320px;width:100%;animation:popIn .2s ease-out}
+    @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+    .fb-icon{font-size:3.5rem}.fb-title{font-size:1.3rem;font-weight:800;margin:8px 0 4px}
+    .fb-title.ok{color:#00a862}.fb-title.partial{color:#f59e0b}.fb-title.no{color:#e0303a}
+    .fb-why{font-size:.82rem;color:#555;line-height:1.5;background:#f5f5f5;border-radius:10px;padding:10px 12px;margin-top:8px}
+    .fb-pts{font-size:.9rem;color:#888;margin-top:6px}
+
+    /* RESULT */
+    #screen-result{text-align:center}
+    .result-header{font-size:1.8rem;font-weight:800}
+    .result-header span{color:#7effd4}
+    .score-box{background:rgba(255,255,255,.12);border:2px solid rgba(255,215,0,.4);border-radius:20px;padding:24px;width:100%}
+    .big-score{font-size:3.5rem;font-weight:900;color:#ffd700}
+    .max-score{font-size:.9rem;color:rgba(255,255,255,.5);margin-top:4px}
+    .result-msg{font-size:1rem;color:rgba(255,255,255,.8);line-height:1.5;max-width:340px}
+    .sum-grid{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .sum-item{background:rgba(255,255,255,.1);border-radius:14px;padding:12px}
+    .sum-item .val{font-size:1.6rem;font-weight:800;color:#7effd4}
+    .sum-item .lbl{font-size:.7rem;color:rgba(255,255,255,.6);margin-top:2px}
+  </style>
+</head>
+<body>
+
+<div id="screen-start" class="screen active">
+  <div class="badge">No Mundo da Lógica · Lição III</div>
+  <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🔍</div>
+  <div class="title">Triagem<br><span>Dupla</span></div>
+  <p class="subtitle">O Senhor x faz duas perguntas sobre cada sentença. Você consegue responder as duas?</p>
+  <div class="rules-box">
+    <h3>Como jogar</h3>
+    <ul>
+      <li><strong>Passo 1:</strong> É uma proposição? ✓ ou ✗</li>
+      <li><strong>Passo 2:</strong> Se sim, é Verdadeira ou Falsa?</li>
+      <li>Acerte as duas = 100 pts. Só a 1ª = 50 pts.</li>
+    </ul>
+  </div>
+  <button class="btn-primary" onclick="startGame()">Iniciar Triagem ▶</button>
+</div>
+
+<div id="screen-game" class="screen">
+  <div class="top-bar">
+    <span class="counter" id="counter">1 / 12</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+  </div>
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot1"></div>
+    <div style="width:20px;height:2px;background:rgba(255,255,255,.2)"></div>
+    <div class="step-dot" id="dot2"></div>
+  </div>
+  <div class="sentence-card" id="sentence-card"></div>
+  <p class="step-label" id="step-label">Passo 1: <strong>É uma proposição?</strong></p>
+  <div class="answer-row" id="answer-row">
+    <button class="btn-answer btn-green" onclick="answerStep1(true)">
+      <span class="icon">✅</span><span>SIM</span>
+    </button>
+    <button class="btn-answer btn-red" onclick="answerStep1(false)">
+      <span class="icon">❌</span><span>NÃO</span>
+    </button>
+  </div>
+</div>
+
+<div id="feedback" onclick="nextQ()">
+  <div class="fb-card">
+    <div class="fb-icon" id="fb-icon"></div>
+    <div class="fb-title" id="fb-title"></div>
+    <div class="fb-pts"  id="fb-pts"></div>
+    <div class="fb-why"  id="fb-why"></div>
+    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+  </div>
+</div>
+
+<div id="screen-result" class="screen">
+  <div class="result-header">Triagem<br><span>concluída!</span></div>
+  <div style="font-size:2.2rem" id="result-stars"></div>
+  <div class="score-box">
+    <div class="big-score" id="final-score">0</div>
+    <div class="max-score">de 1200 pontos</div>
+  </div>
+  <p class="result-msg" id="result-msg"></p>
+  <div class="sum-grid">
+    <div class="sum-item"><div class="val" id="r-full">0</div><div class="lbl">Duplo acerto</div></div>
+    <div class="sum-item"><div class="val" id="r-half">0</div><div class="lbl">Meio acerto</div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
+  </div>
+  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+</div>
+
+<script>
+// isProp: true=proposition | value: 'V','F',null(if not prop)
+const ITEMS = [
+  {text:"Deus Pai é o Criador Todo-Poderoso do céu e da terra.", isProp:true, value:'V', why:"Proposição verdadeira — afirmação central da fé cristã."},
+  {text:"A criação de Deus é bela?", isProp:false, value:null, why:"Frase interrogativa — não tem valor de verdade definido."},
+  {text:"Jesus Cristo não é o único Filho de Deus.", isProp:true, value:'F', why:"É uma proposição falsa — Jesus é sim o único Filho unigênito de Deus."},
+  {text:"Jesus Cristo foi concebido pelo poder do Espírito Santo.", isProp:true, value:'V', why:"Proposição verdadeira, conforme Lucas 1:35."},
+  {text:"Jesus nasceu da Virgem Marta.", isProp:true, value:'F', why:"Falsa — Jesus nasceu da Virgem Maria, não Marta."},
+  {text:"Jesus Cristo padeceu sob o poder de Pôncio Felipe.", isProp:true, value:'F', why:"Falsa — foi Pôncio Pilatos, não Pôncio Felipe."},
+  {text:"Jesus foi crucificado.", isProp:true, value:'V', why:"Proposição verdadeira, um dos fatos centrais do Evangelho."},
+  {text:"10 + 7 + 5 − 6 = 12", isProp:true, value:'F', why:"Falsa — o resultado correto é 16, não 12."},
+  {text:"x² + x + 1 = 0", isProp:false, value:null, why:"Contém a variável x — é um predicado, não uma proposição."},
+  {text:"Jesus Cristo continua morto.", isProp:true, value:'F', why:"Falsa — Jesus ressuscitou no terceiro dia!"},
+  {text:"Jesus subiu ao céu e está sentado à direita de Deus Pai.", isProp:true, value:'V', why:"Proposição verdadeira, conforme o Credo Apostólico."},
+  {text:"Venha após mim, vós que estais cansados e sobrecarregados.", isProp:false, value:null, why:"Frase imperativa (convite/ordem) — não tem valor de verdade."},
+];
+
+let questions, current, score, fullRight, halfRight, wrong;
+let step1Correct=false;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+function startGame(){
+  questions=shuffle(ITEMS);current=0;score=0;fullRight=0;halfRight=0;wrong=0;
+  show('screen-game');loadQ();
+}
+
+function loadQ(){
+  if(current>=questions.length){endGame();return}
+  step1Correct=false;
+  document.getElementById('sentence-card').textContent=questions[current].text;
+  document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
+  document.getElementById('live-score').textContent=score;
+  document.getElementById('dot1').className='step-dot active';
+  document.getElementById('dot2').className='step-dot';
+  document.getElementById('step-label').innerHTML='Passo 1: <strong>É uma proposição?</strong>';
+  document.getElementById('answer-row').innerHTML=`
+    <button class="btn-answer btn-green" onclick="answerStep1(true)"><span class="icon">✅</span><span>SIM</span></button>
+    <button class="btn-answer btn-red" onclick="answerStep1(false)"><span class="icon">❌</span><span>NÃO</span></button>`;
+}
+
+function answerStep1(userSays){
+  const q=questions[current];
+  step1Correct=(userSays===q.isProp);
+  if(!step1Correct){
+    showFeedback('😢','Errado!','no',0,q.why);
+    wrong++;return;
+  }
+  if(!q.isProp){
+    // correct: not a proposition, no step 2
+    score+=100;fullRight++;
+    showFeedback('😊','Correto! +100 pts','ok',100,q.why);return;
+  }
+  // step 2
+  document.getElementById('dot1').className='step-dot done';
+  document.getElementById('dot2').className='step-dot active';
+  document.getElementById('step-label').innerHTML='Passo 2: <strong>Qual o valor verdade?</strong>';
+  document.getElementById('answer-row').innerHTML=`
+    <button class="btn-answer btn-blue" onclick="answerStep2('V')"><span class="icon">😊</span><span>VERDADEIRA</span></button>
+    <button class="btn-answer btn-red" onclick="answerStep2('F')"><span class="icon">😢</span><span>FALSA</span></button>`;
+}
+
+function answerStep2(userVal){
+  const q=questions[current];
+  if(userVal===q.value){
+    score+=100;fullRight++;
+    showFeedback('🎉','Duplo acerto! +100 pts','ok',100,q.why);
+  } else {
+    score+=50;halfRight++;
+    showFeedback('👍','Quase! É uma proposição, mas o valor está errado. +50 pts','partial',50,q.why);
+  }
+}
+
+function showFeedback(icon,title,cls,pts,why){
+  document.getElementById('fb-icon').textContent=icon;
+  document.getElementById('fb-title').textContent=title;
+  document.getElementById('fb-title').className='fb-title '+cls;
+  document.getElementById('fb-pts').textContent='';
+  document.getElementById('fb-why').textContent=why;
+  document.getElementById('feedback').classList.add('show');
+}
+
+function nextQ(){
+  document.getElementById('feedback').classList.remove('show');
+  current++;setTimeout(loadQ,100);
+}
+
+function endGame(){
+  show('screen-result');
+  document.getElementById('final-score').textContent=score;
+  document.getElementById('r-full').textContent=fullRight;
+  document.getElementById('r-half').textContent=halfRight;
+  document.getElementById('r-wrong').textContent=wrong;
+  const pct=score/(ITEMS.length*100);
+  let stars='⭐',msg='Continue praticando! Revise a Lição III. 📖';
+  if(pct>=.9){stars='⭐⭐⭐';msg='Excelente triagem! O Senhor x te contratou! 🏆'}
+  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você está dominando a triagem de Proposia! 😊'}
+  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Revise as lições I e II e tente novamente. 💪'}
+  document.getElementById('result-stars').textContent=stars;
+  document.getElementById('result-msg').textContent=msg;
+}
+
+function restartGame(){startGame()}
+</script>
+</body>
+</html>
