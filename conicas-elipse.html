@@ -169,6 +169,29 @@
     </div>
 
     <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras no canto da tela, depois toque na frase acima para que o interprete virtual explique este conceito.</p>
+
+    <h3 style="color:var(--laranja); margin-top:28px;">🎥 Vídeo 2 — Como fazer a Atividade 2</h3>
+    <p class="caption" id="cap2b">Observe a figura. Ela é uma elipse, uma parábola ou uma hipérbole?</p>
+
+    <div class="svgwrap">
+      <svg viewBox="0 0 320 220" width="320" height="220">
+        <ellipse id="shape2Ellipse" cx="160" cy="110" rx="90" ry="55" fill="#cde4ff" stroke="#1f6feb" stroke-width="4"/>
+        <path id="shape2Parabola" d="M 90 170 Q 160 30 230 170" fill="none" stroke="#f2994a" stroke-width="6" style="display:none"/>
+        <g id="shape2Hyperbole" style="display:none">
+          <path d="M 130 40 Q 150 110 130 180" fill="none" stroke="#2a9d8f" stroke-width="6"/>
+          <path d="M 190 40 Q 170 110 190 180" fill="none" stroke="#2a9d8f" stroke-width="6"/>
+        </g>
+      </svg>
+    </div>
+
+    <p id="resposta2" class="caption hidden" style="background:#e6f7f1; border-left-color:var(--verde);"></p>
+
+    <div class="btnrow">
+      <button class="secundario" onclick="proximaFigura2()">🔄 Ver outra figura</button>
+      <button class="verde" onclick="revelarResposta2()">✅ Revelar resposta</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase da figura ou na resposta revelada.</p>
   </section>
 
   <!-- ================= CONCEITO 2 ================= -->
@@ -213,6 +236,30 @@
     </div>
 
     <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois em cada frase que aparece ao tocar nos botões.</p>
+
+    <h3 style="color:var(--laranja); margin-top:28px;">🎥 Vídeo 5 — Como marcar os focos e pintar os eixos</h3>
+    <p class="caption" id="cap5">Toque nos botões, um de cada vez, para ver como marcar essa elipse.</p>
+
+    <div class="svgwrap">
+      <svg viewBox="0 0 320 240" width="320" height="240">
+        <ellipse cx="160" cy="120" rx="120" ry="80" fill="#fff3e0" stroke="#f2994a" stroke-width="4"/>
+        <line id="eixoMaior5" x1="40" y1="120" x2="280" y2="120" stroke="#cccccc" stroke-width="6"/>
+        <line id="eixoMenor5" x1="160" y1="40" x2="160" y2="200" stroke="#cccccc" stroke-width="6"/>
+        <g id="focos5" class="fade hidden">
+          <text x="72" y="130" font-size="30" font-weight="bold" fill="#e63946">X</text>
+          <text x="212" y="130" font-size="30" font-weight="bold" fill="#e63946">X</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="btnrow">
+      <button class="vermelho" onclick="passo1_5()">1. Marcar focos</button>
+      <button onclick="passo2_5()">2. Pintar eixo maior</button>
+      <button class="secundario" onclick="passo3_5()">3. Pintar eixo menor</button>
+      <button class="laranja" onclick="reiniciar5()">🔁 Reiniciar</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que aparece a cada passo.</p>
   </section>
 
   <!-- ================= CONCEITO 3 ================= -->
@@ -397,6 +444,52 @@
     renderer3d.render(scene3d, camera3d);
   }
   animate3d();
+
+  // ---------- Vídeo 2: exemplo de como fazer a Atividade 2 ----------
+  const tipos2 = [
+    { id:"shape2Ellipse",   nome:"ELIPSE",    dica:"É um formato fechado, parecido com um ovo." },
+    { id:"shape2Parabola",  nome:"PARÁBOLA",  dica:"É uma linha aberta, em forma de U." },
+    { id:"shape2Hyperbole", nome:"HIPÉRBOLE", dica:"São duas partes separadas, uma de cada lado." }
+  ];
+  let tipoAtual2 = 0;
+
+  function mostrarTipo2(i){
+    tipos2.forEach(t => { document.getElementById(t.id).style.display = 'none'; });
+    document.getElementById(tipos2[i].id).style.display = '';
+    document.getElementById('resposta2').classList.add('hidden');
+    document.getElementById('cap2b').textContent = "Observe a figura. Ela é uma elipse, uma parábola ou uma hipérbole?";
+  }
+  function proximaFigura2(){
+    tipoAtual2 = (tipoAtual2 + 1) % tipos2.length;
+    mostrarTipo2(tipoAtual2);
+  }
+  function revelarResposta2(){
+    const t = tipos2[tipoAtual2];
+    const resp = document.getElementById('resposta2');
+    resp.textContent = "Resposta: " + t.nome + ". " + t.dica;
+    resp.classList.remove('hidden');
+  }
+  mostrarTipo2(0);
+
+  // ---------- Vídeo 5: marcar focos e pintar eixos ----------
+  function passo1_5(){
+    document.getElementById('focos5').classList.remove('hidden');
+    document.getElementById('cap5').textContent = "Passo 1: marcamos um X em cada foco.";
+  }
+  function passo2_5(){
+    document.getElementById('eixoMaior5').setAttribute('stroke', '#e63946');
+    document.getElementById('cap5').textContent = "Passo 2: pintamos o eixo maior de vermelho.";
+  }
+  function passo3_5(){
+    document.getElementById('eixoMenor5').setAttribute('stroke', '#1f6feb');
+    document.getElementById('cap5').textContent = "Passo 3: pintamos o eixo menor de azul. Pronto!";
+  }
+  function reiniciar5(){
+    document.getElementById('focos5').classList.add('hidden');
+    document.getElementById('eixoMaior5').setAttribute('stroke', '#cccccc');
+    document.getElementById('eixoMenor5').setAttribute('stroke', '#cccccc');
+    document.getElementById('cap5').textContent = "Toque nos botões, um de cada vez, para ver como marcar essa elipse.";
+  }
 
   // ---------- Conceito 2: partes da elipse ----------
   function mostrarParte(id, frase){
