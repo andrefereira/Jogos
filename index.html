@@ -141,6 +141,80 @@
       opacity: 0.25;
     }
 
+    /* ── ABAS ───────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 10px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tab-btn.active {
+      background: rgba(126,255,212,0.2);
+      color: #7effd4;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── ACESSIBILIDADE / SURDOS ───────────────── */
+    .access-card {
+      display: block;
+      background: rgba(126,255,212,0.12);
+      border: 1px solid rgba(126,255,212,0.3);
+      border-radius: 18px;
+      padding: 22px 18px;
+      text-decoration: none;
+      color: #fff;
+      text-align: center;
+      transition: background 0.2s, transform 0.15s;
+      margin-bottom: 16px;
+    }
+
+    .access-card:active { transform: scale(0.97); }
+    .access-card:hover { background: rgba(126,255,212,0.2); }
+
+    .access-icon { font-size: 2.6rem; margin-bottom: 8px; }
+
+    .access-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .access-desc {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .access-btn {
+      display: inline-block;
+      background: #7effd4;
+      color: #0d4f3c;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px 20px;
+      border-radius: 50px;
+    }
+
     /* ── FOOTER ─────────────────────────────────── */
     .footer {
       text-align: center;
@@ -159,6 +233,13 @@
     <h1 class="title">No Mundo<br>da <span>Lógica</span></h1>
     <p class="subtitle">Escolha uma lição e jogue!<br>Cada jogo treina o que você aprendeu.</p>
   </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="mostrarAba('licoes', this)">🎮 Lições</button>
+    <button class="tab-btn" onclick="mostrarAba('surdos', this)">🤟 Para Surdos</button>
+  </div>
+
+  <div id="panel-licoes" class="panel active">
 
   <p class="section-label">Lições disponíveis</p>
 
@@ -243,11 +324,37 @@
 
   </div>
 
+  </div>
+
+  <div id="panel-surdos" class="panel">
+
+    <p class="section-label">Materiais acessíveis</p>
+
+    <a href="conicas-elipse.html" class="access-card">
+      <div class="access-icon">🤟</div>
+      <div class="access-title">Cônicas e Elipse em Libras</div>
+      <div class="access-desc">
+        Animações interativas — cone 3D, partes da elipse e desenho com barbante — com tradução em Libras pelo VLibras.
+      </div>
+      <span class="access-btn">▶ Acessar material</span>
+    </a>
+
+  </div>
+
   <div class="footer">
     No Mundo da Lógica · André Ferreira Pereira<br>
     Lógica Matemática com viés cristão clássico
   </div>
 
 </div>
+
+<script>
+  function mostrarAba(nome, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + nome).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
 </body>
 </html>
