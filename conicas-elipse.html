@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+<title>Cônicas e Elipse — Animações</title>
+<style>
+  :root{
+    --azul:#1f6feb;
+    --vermelho:#e63946;
+    --laranja:#f2994a;
+    --verde:#2a9d8f;
+    --cinza:#333333;
+    --fundo:#f7f9fc;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--fundo);
+    color:var(--cinza);
+    line-height:1.5;
+  }
+  header{
+    background:var(--azul);
+    color:white;
+    padding:20px 16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1{margin:0; font-size:1.5rem;}
+  header p{margin:4px 0 0; font-size:1rem; opacity:.9;}
+
+  nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    padding:14px 10px;
+    background:white;
+    position:sticky;
+    top:78px;
+    z-index:40;
+    border-bottom:2px solid #e4e9f2;
+  }
+  nav a{
+    text-decoration:none;
+    background:#e8f0ff;
+    color:var(--azul);
+    font-weight:bold;
+    padding:10px 16px;
+    border-radius:999px;
+    font-size:0.95rem;
+  }
+
+  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+
+  section.concept{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:28px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    scroll-margin-top:150px;
+  }
+  section.concept h2{
+    color:var(--azul);
+    font-size:1.4rem;
+    border-bottom:3px solid #e8f0ff;
+    padding-bottom:8px;
+    margin-top:0;
+  }
+  .caption{
+    font-size:1.15rem;
+    background:#e8f0ff;
+    border-left:6px solid var(--azul);
+    border-radius:8px;
+    padding:12px 16px;
+    margin:14px 0;
+    min-height:1.4em;
+  }
+  .btnrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin:14px 0;
+  }
+  button{
+    font-size:1rem;
+    font-weight:bold;
+    border:none;
+    border-radius:10px;
+    padding:14px 18px;
+    min-height:48px;
+    cursor:pointer;
+    color:white;
+    background:var(--azul);
+    transition:transform .1s ease;
+  }
+  button:active{transform:scale(0.96);}
+  button.laranja{background:var(--laranja);}
+  button.verde{background:var(--verde);}
+  button.vermelho{background:var(--vermelho);}
+  button.secundario{background:#dfe6f5; color:var(--azul);}
+
+  .svgwrap{
+    background:#fbfcfe;
+    border-radius:12px;
+    padding:6px;
+    display:flex;
+    justify-content:center;
+  }
+  svg, canvas{max-width:100%; height:auto; display:block;}
+
+  .libras-note{
+    font-size:.95rem;
+    color:#555;
+    background:#fff7e6;
+    border:2px dashed var(--laranja);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-top:14px;
+  }
+  .libras-note b{color:var(--laranja);}
+
+  footer{
+    text-align:center;
+    font-size:.85rem;
+    color:#888;
+    padding:30px 16px 60px;
+  }
+
+  .fade{transition:opacity .4s ease;}
+  .hidden{opacity:0; pointer-events:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Capítulo 8 — As cônicas</h1>
+  <p>Animações de apoio: Figura cônica e Elipse</p>
+</header>
+
+<nav>
+  <a href="#c1">① Figura cônica</a>
+  <a href="#c2">② Partes da elipse</a>
+  <a href="#c3">③ Desenhar a elipse</a>
+</nav>
+
+<main>
+
+  <!-- ================= CONCEITO 1 ================= -->
+  <section class="concept" id="c1">
+    <h2>① O que é uma figura cônica?</h2>
+    <p class="caption" id="cap1">Um cone é cortado por um plano inclinado. Toque no botão para ver outro tipo de corte.</p>
+
+    <div class="svgwrap">
+      <div id="cone3d" style="width:340px; height:320px; max-width:100%;"></div>
+    </div>
+    <div id="labelShape3d" style="text-align:center; font-weight:bold; font-size:1.35rem; margin-top:6px;"></div>
+    <p style="text-align:center; font-size:0.85rem; color:#777; margin-top:2px;">👆 Arraste com o dedo para girar o cone</p>
+
+    <div class="btnrow">
+      <button onclick="proximoCorte()">🔄 Ver outro corte</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras no canto da tela, depois toque na frase acima para que o interprete virtual explique este conceito.</p>
+  </section>
+
+  <!-- ================= CONCEITO 2 ================= -->
+  <section class="concept" id="c2">
+    <h2>② As partes da elipse</h2>
+    <p class="caption" id="cap2">Toque nos botões, um de cada vez, para descobrir cada parte da elipse.</p>
+
+    <div class="svgwrap">
+      <svg viewBox="0 0 320 240" width="320" height="240">
+        <ellipse cx="160" cy="120" rx="120" ry="80" fill="#e8f0ff" stroke="#1f6feb" stroke-width="4"/>
+
+        <g id="grpEixoMaior" class="fade hidden">
+          <line x1="40" y1="120" x2="280" y2="120" stroke="#e63946" stroke-width="5"/>
+          <text x="285" y="115" font-size="15" fill="#e63946" font-weight="bold">eixo maior</text>
+        </g>
+
+        <g id="grpEixoMenor" class="fade hidden">
+          <line x1="160" y1="40" x2="160" y2="200" stroke="#2a9d8f" stroke-width="5"/>
+          <text x="130" y="30" font-size="15" fill="#2a9d8f" font-weight="bold">eixo menor</text>
+        </g>
+
+        <g id="grpCentro" class="fade hidden">
+          <circle cx="160" cy="120" r="6" fill="#333"/>
+          <text x="168" y="112" font-size="14" fill="#333" font-weight="bold">C</text>
+        </g>
+
+        <g id="grpFocos" class="fade hidden">
+          <circle cx="90" cy="120" r="7" fill="#000"/>
+          <circle cx="230" cy="120" r="7" fill="#000"/>
+          <text x="80" y="145" font-size="15" font-weight="bold">F1</text>
+          <text x="220" y="145" font-size="15" font-weight="bold">F2</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="btnrow">
+      <button class="vermelho" onclick="mostrarParte('grpFocos','Os pontos F1 e F2 são os FOCOS da elipse.')">Focos</button>
+      <button onclick="mostrarParte('grpEixoMaior','A linha comprida é o EIXO MAIOR.')">Eixo maior</button>
+      <button class="verde" onclick="mostrarParte('grpEixoMenor','A linha curta é o EIXO MENOR.')">Eixo menor</button>
+      <button class="secundario" onclick="mostrarParte('grpCentro','O ponto C é o CENTRO da elipse.')">Centro</button>
+      <button class="laranja" onclick="mostrarTudo()">Mostrar tudo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois em cada frase que aparece ao tocar nos botões.</p>
+  </section>
+
+  <!-- ================= CONCEITO 3 ================= -->
+  <section class="concept" id="c3">
+    <h2>③ Desenhando a elipse com barbante</h2>
+    <p class="caption" id="cap3">Dois pregos fixos e um barbante esticado. O lápis desenha a elipse dando a volta.</p>
+
+    <div class="svgwrap">
+      <canvas id="canvasBarbante" width="320" height="240"></canvas>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="tocarAnimacao()">▶️ Tocar</button>
+      <button class="secundario" onclick="pausarAnimacao()">⏸️ Pausar</button>
+      <button class="laranja" onclick="reiniciarAnimacao()">🔁 Reiniciar</button>
+    </div>
+
+    <p class="caption">A soma das duas partes do barbante (do lápis até o prego 1, e do lápis até o prego 2) é sempre a mesma, em qualquer ponto da elipse.</p>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois nas frases acima para ver a explicação sinalizada.</p>
+  </section>
+
+</main>
+
+<footer>
+  Material de apoio — Matemática, 3ª série do Ensino Médio.<br>
+  Página pronta para ser hospedada e acessada por QR Code.
+</footer>
+
+<!-- ============ SCRIPTS ============ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+  // ---------- Conceito 1: cortes do cone (cone 3D real, Three.js) ----------
+  // Geometria: cone com eixo em Y, ápice na origem.
+  //   nappe "down" (v de 0 a VMAX): y = -v*cos(theta)  (cone principal, para baixo)
+  //   nappe "up"                  : y = +v*cos(theta)  (segundo ramo do bicone, para hipérbole)
+  // Plano de corte: passa por (0, y0, 0), normal = (sin(phi), cos(phi), 0).
+  // A curva de interseção é calculada por interpolação exata ao longo de cada
+  // geratriz (reta do ápice até a borda), o que dá a cônica correta (não uma aproximação visual).
+
+  const THETA = 30 * Math.PI/180;
+  const VMAX = 5;
+  const NSEG = 48;
+
+  const presets = [
+    { nome:"ELIPSE",    cor:"#e63946", corHex:0xe63946, phi:20*Math.PI/180, y0:-2.5, nappes:["down"] },
+    { nome:"PARÁBOLA",  cor:"#f2994a", corHex:0xf2994a, phi:60*Math.PI/180, y0:-2.5, nappes:["down"] },
+    { nome:"HIPÉRBOLE", cor:"#2a9d8f", corHex:0x2a9d8f, phi:75*Math.PI/180, y0:-1.0, nappes:["down","up"] }
+  ];
+
+  function buildConeGeometry(theta, vmax, nSeg, nappeSign){
+    const sinT = Math.sin(theta), cosT = Math.cos(theta);
+    const capY = nappeSign * vmax * cosT;
+    const ring = [];
+    for(let i=0; i<=nSeg; i++){
+      const u = i*2*Math.PI/nSeg;
+      ring.push([vmax*sinT*Math.cos(u), capY, vmax*sinT*Math.sin(u)]);
+    }
+    const verts = [];
+    for(let i=0;i<nSeg;i++){
+      verts.push(0,0,0, ring[i][0],ring[i][1],ring[i][2], ring[i+1][0],ring[i+1][1],ring[i+1][2]);
+    }
+    for(let i=0;i<nSeg;i++){
+      verts.push(0,capY,0, ring[i+1][0],ring[i+1][1],ring[i+1][2], ring[i][0],ring[i][1],ring[i][2]);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(verts,3));
+    geo.computeVertexNormals();
+    return geo;
+  }
+
+  function computeArcs(theta, phi, y0, vmax, nSeg, nappeSign){
+    const sinT=Math.sin(theta), cosT=Math.cos(theta), sinP=Math.sin(phi), cosP=Math.cos(phi);
+    function dist(x,y){ return sinP*x + cosP*(y-y0); }
+    const dApex = dist(0,0);
+    const pts = [];
+    for(let i=0;i<nSeg;i++){
+      const u = i*2*Math.PI/nSeg;
+      const x = vmax*sinT*Math.cos(u);
+      const y = nappeSign*vmax*cosT;
+      const z = vmax*sinT*Math.sin(u);
+      const dRing = dist(x,y);
+      const t = dApex/(dApex-dRing);
+      pts.push({hit: (t>=0 && t<=1), x:t*x, y:t*y, z:t*z});
+    }
+    let arcs=[], cur=null;
+    for(let i=0;i<nSeg;i++){
+      if(pts[i].hit){ if(!cur) cur=[]; cur.push(pts[i]); }
+      else { if(cur){ arcs.push(cur); cur=null; } }
+    }
+    if(cur) arcs.push(cur);
+    if(arcs.length>1 && pts[0].hit && pts[nSeg-1].hit){
+      const first = arcs.shift();
+      arcs[arcs.length-1] = arcs[arcs.length-1].concat(first);
+    }
+    return arcs.map(a => ({ points:a, closed: a.length===nSeg }));
+  }
+
+  const containerEl = document.getElementById('cone3d');
+  const W = 340, H = 320;
+  const scene3d = new THREE.Scene();
+  const camera3d = new THREE.PerspectiveCamera(45, W/H, 0.1, 100);
+  camera3d.position.set(7,3,9);
+  const renderer3d = new THREE.WebGLRenderer({antialias:true, alpha:true});
+  renderer3d.setSize(W,H);
+  renderer3d.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  containerEl.appendChild(renderer3d.domElement);
+
+  const controls3d = new THREE.OrbitControls(camera3d, renderer3d.domElement);
+  controls3d.target.set(0,-1,0);
+  controls3d.enableDamping = true;
+  controls3d.autoRotate = true;
+  controls3d.autoRotateSpeed = 2.2;
+  controls3d.enablePan = false;
+  controls3d.minDistance = 6;
+  controls3d.maxDistance = 16;
+  controls3d.addEventListener('start', ()=>{ controls3d.autoRotate = false; });
+  controls3d.update();
+
+  scene3d.add(new THREE.AmbientLight(0xffffff, 0.65));
+  const dirLight3d = new THREE.DirectionalLight(0xffffff, 0.7);
+  dirLight3d.position.set(5,8,6);
+  scene3d.add(dirLight3d);
+
+  const group3d = new THREE.Group();
+  scene3d.add(group3d);
+
+  function buildState3d(idx){
+    while(group3d.children.length){
+      const o = group3d.children.pop();
+      if(o.geometry) o.geometry.dispose();
+      if(o.material) o.material.dispose();
+    }
+    const preset = presets[idx];
+
+    preset.nappes.forEach(n=>{
+      const sign = n==='down' ? -1 : 1;
+      const geo = buildConeGeometry(THETA, VMAX, NSEG, sign);
+      const mat = new THREE.MeshPhongMaterial({color:0xdbe4ff, transparent:true, opacity:0.85, side:THREE.DoubleSide, shininess:35});
+      group3d.add(new THREE.Mesh(geo, mat));
+    });
+
+    const planeGeo = new THREE.PlaneGeometry(9,9);
+    const planeMat = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.28, side:THREE.DoubleSide});
+    const planeMesh = new THREE.Mesh(planeGeo, planeMat);
+    const normal = new THREE.Vector3(Math.sin(preset.phi), Math.cos(preset.phi), 0);
+    planeMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), normal);
+    planeMesh.position.set(0, preset.y0, 0);
+    group3d.add(planeMesh);
+
+    preset.nappes.forEach(n=>{
+      const sign = n==='down' ? -1 : 1;
+      const arcs = computeArcs(THETA, preset.phi, preset.y0, VMAX, NSEG, sign);
+      arcs.forEach(arc=>{
+        if(arc.points.length < 2) return;
+        const vecPts = arc.points.map(p=>new THREE.Vector3(p.x,p.y,p.z));
+        const curve = new THREE.CatmullRomCurve3(vecPts, arc.closed);
+        const tubeGeo = new THREE.TubeGeometry(curve, Math.max(vecPts.length*2,16), 0.09, 8, arc.closed);
+        const tubeMat = new THREE.MeshBasicMaterial({color: preset.corHex});
+        group3d.add(new THREE.Mesh(tubeGeo, tubeMat));
+      });
+    });
+
+    document.getElementById('labelShape3d').textContent = preset.nome;
+    document.getElementById('labelShape3d').style.color = preset.cor;
+    document.getElementById('cap1').textContent =
+      "Corte: " + preset.nome + ". Arraste para girar, ou toque no botão para ver outro tipo de corte.";
+  }
+
+  let estadoAtual3d = 0;
+  buildState3d(0);
+
+  function proximoCorte(){
+    estadoAtual3d = (estadoAtual3d + 1) % presets.length;
+    buildState3d(estadoAtual3d);
+  }
+
+  function animate3d(){
+    requestAnimationFrame(animate3d);
+    controls3d.update();
+    renderer3d.render(scene3d, camera3d);
+  }
+  animate3d();
+
+  // ---------- Conceito 2: partes da elipse ----------
+  function mostrarParte(id, frase){
+    ['grpFocos','grpEixoMaior','grpEixoMenor','grpCentro'].forEach(g=>{
+      document.getElementById(g).classList.add('hidden');
+    });
+    document.getElementById(id).classList.remove('hidden');
+    document.getElementById('cap2').textContent = frase;
+  }
+  function mostrarTudo(){
+    ['grpFocos','grpEixoMaior','grpEixoMenor','grpCentro'].forEach(g=>{
+      document.getElementById(g).classList.remove('hidden');
+    });
+    document.getElementById('cap2').textContent = "F1 e F2 são os focos. A linha maior é o eixo maior, a linha menor é o eixo menor, e C é o centro.";
+  }
+
+  // ---------- Conceito 3: barbante ----------
+  const canvas = document.getElementById('canvasBarbante');
+  const ctx = canvas.getContext('2d');
+  const cx = 160, cy = 120, a = 110, b = 70;
+  const f = Math.sqrt(a*a - b*b);
+  let ang = 0;
+  let animando = false;
+  let trilha = [];
+
+  function desenhar(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // elipse guia (tracejada)
+    ctx.setLineDash([6,6]);
+    ctx.strokeStyle = '#1f6feb55';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(cx,cy,a,b,0,0,Math.PI*2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // trilha desenhada
+    ctx.strokeStyle = '#1f6feb';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    trilha.forEach((p,i)=>{
+      if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y);
+    });
+    ctx.stroke();
+
+    // focos
+    ctx.fillStyle = '#333';
+    ctx.fillRect(cx-f-5, cy-5, 10, 10);
+    ctx.fillRect(cx+f-5, cy-5, 10, 10);
+    ctx.font = '13px sans-serif';
+    ctx.fillText('prego 1', cx-f-24, cy+28);
+    ctx.fillText('prego 2', cx+f-24, cy+28);
+
+    // ponto do lápis
+    const px = cx + a*Math.cos(ang);
+    const py = cy + b*Math.sin(ang);
+
+    // barbante (linhas laranjas)
+    ctx.strokeStyle = '#f2994a';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx-f, cy); ctx.lineTo(px,py);
+    ctx.moveTo(cx+f, cy); ctx.lineTo(px,py);
+    ctx.stroke();
+
+    // lápis
+    ctx.fillStyle = '#e63946';
+    ctx.beginPath();
+    ctx.arc(px,py,7,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  let rafId = null;
+  function passo(){
+    ang += 0.02;
+    if(ang > Math.PI*2){
+      ang = 0;
+      trilha = [];
+    }
+    const px = cx + a*Math.cos(ang);
+    const py = cy + b*Math.sin(ang);
+    trilha.push({x:px,y:py});
+    desenhar();
+    if(animando) rafId = requestAnimationFrame(passo);
+  }
+
+  function tocarAnimacao(){
+    if(animando) return;
+    animando = true;
+    passo();
+  }
+  function pausarAnimacao(){
+    animando = false;
+    if(rafId) cancelAnimationFrame(rafId);
+  }
+  function reiniciarAnimacao(){
+    pausarAnimacao();
+    ang = 0;
+    trilha = [];
+    desenhar();
+  }
+  desenhar();
+</script>
+
+<!-- ============ VLIBRAS (tradutor de Libras oficial do Governo Federal) ============ -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+</body>
+</html>
