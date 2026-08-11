@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+<title>Equação da Elipse — Animações</title>
+<style>
+  :root{
+    --azul:#1f6feb;
+    --vermelho:#e63946;
+    --laranja:#f2994a;
+    --verde:#2a9d8f;
+    --cinza:#333333;
+    --fundo:#f7f9fc;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--fundo);
+    color:var(--cinza);
+    line-height:1.5;
+  }
+  header{
+    background:var(--azul);
+    color:white;
+    padding:20px 16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1{margin:0; font-size:1.4rem;}
+  header p{margin:4px 0 0; font-size:1rem; opacity:.9;}
+
+  nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    padding:14px 10px;
+    background:white;
+    position:sticky;
+    top:74px;
+    z-index:40;
+    border-bottom:2px solid #e4e9f2;
+  }
+  nav a{
+    text-decoration:none;
+    background:#e8f0ff;
+    color:var(--azul);
+    font-weight:bold;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:0.85rem;
+  }
+
+  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+
+  section.concept{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:28px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    scroll-margin-top:150px;
+  }
+  section.concept h2{
+    color:var(--azul);
+    font-size:1.3rem;
+    border-bottom:3px solid #e8f0ff;
+    padding-bottom:8px;
+    margin-top:0;
+  }
+  .caption{
+    font-size:1.1rem;
+    background:#e8f0ff;
+    border-left:6px solid var(--azul);
+    border-radius:8px;
+    padding:12px 16px;
+    margin:14px 0;
+    min-height:1.4em;
+  }
+  .formula{
+    font-size:1.2rem;
+    font-weight:bold;
+    text-align:center;
+    background:#fff7e6;
+    border:2px dashed var(--laranja);
+    border-radius:10px;
+    padding:12px 10px;
+    margin:14px 0;
+  }
+  .btnrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin:14px 0;
+  }
+  button{
+    font-size:0.95rem;
+    font-weight:bold;
+    border:none;
+    border-radius:10px;
+    padding:12px 16px;
+    min-height:44px;
+    cursor:pointer;
+    color:white;
+    background:var(--azul);
+    transition:transform .1s ease;
+  }
+  button:active{transform:scale(0.96);}
+  button.laranja{background:var(--laranja);}
+  button.verde{background:var(--verde);}
+  button.vermelho{background:var(--vermelho);}
+  button.secundario{background:#dfe6f5; color:var(--azul);}
+
+  .svgwrap{
+    background:#fbfcfe;
+    border-radius:12px;
+    padding:6px;
+    display:flex;
+    justify-content:center;
+  }
+  svg{max-width:100%; height:auto; display:block;}
+
+  .libras-note{
+    font-size:.95rem;
+    color:#555;
+    background:#fff7e6;
+    border:2px dashed var(--laranja);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-top:14px;
+  }
+  .libras-note b{color:var(--laranja);}
+
+  .feedback{
+    font-weight:bold;
+    text-align:center;
+    padding:10px;
+    border-radius:8px;
+    margin:10px 0;
+    min-height:1.4em;
+  }
+  .feedback.ok{background:#e6f7f1; color:var(--verde);}
+  .feedback.erro{background:#fdeaea; color:var(--vermelho);}
+
+  footer{
+    text-align:center;
+    font-size:.85rem;
+    color:#888;
+    padding:30px 16px 60px;
+  }
+
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Capítulo 8 — As cônicas</h1>
+  <p>Equação da elipse: eixo maior vertical e elipse transladada</p>
+</header>
+
+<nav>
+  <a href="#c1">① Eixo vertical</a>
+  <a href="#c2">② Leia o gráfico</a>
+  <a href="#c3">③ Transladada</a>
+  <a href="#c4">④ Qual a equação?</a>
+  <a href="#c5">⑤ Passo a passo</a>
+</nav>
+
+<main>
+
+  <!-- ================= CONCEITO 1 ================= -->
+  <section class="concept" id="c1">
+    <h2>① Elipse com eixo maior vertical</h2>
+    <p class="caption" id="cap1">Toque nos botões para mudar o tamanho de a e b e veja a equação mudar.</p>
+
+    <div class="svgwrap">
+      <svg id="svg1" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <p class="formula" id="formula1">x² / 9  +  y² / 25  =  1</p>
+
+    <div class="btnrow">
+      <button class="secundario" onclick="mudarA1(-1)">a −</button>
+      <button onclick="mudarA1(1)">a +</button>
+      <button class="secundario" onclick="mudarB1(-1)">b −</button>
+      <button class="verde" onclick="mudarB1(1)">b +</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras no canto da tela, depois toque na frase acima para que o intérprete virtual explique este conceito.</p>
+  </section>
+
+  <!-- ================= CONCEITO 2 ================= -->
+  <section class="concept" id="c2">
+    <h2>② Desafio: leia o gráfico</h2>
+    <p class="caption" id="cap2">Observe o gráfico e escolha a equação certa.</p>
+
+    <div class="svgwrap">
+      <svg id="svg2" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <div class="btnrow" id="opcoes2"></div>
+    <p class="feedback" id="feedback2"></p>
+
+    <div class="btnrow">
+      <button class="laranja" onclick="proximoDesafio2()">🔄 Ver outro gráfico</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= CONCEITO 3 ================= -->
+  <section class="concept" id="c3">
+    <h2>③ Elipse transladada</h2>
+    <p class="caption" id="cap3">Mova o centro da elipse e veja a equação mudar.</p>
+
+    <div class="svgwrap">
+      <svg id="svg3" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <p class="formula" id="formula3">(x−0)² / 4  +  (y−0)² / 16  =  1</p>
+
+    <div class="btnrow">
+      <button onclick="moverCentro3(0,1)">▲</button>
+    </div>
+    <div class="btnrow">
+      <button onclick="moverCentro3(-1,0)">◀</button>
+      <button class="secundario" onclick="resetCentro3()">Centro (0,0)</button>
+      <button onclick="moverCentro3(1,0)">▶</button>
+    </div>
+    <div class="btnrow">
+      <button onclick="moverCentro3(0,-1)">▼</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= CONCEITO 4 ================= -->
+  <section class="concept" id="c4">
+    <h2>④ Desafio: qual é a equação?</h2>
+    <p class="caption" id="cap4">Observe o gráfico transladado e tente descobrir a equação antes de revelar.</p>
+
+    <div class="svgwrap">
+      <svg id="svg4" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <p class="formula hidden" id="formula4"></p>
+
+    <div class="btnrow">
+      <button class="verde" onclick="revelarDesafio4()">✅ Revelar equação</button>
+      <button class="laranja" onclick="proximoDesafio4()">🔄 Ver outro</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na resposta revelada.</p>
+  </section>
+
+  <!-- ================= CONCEITO 5 ================= -->
+  <section class="concept" id="c5">
+    <h2>⑤ Passo a passo: desenhando a elipse transladada</h2>
+    <p class="caption" id="cap5">Centro C(1, −2), a = 4 (vertical), b = 2. Toque nos botões, um de cada vez.</p>
+
+    <div class="svgwrap">
+      <svg id="svg5" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <div class="btnrow">
+      <button class="vermelho" onclick="passo1_5()">1. Marcar centro</button>
+      <button onclick="passo2_5()">2. Vértices eixo maior</button>
+      <button class="verde" onclick="passo3_5()">3. Vértices eixo menor</button>
+      <button class="laranja" onclick="passo4_5()">4. Ver elipse completa</button>
+    </div>
+    <div class="btnrow">
+      <button class="secundario" onclick="reiniciar5()">🔁 Reiniciar</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que aparece a cada passo.</p>
+  </section>
+
+</main>
+
+<footer>
+  Material de apoio — Matemática, 3ª série do Ensino Médio.<br>
+  Página pronta para ser hospedada e acessada por QR Code.
+</footer>
+
+<script>
+  const NS = "http://www.w3.org/2000/svg";
+  const ORIGIN = 160, SCALE = 17;
+
+  function px(x){ return ORIGIN + x*SCALE; }
+  function py(y){ return ORIGIN - y*SCALE; }
+
+  function el(tag, attrs){
+    const e = document.createElementNS(NS, tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function desenharGrade(svg){
+    svg.innerHTML = "";
+    for(let i=-8;i<=8;i++){
+      svg.appendChild(el("line",{x1:px(i),y1:py(-8),x2:px(i),y2:py(8),stroke:"#e4e9f2","stroke-width":1}));
+      svg.appendChild(el("line",{x1:px(-8),y1:py(i),x2:px(8),y2:py(i),stroke:"#e4e9f2","stroke-width":1}));
+    }
+    svg.appendChild(el("line",{x1:px(-8),y1:py(0),x2:px(8),y2:py(0),stroke:"#888","stroke-width":2}));
+    svg.appendChild(el("line",{x1:px(0),y1:py(-8),x2:px(0),y2:py(8),stroke:"#888","stroke-width":2}));
+  }
+
+  function desenharElipse(svg, h, k, semiX, semiY, cor){
+    svg.appendChild(el("ellipse",{cx:px(h),cy:py(k),rx:semiX*SCALE,ry:semiY*SCALE,fill:"none",stroke:cor,"stroke-width":4}));
+  }
+
+  function ponto(svg, x, y, cor, rotulo, dx, dy){
+    svg.appendChild(el("circle",{cx:px(x),cy:py(y),r:6,fill:cor}));
+    if(rotulo){
+      const t = el("text",{x:px(x)+(dx||8),y:py(y)+(dy||-8),"font-size":13,"font-weight":"bold",fill:cor});
+      t.textContent = rotulo;
+      svg.appendChild(t);
+    }
+  }
+
+  function fmtTermo(letra, v){
+    if(v===0) return letra+"²";
+    const sinal = v>0 ? "−" : "+";
+    return "("+letra+sinal+Math.abs(v)+")²";
+  }
+
+  // ---------- ① Eixo maior vertical ----------
+  let a1=5, b1=3;
+  function redraw1(){
+    const svg = document.getElementById("svg1");
+    desenharGrade(svg);
+    desenharElipse(svg, 0,0, b1, a1, "#1f6feb");
+    const c = Math.sqrt(Math.max(a1*a1-b1*b1,0));
+    ponto(svg,0,a1,"#333","A1",8,-6);
+    ponto(svg,0,-a1,"#333","A2",8,14);
+    ponto(svg,b1,0,"#333","B1",8,-6);
+    ponto(svg,-b1,0,"#333","B2",-28,-6);
+    ponto(svg,0,c,"#e63946","F1",8,4);
+    ponto(svg,0,-c,"#e63946","F2",8,16);
+    document.getElementById("formula1").textContent =
+      "x² / "+(b1*b1)+"  +  y² / "+(a1*a1)+"  =  1";
+    document.getElementById("cap1").textContent =
+      "a = "+a1+", b = "+b1+", c = "+c.toFixed(1)+". Toque nos botões para mudar a e b.";
+  }
+  function mudarA1(d){
+    const novo = a1+d;
+    if(novo>b1 && novo<=7) a1=novo;
+    redraw1();
+  }
+  function mudarB1(d){
+    const novo = b1+d;
+    if(novo>=1 && novo<a1) b1=novo;
+    redraw1();
+  }
+
+  // ---------- ② Desafio: leia o gráfico ----------
+  const presets2 = [ {a:4,b:2}, {a:6,b:3}, {a:5,b:2} ];
+  let idx2 = 0;
+  function redraw2(){
+    const p = presets2[idx2];
+    const svg = document.getElementById("svg2");
+    desenharGrade(svg);
+    desenharElipse(svg, 0,0, p.b, p.a, "#f2994a");
+    document.getElementById("cap2").textContent = "Observe o gráfico e escolha a equação certa.";
+    document.getElementById("feedback2").textContent = "";
+    document.getElementById("feedback2").className = "feedback";
+
+    const certa = "x² / "+(p.b*p.b)+"  +  y² / "+(p.a*p.a)+"  =  1";
+    const errada = "x² / "+(p.a*p.a)+"  +  y² / "+(p.b*p.b)+"  =  1";
+    const opcoes = Math.random()<0.5 ? [certa,errada] : [errada,certa];
+
+    const box = document.getElementById("opcoes2");
+    box.innerHTML = "";
+    opcoes.forEach(op=>{
+      const btn = document.createElement("button");
+      btn.className = "secundario";
+      btn.textContent = op;
+      btn.onclick = ()=>verificar2(op===certa);
+      box.appendChild(btn);
+    });
+  }
+  function verificar2(certo){
+    const f = document.getElementById("feedback2");
+    if(certo){
+      f.textContent = "✅ Isso mesmo! Você leu o gráfico corretamente.";
+      f.className = "feedback ok";
+    } else {
+      f.textContent = "❌ Quase! Olhe de novo: o número embaixo de y² é sempre o maior, porque o eixo maior está na vertical.";
+      f.className = "feedback erro";
+    }
+  }
+  function proximoDesafio2(){
+    idx2 = (idx2+1) % presets2.length;
+    redraw2();
+  }
+
+  // ---------- ③ Elipse transladada ----------
+  let h3=0, k3=0;
+  const a3=4, b3=2;
+  function redraw3(){
+    const svg = document.getElementById("svg3");
+    desenharGrade(svg);
+    desenharElipse(svg, h3,k3, b3, a3, "#1f6feb");
+    ponto(svg,h3,k3,"#333","C ("+h3+", "+k3+")",8,-8);
+    document.getElementById("formula3").innerHTML =
+      fmtTermo("x",h3)+" / "+(b3*b3)+"  +  "+fmtTermo("y",k3)+" / "+(a3*a3)+"  =  1";
+    document.getElementById("cap3").textContent =
+      "Centro atual: C("+h3+", "+k3+"). Mova com as setas e veja a equação mudar.";
+  }
+  function moverCentro3(dh,dk){
+    const nh = h3+dh, nk = k3+dk;
+    if(nh>=-5 && nh<=5) h3 = nh;
+    if(nk>=-5 && nk<=5) k3 = nk;
+    redraw3();
+  }
+  function resetCentro3(){
+    h3=0; k3=0; redraw3();
+  }
+
+  // ---------- ④ Desafio: qual é a equação transladada ----------
+  const presets4 = [
+    {h:2,k:1,a:4,b:2},
+    {h:-3,k:2,a:5,b:3},
+    {h:1,k:-3,a:4,b:2}
+  ];
+  let idx4 = 0;
+  function redraw4(){
+    const p = presets4[idx4];
+    const svg = document.getElementById("svg4");
+    desenharGrade(svg);
+    desenharElipse(svg, p.h, p.k, p.b, p.a, "#2a9d8f");
+    document.getElementById("cap4").textContent = "Observe o gráfico transladado e tente descobrir a equação antes de revelar.";
+    const fEl = document.getElementById("formula4");
+    fEl.classList.add("hidden");
+    fEl.innerHTML =
+      "Centro: C("+p.h+", "+p.k+")<br>"+
+      fmtTermo("x",p.h)+" / "+(p.b*p.b)+"  +  "+fmtTermo("y",p.k)+" / "+(p.a*p.a)+"  =  1";
+  }
+  function revelarDesafio4(){
+    document.getElementById("formula4").classList.remove("hidden");
+  }
+  function proximoDesafio4(){
+    idx4 = (idx4+1) % presets4.length;
+    redraw4();
+  }
+
+  // ---------- ⑤ Passo a passo: elipse transladada ----------
+  const h5=1, k5=-2, a5=4, b5=2;
+  function base5(){
+    const svg = document.getElementById("svg5");
+    desenharGrade(svg);
+    return svg;
+  }
+  function reiniciar5(){
+    base5();
+    document.getElementById("cap5").textContent = "Centro C(1, −2), a = 4 (vertical), b = 2. Toque nos botões, um de cada vez.";
+  }
+  function passo1_5(){
+    const svg = base5();
+    ponto(svg,h5,k5,"#333","C (1, -2)",8,-8);
+    document.getElementById("cap5").textContent = "Passo 1: marcamos o centro C(1, −2).";
+  }
+  function passo2_5(){
+    const svg = base5();
+    ponto(svg,h5,k5,"#333","C (1, -2)",8,-8);
+    ponto(svg,h5,k5+a5,"#e63946","A1 (1, 2)",8,-6);
+    ponto(svg,h5,k5-a5,"#e63946","A2 (1, -6)",8,16);
+    document.getElementById("cap5").textContent = "Passo 2: marcamos os vértices do eixo maior, a = 4 acima e abaixo do centro.";
+  }
+  function passo3_5(){
+    const svg = base5();
+    ponto(svg,h5,k5,"#333","C (1, -2)",8,-8);
+    ponto(svg,h5,k5+a5,"#e63946","A1 (1, 2)",8,-6);
+    ponto(svg,h5,k5-a5,"#e63946","A2 (1, -6)",8,16);
+    ponto(svg,h5+b5,k5,"#2a9d8f","B1 (3, -2)",8,-6);
+    ponto(svg,h5-b5,k5,"#2a9d8f","B2 (-1, -2)",-70,-6);
+    document.getElementById("cap5").textContent = "Passo 3: marcamos os vértices do eixo menor, b = 2 à direita e à esquerda do centro.";
+  }
+  function passo4_5(){
+    const svg = base5();
+    desenharElipse(svg, h5,k5, b5, a5, "#1f6feb");
+    ponto(svg,h5,k5,"#333","C (1, -2)",8,-8);
+    ponto(svg,h5,k5+a5,"#e63946","A1",8,-6);
+    ponto(svg,h5,k5-a5,"#e63946","A2",8,16);
+    ponto(svg,h5+b5,k5,"#2a9d8f","B1",8,-6);
+    ponto(svg,h5-b5,k5,"#2a9d8f","B2",-24,-6);
+    document.getElementById("cap5").textContent = "Pronto! A elipse: (x−1)² / 4  +  (y+2)² / 16  =  1";
+  }
+
+  // inicializa tudo
+  redraw1();
+  redraw2();
+  redraw3();
+  redraw4();
+  reiniciar5();
+</script>
+
+<!-- ============ VLIBRAS (tradutor de Libras oficial do Governo Federal) ============ -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+</body>
+</html>
