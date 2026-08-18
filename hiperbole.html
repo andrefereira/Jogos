@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+<title>A Hipérbole — Animações</title>
+<style>
+  :root{
+    --azul:#1f6feb;
+    --vermelho:#e63946;
+    --laranja:#f2994a;
+    --verde:#2a9d8f;
+    --cinza:#333333;
+    --fundo:#f7f9fc;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--fundo);
+    color:var(--cinza);
+    line-height:1.5;
+  }
+  header{
+    background:var(--azul);
+    color:white;
+    padding:20px 16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1{margin:0; font-size:1.5rem;}
+  header p{margin:6px 0 0; font-size:1.15rem; opacity:.95;}
+
+  nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    padding:14px 10px;
+    background:white;
+    position:sticky;
+    top:82px;
+    z-index:40;
+    border-bottom:2px solid #e4e9f2;
+  }
+  nav a{
+    text-decoration:none;
+    background:#e8f0ff;
+    color:var(--azul);
+    font-weight:bold;
+    padding:12px 18px;
+    border-radius:999px;
+    font-size:1.05rem;
+  }
+
+  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+
+  section.concept{
+    background:white;
+    border-radius:20px;
+    padding:22px;
+    margin-bottom:30px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    scroll-margin-top:160px;
+  }
+  section.concept h2{
+    color:var(--azul);
+    font-size:1.5rem;
+    border-bottom:3px solid #e8f0ff;
+    padding-bottom:10px;
+    margin-top:0;
+    text-align:center;
+  }
+  .caption{
+    font-size:1.35rem;
+    font-weight:600;
+    text-align:center;
+    background:#e8f0ff;
+    border-left:8px solid var(--azul);
+    border-radius:10px;
+    padding:16px;
+    margin:16px 0;
+    min-height:1.4em;
+  }
+  .btnrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    justify-content:center;
+    margin:16px 0;
+  }
+  button{
+    font-size:1.15rem;
+    font-weight:bold;
+    border:none;
+    border-radius:14px;
+    padding:16px 22px;
+    min-height:60px;
+    min-width:100px;
+    cursor:pointer;
+    color:white;
+    background:var(--azul);
+    transition:transform .1s ease;
+  }
+  button:active{transform:scale(0.95);}
+  button.laranja{background:var(--laranja);}
+  button.verde{background:var(--verde);}
+  button.vermelho{background:var(--vermelho);}
+  button.secundario{background:#dfe6f5; color:var(--azul);}
+  button.grande{font-size:1.4rem; padding:20px 30px; min-height:76px; min-width:160px;}
+
+  .svgwrap{
+    background:#fbfcfe;
+    border-radius:16px;
+    padding:10px;
+    display:flex;
+    justify-content:center;
+  }
+  svg{max-width:100%; height:auto; display:block; touch-action:manipulation;}
+
+  .libras-note{
+    font-size:1.05rem;
+    color:#555;
+    background:#fff7e6;
+    border:2px dashed var(--laranja);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-top:16px;
+  }
+  .libras-note b{color:var(--laranja);}
+
+  .dots{ display:flex; gap:8px; justify-content:center; margin:14px 0; flex-wrap:wrap; }
+  .dot{ width:18px; height:18px; border-radius:50%; background:#dfe6f5; }
+  .dot.certo{ background:var(--verde); }
+  .dot.errado{ background:var(--vermelho); }
+
+  .feedback{
+    font-size:1.4rem;
+    font-weight:bold;
+    text-align:center;
+    padding:14px;
+    border-radius:12px;
+    margin:14px 0;
+    min-height:1.4em;
+  }
+  .feedback.ok{background:#e6f7f1; color:var(--verde);}
+  .feedback.nao{background:#fff2e8; color:var(--laranja);}
+
+  .hidden{display:none;}
+
+  footer{
+    text-align:center;
+    font-size:.9rem;
+    color:#888;
+    padding:30px 16px 60px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Capítulo 8 — As cônicas</h1>
+  <p>🤟 Vamos conhecer a Hipérbole!</p>
+</header>
+
+<nav>
+  <a href="#c1">① O que é?</a>
+  <a href="#c2">② Encontre!</a>
+  <a href="#c3">③ Vértice</a>
+</nav>
+
+<main>
+
+  <!-- ================= 1: O QUE É ================= -->
+  <section class="concept" id="c1">
+    <h2>① O que é uma hipérbole?</h2>
+
+    <div class="svgwrap">
+      <svg id="svg1" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <p class="caption">Esta é a HIPÉRBOLE.<br>Ela tem DUAS partes.<br>As duas partes não se tocam.</p>
+
+    <div class="btnrow">
+      <button onclick="tocarAnimacao1()">👀 Ver de novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras no canto da tela, depois toque na frase acima.</p>
+  </section>
+
+  <!-- ================= 2: ENCONTRE A HIPÉRBOLE ================= -->
+  <section class="concept" id="c2">
+    <h2>② Encontre a hipérbole!</h2>
+
+    <div class="svgwrap">
+      <svg id="svg2" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <p class="caption" id="cap2">É uma HIPÉRBOLE?</p>
+
+    <div class="dots" id="dots2"></div>
+
+    <div class="btnrow" id="botoesSimNao2">
+      <button class="verde grande" onclick="responder2(true)">✅ SIM</button>
+      <button class="vermelho grande" onclick="responder2(false)">❌ NÃO</button>
+    </div>
+
+    <p class="feedback hidden" id="feedback2"></p>
+
+    <div class="btnrow">
+      <button class="laranja hidden" id="btnProximo2" onclick="proximo2()">Próxima ▶</button>
+      <button class="secundario hidden" id="btnReiniciar2" onclick="iniciar2()">🔁 Jogar de novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na pergunta.</p>
+  </section>
+
+  <!-- ================= 3: VÉRTICE ================= -->
+  <section class="concept" id="c3">
+    <h2>③ Onde fica o vértice?</h2>
+
+    <p class="caption">O VÉRTICE é a pontinha de cada parte.<br>É o lugar mais pertinho do meio.</p>
+
+    <div class="svgwrap">
+      <svg id="svg3" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <p class="feedback hidden" id="feedback3"></p>
+
+    <div class="btnrow">
+      <button onclick="mostrarVertices3()">👀 Mostrar o vértice</button>
+      <button class="laranja" onclick="modoJogo3()">🎯 Agora eu toco!</button>
+      <button class="secundario" onclick="resetar3()">🔁 Tentar de novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+</main>
+
+<footer>
+  Material de apoio — Matemática, 3ª série do Ensino Médio.<br>
+  Página pronta para ser hospedada e acessada por QR Code.
+</footer>
+
+<script>
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs){
+    const e = document.createElementNS(NS, tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // ---------- desenhos das formas (todas na mesma cor, só muda o formato) ----------
+  const COR = "#1f6feb";
+  const LW = 10;
+
+  function limpar(svg){ svg.innerHTML = ""; }
+
+  function pontosRamoHiperbole(cx, cy, a, b, scale, lado){
+    const pts = [];
+    for(let t=-1.15; t<=1.151; t+=0.05){
+      const x = lado*a*Math.cosh(t);
+      const y = b*Math.sinh(t);
+      pts.push([cx + x*scale, cy - y*scale]);
+    }
+    return pts;
+  }
+  function pathDePontos(pts){
+    return "M " + pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" L ");
+  }
+
+  function desenharHiperbole(svg, cx, cy, a, b, scale){
+    const d = el("path",{d: pathDePontos(pontosRamoHiperbole(cx,cy,a,b,scale,1)), fill:"none", stroke:COR, "stroke-width":LW, "stroke-linecap":"round"});
+    const e = el("path",{d: pathDePontos(pontosRamoHiperbole(cx,cy,a,b,scale,-1)), fill:"none", stroke:COR, "stroke-width":LW, "stroke-linecap":"round"});
+    svg.appendChild(d); svg.appendChild(e);
+    return {
+      direito: {x: cx+a*scale, y: cy},
+      esquerdo: {x: cx-a*scale, y: cy}
+    };
+  }
+
+  function desenharReta(svg){
+    svg.appendChild(el("line",{x1:40,y1:270,x2:280,y2:50,stroke:COR,"stroke-width":LW,"stroke-linecap":"round"}));
+  }
+  function desenharParabola(svg){
+    const pts = [];
+    for(let x=-4;x<=4;x+=0.2){
+      pts.push([160+x*36, 260 - (32*(4-Math.abs(x)))]);
+    }
+    // curva simples em U usando quadratic bezier
+    svg.appendChild(el("path",{d:"M 60 90 Q 160 300 260 90", fill:"none", stroke:COR, "stroke-width":LW, "stroke-linecap":"round"}));
+  }
+  function desenharElipse(svg){
+    svg.appendChild(el("ellipse",{cx:160,cy:160,rx:130,ry:85,fill:"none",stroke:COR,"stroke-width":LW}));
+  }
+  function desenharCirculo(svg){
+    svg.appendChild(el("circle",{cx:160,cy:160,r:105,fill:"none",stroke:COR,"stroke-width":LW}));
+  }
+  function desenharTriangulo(svg){
+    svg.appendChild(el("polygon",{points:"160,45 45,270 275,270",fill:"none",stroke:COR,"stroke-width":LW,"stroke-linejoin":"round"}));
+  }
+  function desenharRetangulo(svg){
+    svg.appendChild(el("rect",{x:45,y:95,width:230,height:130,fill:"none",stroke:COR,"stroke-width":LW,"stroke-linejoin":"round"}));
+  }
+
+  function desenharForma(svg, tipo){
+    limpar(svg);
+    if(tipo==="hiperbole") desenharHiperbole(svg,160,160,2.4,3.4,32);
+    else if(tipo==="reta") desenharReta(svg);
+    else if(tipo==="parabola") desenharParabola(svg);
+    else if(tipo==="elipse") desenharElipse(svg);
+    else if(tipo==="circulo") desenharCirculo(svg);
+    else if(tipo==="triangulo") desenharTriangulo(svg);
+    else if(tipo==="retangulo") desenharRetangulo(svg);
+  }
+
+  // ---------- ① O que é uma hipérbole ----------
+  function tocarAnimacao1(){
+    const svg = document.getElementById("svg1");
+    limpar(svg);
+    const v = desenharHiperbole(svg,160,160,2.4,3.4,32);
+    const paths = svg.querySelectorAll("path");
+    paths.forEach(p=>{
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      p.getBoundingClientRect();
+      p.style.transition = "stroke-dashoffset 1.1s ease";
+      requestAnimationFrame(()=>{ p.style.strokeDashoffset = 0; });
+    });
+  }
+  tocarAnimacao1();
+
+  // ---------- ② Encontre a hipérbole ----------
+  const itens2 = [
+    {tipo:"reta", eh:false},
+    {tipo:"hiperbole", eh:true},
+    {tipo:"circulo", eh:false},
+    {tipo:"parabola", eh:false},
+    {tipo:"triangulo", eh:false},
+    {tipo:"hiperbole", eh:true},
+    {tipo:"elipse", eh:false},
+    {tipo:"retangulo", eh:false},
+  ];
+  let atual2 = 0, acertos2 = 0;
+
+  function atualizarDots2(){
+    const box = document.getElementById("dots2");
+    box.innerHTML = "";
+    itens2.forEach((it,i)=>{
+      const d = document.createElement("div");
+      d.className = "dot" + (i<atual2 ? (it._acertou ? " certo" : " errado") : "");
+      box.appendChild(d);
+    });
+  }
+
+  function iniciar2(){
+    atual2 = 0; acertos2 = 0;
+    itens2.forEach(it=>{ it._acertou = undefined; });
+    document.getElementById("btnReiniciar2").classList.add("hidden");
+    mostrarItem2();
+  }
+
+  function mostrarItem2(){
+    const svg = document.getElementById("svg2");
+    desenharForma(svg, itens2[atual2].tipo);
+    document.getElementById("cap2").textContent = "É uma HIPÉRBOLE?";
+    document.getElementById("feedback2").classList.add("hidden");
+    document.getElementById("botoesSimNao2").classList.remove("hidden");
+    document.getElementById("btnProximo2").classList.add("hidden");
+    svg.classList.remove("hidden");
+    atualizarDots2();
+  }
+
+  function responder2(resposta){
+    const item = itens2[atual2];
+    const certo = resposta === item.eh;
+    item._acertou = certo;
+    if(certo) acertos2++;
+
+    const f = document.getElementById("feedback2");
+    f.classList.remove("hidden");
+    if(certo){
+      f.textContent = "🎉 Isso mesmo!";
+      f.className = "feedback ok";
+    } else {
+      f.textContent = item.eh ? "😊 Essa É uma hipérbole! Duas partes, sem se tocar." : "😊 Essa NÃO é. Olha, ela não tem duas partes separadas.";
+      f.className = "feedback nao";
+    }
+    document.getElementById("botoesSimNao2").classList.add("hidden");
+    document.getElementById("btnProximo2").classList.remove("hidden");
+    document.getElementById("btnProximo2").textContent = (atual2 === itens2.length-1) ? "Ver resultado 🏁" : "Próxima ▶";
+    atualizarDots2();
+  }
+
+  function proximo2(){
+    atual2++;
+    if(atual2 >= itens2.length){
+      mostrarResultado2();
+      return;
+    }
+    mostrarItem2();
+  }
+
+  function mostrarResultado2(){
+    document.getElementById("svg2").classList.add("hidden");
+    document.getElementById("cap2").textContent = "Você acertou " + acertos2 + " de " + itens2.length + "! 🎉";
+    document.getElementById("feedback2").classList.add("hidden");
+    document.getElementById("botoesSimNao2").classList.add("hidden");
+    document.getElementById("btnProximo2").classList.add("hidden");
+    document.getElementById("btnReiniciar2").classList.remove("hidden");
+  }
+
+  iniciar2();
+
+  // ---------- ③ Onde fica o vértice ----------
+  const CX3=160, CY3=160, A3=2.4, B3=3.4, ESC3=32;
+  let vertices3 = null;
+  let modoJogoAtivo3 = false;
+  let tentativas3 = 0;
+
+  function base3(){
+    const svg = document.getElementById("svg3");
+    limpar(svg);
+    vertices3 = desenharHiperbole(svg, CX3, CY3, A3, B3, ESC3);
+    return svg;
+  }
+
+  function resetar3(){
+    modoJogoAtivo3 = false;
+    tentativas3 = 0;
+    base3();
+    document.getElementById("feedback3").classList.add("hidden");
+  }
+  resetar3();
+
+  function mostrarVertices3(){
+    const svg = base3();
+    modoJogoAtivo3 = false;
+    [vertices3.direito, vertices3.esquerdo].forEach(v=>{
+      svg.appendChild(el("circle",{cx:v.x, cy:v.y, r:12, fill:"#e63946"}));
+    });
+    const t1 = el("text",{x:vertices3.direito.x+16, y:vertices3.direito.y+6, "font-size":18, "font-weight":"bold", fill:"#e63946"});
+    t1.textContent = "vértice";
+    svg.appendChild(t1);
+    const t2 = el("text",{x:vertices3.esquerdo.x-102, y:vertices3.esquerdo.y+6, "font-size":18, "font-weight":"bold", fill:"#e63946"});
+    t2.textContent = "vértice";
+    svg.appendChild(t2);
+  }
+
+  function modoJogo3(){
+    base3();
+    modoJogoAtivo3 = true;
+    tentativas3 = 0;
+    const f = document.getElementById("feedback3");
+    f.classList.remove("hidden");
+    f.className = "feedback nao";
+    f.textContent = "Toque na pontinha de uma das partes!";
+  }
+
+  function coordsSvg(svg, evt){
+    const rect = svg.getBoundingClientRect();
+    const escX = 320/rect.width, escY = 320/rect.height;
+    return { x: (evt.clientX-rect.left)*escX, y: (evt.clientY-rect.top)*escY };
+  }
+
+  document.getElementById("svg3").addEventListener("click", function(evt){
+    if(!modoJogoAtivo3 || !vertices3) return;
+    const p = coordsSvg(this, evt);
+    const dD = Math.hypot(p.x-vertices3.direito.x, p.y-vertices3.direito.y);
+    const dE = Math.hypot(p.x-vertices3.esquerdo.x, p.y-vertices3.esquerdo.y);
+    const f = document.getElementById("feedback3");
+    if(Math.min(dD,dE) < 42){
+      modoJogoAtivo3 = false;
+      const svg = base3();
+      [vertices3.direito, vertices3.esquerdo].forEach(v=>{
+        svg.appendChild(el("circle",{cx:v.x, cy:v.y, r:14, fill:"#2a9d8f"}));
+      });
+      f.className = "feedback ok";
+      f.textContent = "🎉 Isso mesmo! Você achou o vértice!";
+    } else {
+      tentativas3++;
+      f.className = "feedback nao";
+      f.textContent = tentativas3 >= 3 ? "😊 Tente na pontinha da curva, bem no meio!" : "😊 Quase! Tente de novo.";
+    }
+  });
+</script>
+
+<!-- ============ VLIBRAS (tradutor de Libras oficial do Governo Federal) ============ -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+</body>
+</html>
