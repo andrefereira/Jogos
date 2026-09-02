@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+<title>Revisão das Cônicas — Animações</title>
+<style>
+  :root{
+    --azul:#1f6feb;
+    --vermelho:#e63946;
+    --laranja:#f2994a;
+    --verde:#2a9d8f;
+    --cinza:#333333;
+    --fundo:#f7f9fc;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--fundo);
+    color:var(--cinza);
+    line-height:1.5;
+  }
+  header{
+    background:var(--azul);
+    color:white;
+    padding:20px 16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1{margin:0; font-size:1.5rem;}
+  header p{margin:6px 0 0; font-size:1.15rem; opacity:.95;}
+
+  nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    padding:14px 10px;
+    background:white;
+    position:sticky;
+    top:82px;
+    z-index:40;
+    border-bottom:2px solid #e4e9f2;
+  }
+  nav a{
+    text-decoration:none;
+    background:#e8f0ff;
+    color:var(--azul);
+    font-weight:bold;
+    padding:12px 16px;
+    border-radius:999px;
+    font-size:1rem;
+  }
+
+  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+
+  section.concept{
+    background:white;
+    border-radius:20px;
+    padding:22px;
+    margin-bottom:30px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    scroll-margin-top:160px;
+  }
+  section.concept h2{
+    color:var(--azul);
+    font-size:1.5rem;
+    border-bottom:3px solid #e8f0ff;
+    padding-bottom:10px;
+    margin-top:0;
+    text-align:center;
+  }
+  .caption{
+    font-size:1.35rem;
+    font-weight:600;
+    text-align:center;
+    background:#e8f0ff;
+    border-left:8px solid var(--azul);
+    border-radius:10px;
+    padding:16px;
+    margin:16px 0;
+    min-height:1.4em;
+  }
+  .btnrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    justify-content:center;
+    margin:16px 0;
+  }
+  button{
+    font-size:1.1rem;
+    font-weight:bold;
+    border:none;
+    border-radius:14px;
+    padding:15px 20px;
+    min-height:58px;
+    min-width:100px;
+    cursor:pointer;
+    color:white;
+    background:var(--azul);
+    transition:transform .1s ease;
+  }
+  button:active{transform:scale(0.95);}
+  button.laranja{background:var(--laranja);}
+  button.verde{background:var(--verde);}
+  button.vermelho{background:var(--vermelho);}
+  button.secundario{background:#dfe6f5; color:var(--azul);}
+
+  .svgwrap{
+    background:#fbfcfe;
+    border-radius:16px;
+    padding:10px;
+    display:flex;
+    justify-content:center;
+  }
+  svg{max-width:100%; height:auto; display:block; touch-action:manipulation;}
+
+  .libras-note{
+    font-size:1.05rem;
+    color:#555;
+    background:#fff7e6;
+    border:2px dashed var(--laranja);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-top:16px;
+  }
+  .libras-note b{color:var(--laranja);}
+
+  .feedback{
+    font-size:1.3rem;
+    font-weight:bold;
+    text-align:center;
+    padding:14px;
+    border-radius:12px;
+    margin:14px 0;
+    min-height:1.4em;
+  }
+  .feedback.ok{background:#e6f7f1; color:var(--verde);}
+  .feedback.nao{background:#fff2e8; color:var(--laranja);}
+
+  .hidden{display:none;}
+
+  footer{
+    text-align:center;
+    font-size:.9rem;
+    color:#888;
+    padding:30px 16px 60px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Capítulo 8 — As cônicas</h1>
+  <p>🤟 Revisão: Elipse, Hipérbole e Parábola</p>
+</header>
+
+<nav>
+  <a href="#c1">① As 3 formas</a>
+  <a href="#c2">② Elipse</a>
+  <a href="#c3">③ Hipérbole</a>
+  <a href="#c4">④ Parábola</a>
+</nav>
+
+<main>
+
+  <!-- ================= 1: AS 3 FORMAS ================= -->
+  <section class="concept" id="c1">
+    <h2>① Você lembra dessas formas?</h2>
+
+    <div class="svgwrap">
+      <svg id="svg1" viewBox="0 0 320 220" width="320" height="220"></svg>
+    </div>
+
+    <p class="caption" id="cap1">Vimos 3 formas neste ano. Você lembra o nome de cada uma?</p>
+
+    <div class="btnrow">
+      <button onclick="mostrarNomes1()">👀 Mostrar os nomes</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras no canto da tela, depois toque na frase acima.</p>
+  </section>
+
+  <!-- ================= 2: ELIPSE ================= -->
+  <section class="concept" id="c2">
+    <h2>② Elipse</h2>
+
+    <div class="svgwrap">
+      <svg id="svg2" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <p class="feedback" id="feedback2">Vamos relembrar o foco e o vértice da elipse!</p>
+
+    <div class="btnrow">
+      <button class="laranja" id="btnIniciar2" onclick="revisaoElipse.iniciar()">▶️ Começar</button>
+      <button class="secundario" id="btnMostrar2" onclick="revisaoElipse.revelar()">👀 Já esqueci, me mostra</button>
+      <button class="secundario" onclick="revisaoElipse.reiniciar()">🔁 De novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 3: HIPÉRBOLE ================= -->
+  <section class="concept" id="c3">
+    <h2>③ Hipérbole</h2>
+
+    <div class="svgwrap">
+      <svg id="svg3" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <p class="feedback" id="feedback3">Vamos relembrar o foco e o vértice da hipérbole!</p>
+
+    <div class="btnrow">
+      <button class="laranja" id="btnIniciar3" onclick="revisaoHiperbole.iniciar()">▶️ Começar</button>
+      <button class="secundario" id="btnMostrar3" onclick="revisaoHiperbole.revelar()">👀 Já esqueci, me mostra</button>
+      <button class="secundario" onclick="revisaoHiperbole.reiniciar()">🔁 De novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 4: PARÁBOLA ================= -->
+  <section class="concept" id="c4">
+    <h2>④ Parábola</h2>
+
+    <div class="svgwrap">
+      <svg id="svg4" viewBox="0 0 320 320" width="320" height="320"></svg>
+    </div>
+
+    <p class="feedback" id="feedback4">Vamos relembrar o vértice, o foco e a diretriz da parábola!</p>
+
+    <div class="btnrow">
+      <button class="laranja" id="btnIniciar4" onclick="revisaoParabola.iniciar()">▶️ Começar</button>
+      <button class="secundario" id="btnMostrar4" onclick="revisaoParabola.revelar()">👀 Já esqueci, me mostra</button>
+      <button class="secundario" onclick="revisaoParabola.reiniciar()">🔁 De novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+</main>
+
+<footer>
+  Material de apoio — Matemática, 3ª série do Ensino Médio.<br>
+  Página pronta para ser hospedada e acessada por QR Code.
+</footer>
+
+<script>
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs){
+    const e = document.createElementNS(NS, tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function limpar(svg){ svg.innerHTML = ""; }
+  const COR = "#1f6feb";
+  const COR_MARCA = "#e63946";
+  const COR_OK = "#2a9d8f";
+  const LW = 9;
+
+  function coordsSvg(svg, evt){
+    const rect = svg.getBoundingClientRect();
+    const escX = svg.viewBox.baseVal.width / rect.width, escY = svg.viewBox.baseVal.height / rect.height;
+    return { x: (evt.clientX-rect.left)*escX, y: (evt.clientY-rect.top)*escY };
+  }
+
+  // ---------- ① As 3 formas ----------
+  function pontosParabolaMini(cx, cy, escala){
+    const pts = [];
+    for(let x=-2.2; x<=2.201; x+=0.1){
+      const y = (x*x)/2.6;
+      pts.push([cx+x*escala, cy-y*escala]);
+    }
+    return pts;
+  }
+  function pathDePontos(pts){
+    return "M " + pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" L ");
+  }
+  function pontosRamoHiperboleMini(cx, cy, a, b, escala, lado){
+    const pts = [];
+    for(let t=-1.0; t<=1.001; t+=0.08){
+      const x = lado*a*Math.cosh(t);
+      const y = b*Math.sinh(t);
+      pts.push([cx + x*escala, cy - y*escala]);
+    }
+    return pts;
+  }
+
+  function montarIntro(){
+    const svg = document.getElementById("svg1");
+    limpar(svg);
+    // elipse
+    svg.appendChild(el("ellipse",{cx:60, cy:110, rx:44, ry:30, fill:"none", stroke:COR, "stroke-width":LW}));
+    // hiperbole
+    svg.appendChild(el("path",{d:pathDePontos(pontosRamoHiperboleMini(160,110,1.4,2.0,20,1)), fill:"none", stroke:COR, "stroke-width":LW, "stroke-linecap":"round"}));
+    svg.appendChild(el("path",{d:pathDePontos(pontosRamoHiperboleMini(160,110,1.4,2.0,20,-1)), fill:"none", stroke:COR, "stroke-width":LW, "stroke-linecap":"round"}));
+    // parabola
+    svg.appendChild(el("path",{d:pathDePontos(pontosParabolaMini(260,130,20)), fill:"none", stroke:COR, "stroke-width":LW, "stroke-linecap":"round"}));
+  }
+  montarIntro();
+
+  let nomesVisiveis1 = false;
+  function mostrarNomes1(){
+    montarIntro();
+    nomesVisiveis1 = !nomesVisiveis1;
+    if(nomesVisiveis1){
+      const svg = document.getElementById("svg1");
+      const t1 = el("text",{x:30,y:170,"font-size":16,"font-weight":"bold",fill:COR}); t1.textContent="ELIPSE"; svg.appendChild(t1);
+      const t2 = el("text",{x:128,y:170,"font-size":16,"font-weight":"bold",fill:COR}); t2.textContent="HIPÉRBOLE"; svg.appendChild(t2);
+      const t3 = el("text",{x:232,y:170,"font-size":16,"font-weight":"bold",fill:COR}); t3.textContent="PARÁBOLA"; svg.appendChild(t3);
+      document.getElementById("cap1").textContent = "Isso mesmo! ELIPSE, HIPÉRBOLE e PARÁBOLA.";
+    } else {
+      document.getElementById("cap1").textContent = "Vimos 3 formas neste ano. Você lembra o nome de cada uma?";
+    }
+  }
+
+  // ---------- motor genérico de revisão (usado nas 3 formas) ----------
+  function criarRevisao(cfg){
+    // cfg = { svgId, capId, desenharBase, itens }
+    const svg = document.getElementById(cfg.svgId);
+    const cap = document.getElementById(cfg.capId);
+    let idx = 0, ativo = false, timerId = null;
+
+    function agendar(fn){
+      if(timerId) clearTimeout(timerId);
+      timerId = setTimeout(fn, 1400);
+    }
+    function cancelarAgenda(){
+      if(timerId){ clearTimeout(timerId); timerId = null; }
+    }
+
+    function base(){ limpar(svg); cfg.desenharBase(svg); }
+
+    function marcar(item, cor){
+      if(item.tipo === "linha"){
+        svg.appendChild(el("line",{x1:20,y1:item.y,x2:300,y2:item.y, stroke:cor, "stroke-width": cor===COR_OK?9:7}));
+      } else {
+        item.pontos.forEach(pt => svg.appendChild(el("circle",{cx:pt.x, cy:pt.y, r: cor===COR_OK?14:12, fill:cor})));
+      }
+    }
+
+    function mostrarInstrucao(){
+      if(idx >= cfg.itens.length) return;
+      cap.className = "feedback nao";
+      cap.textContent = cfg.itens[idx].instrucao;
+    }
+
+    function iniciar(){
+      cancelarAgenda();
+      idx = 0; ativo = true;
+      base();
+      mostrarInstrucao();
+    }
+
+    function reiniciar(){
+      cancelarAgenda();
+      idx = 0; ativo = false;
+      base();
+      cap.className = "feedback";
+      cap.textContent = cfg.mensagemInicial;
+    }
+
+    function revelar(){
+      if(!ativo || idx >= cfg.itens.length){ return; }
+      const item = cfg.itens[idx];
+      ativo = false;
+      marcar(item, COR_MARCA);
+      cap.className = "feedback ok";
+      cap.textContent = item.nomeCompleto + "! " + (idx+1 < cfg.itens.length ? "Vamos para o próximo." : "Terminamos a revisão!");
+      idx++;
+      if(idx < cfg.itens.length){
+        agendar(()=>{ ativo = true; mostrarInstrucao(); });
+      } else {
+        agendar(()=>{ cap.className="feedback ok"; cap.textContent = "🎉 Você lembrou tudo da " + cfg.nomeForma + "! Muito bem!"; });
+      }
+    }
+
+    function verificarClique(p){
+      if(!ativo) return;
+      const item = cfg.itens[idx];
+      const acertou = item.tipo === "linha"
+        ? (Math.abs(p.y - item.y) < 30 && p.x > 15 && p.x < 305)
+        : item.pontos.some(pt => Math.hypot(p.x-pt.x, p.y-pt.y) < 42);
+
+      if(acertou){
+        ativo = false;
+        marcar(item, COR_OK);
+        cap.className = "feedback ok";
+        cap.textContent = "🎉 Isso mesmo! " + item.fraseAcerto;
+        idx++;
+        if(idx >= cfg.itens.length){
+          agendar(()=>{ cap.className="feedback ok"; cap.textContent = "🎉 Você lembrou tudo da " + cfg.nomeForma + "! Muito bem!"; });
+        } else {
+          agendar(()=>{ ativo = true; mostrarInstrucao(); });
+        }
+      } else {
+        cap.className = "feedback nao";
+        cap.textContent = "😊 Quase! " + item.dica;
+      }
+    }
+
+    svg.addEventListener("click", function(evt){
+      verificarClique(coordsSvg(this, evt));
+    });
+
+    base();
+    cap.className = "feedback";
+    cap.textContent = cfg.mensagemInicial;
+
+    return { iniciar, revelar, reiniciar };
+  }
+
+  // ---------- ② Elipse ----------
+  function desenharElipseBase(svg){
+    svg.appendChild(el("ellipse",{cx:160, cy:160, rx:120, ry:78, fill:"none", stroke:COR, "stroke-width":LW}));
+  }
+  const EL_A1 = {x:40, y:160}, EL_A2 = {x:280, y:160};
+  const EL_F1 = {x:95, y:160}, EL_F2 = {x:225, y:160};
+  const revisaoElipse = criarRevisao({
+    svgId: "svg2", capId: "feedback2",
+    desenharBase: desenharElipseBase,
+    nomeForma: "elipse",
+    mensagemInicial: "Vamos relembrar o foco e o vértice da elipse!",
+    itens: [
+      { tipo:"ponto-multi", nome:"foco", nomeCompleto:"Isso é um FOCO", fraseAcerto:"Esse é um FOCO da elipse.", pontos:[EL_F1, EL_F2], instrucao:"Toque em um dos FOCOS da elipse!", dica:"O foco fica dentro da elipse, mais para o meio." },
+      { tipo:"ponto-multi", nome:"vértice", nomeCompleto:"Isso é um VÉRTICE", fraseAcerto:"Esse é um VÉRTICE da elipse.", pontos:[EL_A1, EL_A2], instrucao:"Toque em um dos VÉRTICES da elipse!", dica:"O vértice é a pontinha, na ponta da elipse." },
+    ],
+  });
+
+  // ---------- ③ Hipérbole ----------
+  function pontosRamoHiperbole(cx, cy, a, b, scale, lado){
+    const pts = [];
+    for(let t=-1.15; t<=1.151; t+=0.05){
+      const x = lado*a*Math.cosh(t);
+      const y = b*Math.sinh(t);
+      pts.push([cx + x*scale, cy - y*scale]);
+    }
+    return pts;
+  }
+  function desenharHiperboleBase(svg){
+    svg.appendChild(el("path",{d:pathDePontos(pontosRamoHiperbole(160,160,2.4,3.4,32,1)), fill:"none", stroke:COR, "stroke-width":LW, "stroke-linecap":"round"}));
+    svg.appendChild(el("path",{d:pathDePontos(pontosRamoHiperbole(160,160,2.4,3.4,32,-1)), fill:"none", stroke:COR, "stroke-width":LW, "stroke-linecap":"round"}));
+  }
+  const HI_V1 = {x:236.8, y:160}, HI_V2 = {x:83.2, y:160};
+  const HI_F1 = {x:282, y:160}, HI_F2 = {x:38, y:160};
+  const revisaoHiperbole = criarRevisao({
+    svgId: "svg3", capId: "feedback3",
+    desenharBase: desenharHiperboleBase,
+    nomeForma: "hipérbole",
+    mensagemInicial: "Vamos relembrar o foco e o vértice da hipérbole!",
+    itens: [
+      { tipo:"ponto-multi", nome:"vértice", nomeCompleto:"Isso é um VÉRTICE", fraseAcerto:"Esse é um VÉRTICE da hipérbole.", pontos:[HI_V1, HI_V2], instrucao:"Toque em um dos VÉRTICES (a pontinha de cada parte)!", dica:"É a pontinha, o lugar mais pertinho do meio." },
+      { tipo:"ponto-multi", nome:"foco", nomeCompleto:"Isso é um FOCO", fraseAcerto:"Esse é um FOCO da hipérbole.", pontos:[HI_F1, HI_F2], instrucao:"Toque em um dos FOCOS!", dica:"O foco fica um pouco mais para fora do que o vértice." },
+    ],
+  });
+
+  // ---------- ④ Parábola ----------
+  function pontosParabola(){
+    const pts = [];
+    for(let x=-4.3; x<=4.301; x+=0.1){
+      const y = (x*x)/8;
+      pts.push([160 + x*26, 220 - y*26]);
+    }
+    return pts;
+  }
+  function desenharParabolaBase(svg){
+    svg.appendChild(el("path",{d:pathDePontos(pontosParabola()), fill:"none", stroke:COR, "stroke-width":LW, "stroke-linecap":"round"}));
+  }
+  const PA_VERTICE = {x:160, y:220};
+  const PA_FOCO = {x:160, y:168};
+  const PA_DIRETRIZ_Y = 272;
+  const revisaoParabola = criarRevisao({
+    svgId: "svg4", capId: "feedback4",
+    desenharBase: desenharParabolaBase,
+    nomeForma: "parábola",
+    mensagemInicial: "Vamos relembrar o vértice, o foco e a diretriz da parábola!",
+    itens: [
+      { tipo:"ponto-multi", nome:"vértice", nomeCompleto:"Isso é o VÉRTICE", fraseAcerto:"Esse é o VÉRTICE da parábola.", pontos:[PA_VERTICE], instrucao:"Toque no VÉRTICE (a pontinha do sorriso)!", dica:"É a pontinha, bem no meio, embaixo." },
+      { tipo:"ponto-multi", nome:"foco", nomeCompleto:"Isso é o FOCO", fraseAcerto:"Esse é o FOCO da parábola.", pontos:[PA_FOCO], instrucao:"Toque no FOCO (o pontinho mágico)!", dica:"É um pontinho escondido dentro do sorriso." },
+      { tipo:"linha", nome:"diretriz", nomeCompleto:"Essa é a DIRETRIZ", fraseAcerto:"Essa é a DIRETRIZ da parábola.", y: PA_DIRETRIZ_Y, instrucao:"Toque na DIRETRIZ (a linha reta por fora)!", dica:"É a linha reta lá embaixo, que não toca no sorriso." },
+    ],
+  });
+</script>
+
+<!-- ============ VLIBRAS (tradutor de Libras oficial do Governo Federal) ============ -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+</body>
+</html>
