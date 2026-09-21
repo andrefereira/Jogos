@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>No Mundo da Lógica — Lição XII</title>
+<style>
+:root{--bg1:#10123a;--bg2:#1e2270;--bg3:#171a58;--acc:#b8c0ff;--acc2:#ffd166;--btn1:#b8c0ff;--btn2:#7a86ff;--ink:#10123a;--card:#10123a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
+.screen{display:none;width:100%;max-width:480px;flex-direction:column;align-items:center;gap:14px}
+.screen.active{display:flex}
+.badge{background:rgba(255,255,255,.12);border:1px solid var(--acc2);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--acc2);text-align:center}
+.mascot{font-size:4.5rem;animation:float 3s ease-in-out infinite}
+.title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+.title span{color:var(--acc)}
+.subtitle{font-size:.92rem;color:rgba(255,255,255,.75);text-align:center;line-height:1.5;max-width:380px}
+.rules-box{background:rgba(255,255,255,.1);border-radius:16px;padding:14px 18px;width:100%;border:1px solid rgba(255,255,255,.15)}
+.rules-box h3{color:var(--acc2);font-size:.82rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.rules-box li{font-size:.86rem;color:rgba(255,255,255,.88);padding:3px 0;list-style:none;display:flex;gap:8px;line-height:1.35}
+.rules-box li::before{content:'▸';color:var(--acc)}
+.btn-primary{width:100%;padding:16px;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,var(--btn1),var(--btn2));color:var(--ink);border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:transform .1s}
+.btn-primary:active{transform:scale(.97)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.top-bar{width:100%;display:flex;justify-content:space-between;align-items:center}
+.counter{font-size:.82rem;color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);padding:4px 12px;border-radius:20px}
+.score-display{font-size:.95rem;font-weight:700;color:var(--acc2)}
+.bar-wrap{width:100%;height:9px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden}
+#progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .3s;border-radius:10px}
+#timer-bar{height:100%;width:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:10px}
+#timer-bar.danger{background:linear-gradient(90deg,#ff6b6b,#ff3333)}
+#stage{width:100%;display:flex;flex-direction:column;gap:12px}
+.tag{font-size:.72rem;color:var(--acc);text-transform:uppercase;letter-spacing:.6px}
+.question-card{width:100%;background:rgba(255,255,255,.96);color:var(--card);border-radius:20px;padding:20px 18px;box-shadow:0 8px 30px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:6px;justify-content:center;min-height:110px}
+.question-card .ln{font-size:1.02rem;font-weight:600;line-height:1.45;text-align:left}
+.question-card .ln.concl{font-weight:800;border-top:2px solid var(--card);padding-top:6px;margin-top:2px}
+.question-card .ln.center{text-align:center}
+.question-card .ln.big{font-size:1.25rem;text-align:center;font-weight:800}
+.question-card .ln.small{font-size:.85rem;font-weight:500;color:#555}
+.opts{display:flex;flex-direction:column;gap:10px;width:100%}
+.opts.two{flex-direction:row}
+.opt{flex:1;padding:14px 12px;font-size:.98rem;font-weight:700;border:none;border-radius:16px;cursor:pointer;background:rgba(255,255,255,.14);color:#fff;border:2px solid rgba(255,255,255,.25);text-align:center;line-height:1.3;transition:transform .1s,background .15s}
+.opt:hover{background:rgba(255,255,255,.24)}
+.opt:active{transform:scale(.97)}
+.opt:disabled{cursor:default;opacity:.6}
+.opt .em{display:block;font-size:2rem;margin-bottom:2px}
+
+#feedback{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;padding:18px}
+#feedback.show{display:flex}
+.feedback-card{background:#fff;color:#1a2a2a;border-radius:24px;padding:24px 22px;text-align:center;max-width:380px;width:100%;animation:popIn .2s ease-out;max-height:92vh;overflow:auto}
+.feedback-icon{font-size:3.6rem}
+.feedback-title{font-size:1.35rem;font-weight:800;margin:6px 0 2px}
+.feedback-title.correct{color:#00a862}.feedback-title.wrong{color:#e0303a}
+.feedback-pts{font-size:.92rem;color:#777;margin-bottom:10px}
+.feedback-pts strong{color:#1a2a2a}
+.feedback-exp{font-size:.88rem;color:#444;line-height:1.55;background:#f3f3f3;border-radius:12px;padding:12px 14px;text-align:left;white-space:pre-line;margin-bottom:14px}
+.feedback-card .btn-primary{padding:12px;font-size:1rem}
+
+/* ORDER */
+.slots{display:flex;flex-direction:column;gap:6px;width:100%}
+.slot{display:flex;gap:8px;align-items:center;min-height:44px;border-radius:12px;padding:8px 10px;border:2px dashed rgba(255,255,255,.28);font-size:.9rem;color:rgba(255,255,255,.4);line-height:1.3}
+.slot .n{flex:0 0 22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;color:#fff}
+.slot.ok{border:2px solid var(--acc);background:rgba(255,255,255,.14);color:#fff;font-weight:600}
+.slot.ok .n{background:var(--acc);color:var(--ink)}
+.pool{display:flex;flex-direction:column;gap:8px;width:100%}
+.pool .opt{font-size:.9rem;padding:11px 12px;text-align:left}
+.pool .opt.shake{animation:shake .3s;background:rgba(255,80,80,.35)}
+
+/* TABLE */
+.mission{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:12px 14px}
+.mission .t{font-size:.72rem;color:var(--acc);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.mission .f{font-size:1.1rem;font-weight:800;color:var(--acc2)}
+.legend{display:flex;flex-direction:column;gap:3px;margin-top:8px}
+.legend div{font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.3}
+.legend strong{color:var(--acc)}
+.table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.84rem}
+th{background:rgba(255,255,255,.2);padding:8px 5px;text-align:center;font-weight:700;white-space:nowrap;font-size:.8rem}
+th.fixed{background:rgba(255,255,255,.1)}
+td{padding:0;text-align:center;border:1px solid rgba(255,255,255,.12)}
+td.fixed{background:rgba(0,0,0,.2);color:rgba(255,255,255,.75);font-weight:700;padding:8px 5px}
+.cell-btn{width:100%;height:100%;min-width:44px;padding:10px 6px;background:transparent;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-size:.9rem;font-weight:800}
+.cell-btn:hover{background:rgba(255,255,255,.1)}
+.cell-btn.sv{background:rgba(0,200,120,.22);color:#7effd4}
+.cell-btn.sf{background:rgba(255,120,120,.2);color:#ffb0b0}
+.cell-btn.correct{background:rgba(0,200,120,.42)!important;color:#eafff6!important;cursor:default}
+.cell-btn.wrong{background:rgba(255,80,80,.4)!important;animation:shake .3s}
+.hint{font-size:.75rem;color:rgba(255,255,255,.45);text-align:center}
+#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:.85rem;font-weight:600;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.show{opacity:1}
+
+/* RESULT */
+#screen-result{text-align:center}
+.result-header{font-size:1.8rem;font-weight:800;line-height:1.2}
+.result-header span{color:var(--acc)}
+.result-score-box{background:rgba(255,255,255,.12);border:2px solid var(--acc2);border-radius:20px;padding:22px;width:100%}
+.big-score{font-size:3.4rem;font-weight:900;color:var(--acc2);line-height:1}
+.max-score{font-size:.9rem;color:rgba(255,255,255,.6);margin-top:4px}
+.result-stars{font-size:2.4rem}
+.result-msg{font-size:1rem;color:rgba(255,255,255,.85);line-height:1.5;max-width:360px}
+.summary-grid{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.summary-item{background:rgba(255,255,255,.1);border-radius:14px;padding:14px}
+.summary-item .val{font-size:1.8rem;font-weight:800;color:var(--acc)}
+.summary-item .lbl{font-size:.75rem;color:rgba(255,255,255,.65);margin-top:2px}
+.back{color:rgba(255,255,255,.6);font-size:.85rem;text-decoration:none;margin-top:4px}
+</style>
+</head>
+<body>
+
+<div id="screen-start" class="screen active">
+  <div class="badge">No Mundo da Lógica · Lição XII</div>
+  <div class="mascot">🪞</div>
+  <div class="title">Tabelas do<br><span>Espelho</span></div>
+  <p class="subtitle">O Espelho Inversor agora ajuda o Senhor x a montar tabelas! Ele troca V por F e F por V. Use-o para completar cada tabela.</p>
+  <div class="rules-box"><h3>Como jogar</h3><ul><li>Primeiro, responda algumas perguntas rápidas sobre o espelho</li><li>Depois, toque em cada célula para alternar entre V e F</li><li>As colunas de p e q já vêm preenchidas</li><li>Cada célula certa fica verde ✅</li></ul></div>
+  <button class="btn-primary" onclick="startGame()">Jogar ▶</button>
+  <a class="back" href="index.html">← Todas as lições</a>
+</div>
+
+<div id="screen-game" class="screen">
+  <div class="top-bar">
+    <span class="counter" id="counter"></span>
+    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+  </div>
+  <div class="bar-wrap" id="progress-wrap"><div id="progress-bar"></div></div>
+  <div class="bar-wrap" id="timer-wrap" style="display:none"><div id="timer-bar"></div></div>
+  <div id="stage"></div>
+</div>
+
+<div id="feedback"><div class="feedback-card">
+  <div class="feedback-icon" id="fb-icon"></div>
+  <div class="feedback-title" id="fb-title"></div>
+  <div class="feedback-pts" id="fb-pts"></div>
+  <div class="feedback-exp" id="fb-exp"></div>
+  <button class="btn-primary" id="fb-next">Continuar ▶</button>
+</div></div>
+<div id="toast"></div>
+
+<div id="screen-result" class="screen">
+  <div class="result-header">Jogo<br><span>concluído!</span></div>
+  <div class="result-stars" id="result-stars"></div>
+  <div class="result-score-box"><div class="big-score" id="final-score">0</div><div class="max-score" id="max-score"></div></div>
+  <p class="result-msg" id="result-msg"></p>
+  <div class="summary-grid">
+    <div class="summary-item"><div class="val" id="res-correct">0</div><div class="lbl">Acertos</div></div>
+    <div class="summary-item"><div class="val" id="res-wrong">0</div><div class="lbl">Erros</div></div>
+  </div>
+  <button class="btn-primary" onclick="startGame()">Jogar novamente 🔄</button>
+  <a class="back" href="index.html">← Todas as lições</a>
+</div>
+
+<script>
+const CFG = {"items": [{"type": "choice", "q": "§b p = V\n§c Qual é o valor de ¬p ?", "opts": ["V", "F"], "a": 1, "exp": "O espelho inverte: a negação de uma proposição verdadeira é falsa.", "fix": true}, {"type": "choice", "q": "§b ¬q = V\n§c Então, qual é o valor de q ?", "opts": ["V", "F"], "a": 1, "exp": "Se a negação de q é verdadeira, então q só pode ser falsa. O espelho inverte nos dois sentidos!", "fix": true}, {"type": "table", "formula": "¬p ∨ q", "legend": [{"k": "p", "t": "Deus é fiel."}, {"k": "q", "t": "Deus cumpre o que promete."}], "headers": ["p", "q", "¬p", "¬p ∨ q"], "rows": [[true, true, false, true], [true, false, false, false], [false, true, true, true], [false, false, true, true]], "fixed": [0, 1], "exp": "Coluna do meio: primeiro calcule ¬p (o espelho). Depois faça o \"ou\" entre ¬p e q."}, {"type": "table", "formula": "p ∧ ¬q", "legend": [{"k": "p", "t": "Eu creio em Jesus."}, {"k": "q", "t": "Eu sou salvo."}], "headers": ["p", "q", "¬q", "p ∧ ¬q"], "rows": [[true, true, false, false], [true, false, true, true], [false, true, false, false], [false, false, true, false]], "fixed": [0, 1], "exp": "A conjunção só é V quando os DOIS lados são V. Aqui, p precisa ser V e ¬q precisa ser V (ou seja, q falsa)."}, {"type": "choice", "q": "§b p ∧ ¬q\n§c Em qual linha ela é verdadeira?", "opts": ["p = V e q = V", "p = V e q = F", "p = F e q = V", "p = F e q = F"], "a": 1, "exp": "Precisamos de p verdadeira e ¬q verdadeira. ¬q é verdadeira quando q é falsa.", "fix": true}, {"type": "table", "formula": "¬p ∧ ¬q", "legend": [{"k": "p", "t": "Está chovendo."}, {"k": "q", "t": "Está frio."}], "headers": ["p", "q", "¬p", "¬q", "¬p ∧ ¬q"], "rows": [[true, true, false, false, false], [true, false, false, true, false], [false, true, true, false, false], [false, false, true, true, true]], "fixed": [0, 1], "exp": "¬p ∧ ¬q só é verdadeira quando as duas negações são verdadeiras, isto é, quando p e q são falsas."}, {"type": "choice", "q": "A tabela de  ¬p ∨ q  é igual à tabela de  p → q.", "opts": ["§e 😊|Verdadeira", "§e 😢|Falsa"], "a": 0, "exp": "É mesmo! As colunas finais são iguais (V, F, V, V). As duas proposições dizem a mesma coisa de jeitos diferentes.", "fix": true}], "timer": null, "shuffle": false, "revise": "Revise a Lição XII", "win": "Você domina o Espelho das Tabelas! 🏆"};
+let items, idx, score, right, wrong, timerInt, tStart, maxScore, curTimer;
+const $ = id => document.getElementById(id);
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active')}
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+
+function itemMax(it){ if(it.type==='table'){return it.rows.length*(it.headers.length-it.fixed.length)*10+50} return 100 }
+
+function startGame(){
+  items = CFG.shuffle ? shuffle(CFG.items) : CFG.items.slice();
+  if(CFG.pick && items.length>CFG.pick) items = items.slice(0,CFG.pick);
+  maxScore = items.reduce((s,it)=>s+itemMax(it),0);
+  idx=0; score=0; right=0; wrong=0;
+  show('screen-game'); next();
+}
+function next(){
+  clearInterval(timerInt);
+  if(idx>=items.length){ endGame(); return }
+  const it = items[idx];
+  $('counter').textContent = (it.type==='table'?'Tabela ':'Desafio ')+(idx+1)+' / '+items.length;
+  $('live-score').textContent = score;
+  $('progress-bar').style.width = (idx/items.length*100)+'%';
+  const stage = $('stage'); stage.innerHTML='';
+  $('timer-wrap').style.display='none';
+  if(it.type==='choice') renderChoice(it,stage);
+  else if(it.type==='order') renderOrder(it,stage);
+  else renderTable(it,stage);
+}
+function lines(container,text){
+  text.split('\n').forEach(l=>{
+    let cls='ln';
+    if(l.startsWith('§c ')){cls+=' center';l=l.slice(3)}
+    if(l.startsWith('§b ')){cls+=' big';l=l.slice(3)}
+    if(l.startsWith('§s ')){cls+=' small';l=l.slice(3)}
+    if(l.startsWith('∴')) cls+=' concl';
+    container.appendChild(el('div',cls,l));
+  });
+}
+/* ---------- feedback ---------- */
+function feedback(ok, timeout, pts, exp, done){
+  $('fb-icon').textContent = timeout?'⏱️':(ok?'😊':'🤔');
+  const t=$('fb-title'); t.textContent = timeout?'Tempo esgotado!':(ok?'Muito bem!':'Quase lá!'); t.className='feedback-title '+(ok?'correct':'wrong');
+  $('fb-pts').innerHTML = ok?('+<strong>'+pts+' pontos</strong>'):'<strong>+0 pontos</strong>';
+  $('fb-exp').textContent = exp;
+  $('feedback').classList.add('show');
+  $('fb-next').onclick = ()=>{ $('feedback').classList.remove('show'); done(); };
+}
+/* ---------- choice ---------- */
+function renderChoice(it,stage){
+  const secs = it.t || CFG.timer;
+  if(it.label) stage.appendChild(el('div','tag',it.label));
+  const card = el('div','question-card'); lines(card,it.q); stage.appendChild(card);
+  let opts = it.opts.map((t,i)=>({t,ok:i===it.a}));
+  if(!it.fix) opts = shuffle(opts);
+  const box = el('div','opts'+((opts.length===2&&opts.every(o=>o.t.length<26))?' two':''));
+  opts.forEach(o=>{
+    const b = el('button','opt'); 
+    if(o.t.startsWith('§e ')){ const parts=o.t.slice(3).split('|'); b.appendChild(el('span','em',parts[0])); b.appendChild(document.createTextNode(parts[1])); }
+    else b.textContent=o.t;
+    b.onclick=()=>{ clearInterval(timerInt); box.querySelectorAll('button').forEach(x=>x.disabled=true); resolveChoice(it,o.ok,false,tStart?(Date.now()-tStart)/1000:0,secs) };
+    box.appendChild(b);
+  });
+  stage.appendChild(box);
+  if(secs){
+    $('timer-wrap').style.display='block'; const bar=$('timer-bar'); bar.style.width='100%'; bar.classList.remove('danger');
+    tStart=Date.now();
+    timerInt=setInterval(()=>{
+      const el_=(Date.now()-tStart)/1000, pct=Math.max(0,1-el_/secs);
+      bar.style.width=(pct*100)+'%'; bar.classList.toggle('danger',pct<.3);
+      if(el_>=secs){ clearInterval(timerInt); box.querySelectorAll('button').forEach(x=>x.disabled=true); resolveChoice(it,false,true,secs,secs) }
+    },80);
+  } else tStart=0;
+}
+function resolveChoice(it,ok,timeout,elapsed,secs){
+  let pts=0;
+  if(ok){ pts = secs? Math.max(30,Math.round(100-(elapsed/secs)*70)) : 100; score+=pts; right++ } else wrong++;
+  $('live-score').textContent=score;
+  feedback(ok,timeout,pts,it.exp,()=>{idx++;next()});
+}
+/* ---------- order ---------- */
+function renderOrder(it,stage){
+  const card = el('div','question-card'); lines(card,it.q); stage.appendChild(card);
+  const slots = el('div','slots'); stage.appendChild(slots);
+  const slotEls = it.steps.map((s,i)=>{ const d=el('div','slot'); d.appendChild(el('span','n',String(i+1))); const t=el('span','tx','…'); d.appendChild(t); slots.appendChild(d); return d });
+  const pool = el('div','pool'); stage.appendChild(pool);
+  stage.appendChild(el('div','hint','Toque nas frases na ordem certa'));
+  let placed=0, errs=0; const usedSet=new Set();
+  shuffle(it.steps).forEach(s=>{
+    const b=el('button','opt',s);
+    b.onclick=()=>{
+      const fr = it.free||0; const used = it.steps.slice(0,fr).filter(x=>usedSet.has(x));
+      const okStep = (placed<fr) ? (it.steps.indexOf(s)>=0 && it.steps.indexOf(s)<fr && !usedSet.has(s)) : (s===it.steps[placed]);
+      if(okStep){
+        usedSet.add(s);
+        const d=slotEls[placed]; d.classList.add('ok'); d.querySelector('.tx').textContent=s; b.remove(); placed++;
+        if(placed===it.steps.length){
+          const pts=Math.max(20,100-25*errs); score+=pts; if(errs===0) right++; else wrong++;
+          $('live-score').textContent=score;
+          setTimeout(()=>feedback(true,false,pts,it.exp,()=>{idx++;next()}),400);
+        }
+      } else {
+        errs++; b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),350); toast('Ainda não é essa. Pense na ordem!');
+      }
+    };
+    pool.appendChild(b);
+  });
+}
+/* ---------- table ---------- */
+let cellOK, cellTries, cellDone, cellTotal, cellWrongOnce;
+function renderTable(it,stage){
+  const m=el('div','mission'); m.appendChild(el('div','t','📋 Complete a tabela verdade de:')); m.appendChild(el('div','f',it.formula));
+  if(it.legend&&it.legend.length){ const lg=el('div','legend'); it.legend.forEach(l=>{const d=el('div'); const s=el('strong',null,l.k+': '); d.appendChild(s); d.appendChild(document.createTextNode(l.t)); lg.appendChild(d)}); m.appendChild(lg) }
+  stage.appendChild(m);
+  const wrap=el('div','table-wrap'); const tb=el('table'); wrap.appendChild(tb); stage.appendChild(wrap);
+  const hr=el('tr'); it.headers.forEach((h,i)=>{const th=el('th',it.fixed.includes(i)?'fixed':'',h); hr.appendChild(th)});
+  const thead=el('thead'); thead.appendChild(hr); tb.appendChild(thead);
+  const tbody=el('tbody'); tb.appendChild(tbody);
+  cellDone=0; cellTotal=it.rows.length*(it.headers.length-it.fixed.length); cellWrongOnce={};
+  it.rows.forEach((row,ri)=>{
+    const tr=el('tr');
+    row.forEach((v,ci)=>{
+      const td=el('td');
+      if(it.fixed.includes(ci)){ td.className='fixed'; td.textContent=v?'V':'F' }
+      else{
+        const b=el('button','cell-btn','—'); const key=ri+'-'+ci; let state='';
+        b.onclick=()=>{
+          if(b.classList.contains('correct')) return;
+          state=(state===''||state==='F')?'V':'F'; b.textContent=state; b.className='cell-btn '+(state==='V'?'sv':'sf');
+          if((state==='V')===v){
+            b.classList.add('correct'); const p=cellWrongOnce[key]?5:10; score+=p; right++; cellDone++;
+            $('live-score').textContent=score; toast('✅ +'+p);
+            if(cellDone===cellTotal){ score+=50; $('live-score').textContent=score; toast('🎉 Tabela completa! +50'); setTimeout(()=>{ if(it.exp){feedback(true,false,50,it.exp,()=>{idx++;next()})} else {idx++;next()} },700) }
+          } else { if(!cellWrongOnce[key]){cellWrongOnce[key]=1; wrong++} b.classList.add('wrong'); setTimeout(()=>b.classList.remove('wrong'),350) }
+        };
+        td.appendChild(b);
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  stage.appendChild(el('div','hint','Toque nas células para alternar entre V e F'));
+}
+let toastT; function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1100)}
+/* ---------- fim ---------- */
+function endGame(){
+  clearInterval(timerInt); show('screen-result');
+  $('progress-bar').style.width='100%';
+  $('final-score').textContent=score; $('max-score').textContent='de '+maxScore+' pontos';
+  $('res-correct').textContent=right; $('res-wrong').textContent=wrong;
+  const pct=score/maxScore; let stars='⭐', msg='Continue estudando! '+CFG.revise+' e tente de novo. 💪';
+  if(pct>=.9){stars='⭐⭐⭐'; msg=CFG.win}
+  else if(pct>=.7){stars='⭐⭐'; msg='Muito bom! Mais um pouco de treino e você chega lá. 😊'}
+  else if(pct>=.5){stars='⭐½'; msg='Bom esforço! '+CFG.revise+' e jogue outra vez. 📖'}
+  $('result-stars').textContent=stars; $('result-msg').textContent=msg;
+}
+</script>
+</body>
+</html>
