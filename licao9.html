@@ -89,10 +89,11 @@
       <li>Toque nos cards para revelar V ou F</li>
       <li>Se p e q forem <strong>iguais</strong> → dançam juntos (V)</li>
       <li>Se forem <strong>diferentes</strong> → se repelem (F)</li>
-      <li>Tap, pense, responda!</li>
+      <li>Toque, pense e responda!</li>
     </ul>
   </div>
   <button class="btn-primary" onclick="startGame()">Entrar no Salão ✨</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <div id="screen-game" class="screen">
@@ -130,7 +131,7 @@
       </div>
     </div>
     <div class="result-formula">p ↔ q = ?</div>
-    <div class="tap-hint">Revele os dois tiles antes de responder</div>
+    <div class="tap-hint">Revele as duas cartas antes de responder</div>
   </div>
   <div class="answer-row">
     <button class="btn-answer btn-dance" id="btn-dance" onclick="answer(true)" disabled>
@@ -164,6 +165,7 @@
     <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
   </div>
   <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <script>
@@ -233,7 +235,7 @@ function answer(userDance){
   document.getElementById('feedback').classList.add('show');
 }
 
-function nextQ(){document.getElementById('feedback').classList.remove('show');current++;setTimeout(loadQ,100)}
+function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
   show('screen-result');

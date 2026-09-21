@@ -83,6 +83,7 @@
     </ul>
   </div>
   <button class="btn-primary" onclick="startGame()">Iniciar Triagem ▶</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <div id="screen-game" class="screen">
@@ -131,6 +132,7 @@
     <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
   </div>
   <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <script>
@@ -147,7 +149,7 @@ const ITEMS = [
   {text:"x² + x + 1 = 0", isProp:false, value:null, why:"Contém a variável x — é um predicado, não uma proposição."},
   {text:"Jesus Cristo continua morto.", isProp:true, value:'F', why:"Falsa — Jesus ressuscitou no terceiro dia!"},
   {text:"Jesus subiu ao céu e está sentado à direita de Deus Pai.", isProp:true, value:'V', why:"Proposição verdadeira, conforme o Credo Apostólico."},
-  {text:"Venha após mim, vós que estais cansados e sobrecarregados.", isProp:false, value:null, why:"Frase imperativa (convite/ordem) — não tem valor de verdade."},
+  {text:"Vinde a mim, todos os que estais cansados e sobrecarregados.", isProp:false, value:null, why:"Frase imperativa (convite/ordem) — não tem valor de verdade."},
 ];
 
 let questions, current, score, fullRight, halfRight, wrong;
@@ -190,7 +192,7 @@ function answerStep1(userSays){
   // step 2
   document.getElementById('dot1').className='step-dot done';
   document.getElementById('dot2').className='step-dot active';
-  document.getElementById('step-label').innerHTML='Passo 2: <strong>Qual o valor verdade?</strong>';
+  document.getElementById('step-label').innerHTML='Passo 2: <strong>Qual o valor-verdade?</strong>';
   document.getElementById('answer-row').innerHTML=`
     <button class="btn-answer btn-blue" onclick="answerStep2('V')"><span class="icon">😊</span><span>VERDADEIRA</span></button>
     <button class="btn-answer btn-red" onclick="answerStep2('F')"><span class="icon">😢</span><span>FALSA</span></button>`;
@@ -218,7 +220,7 @@ function showFeedback(icon,title,cls,pts,why){
 
 function nextQ(){
   document.getElementById('feedback').classList.remove('show');
-  current++;setTimeout(loadQ,100);
+  current++;loadQ();
 }
 
 function endGame(){

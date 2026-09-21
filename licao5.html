@@ -74,7 +74,7 @@
   <div class="badge">No Mundo da Lógica · Lição V</div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🔗</div>
   <div class="title">Caça ao<br><span>Conectivo</span></div>
-  <p class="subtitle">As proposições compostas chegaram em Proposia, mas seus conectivos estão escondidos! Identifique o símbolo correto.</p>
+  <p class="subtitle">As proposições compostas chegaram a Proposia, mas seus conectivos estão escondidos! Identifique o símbolo correto.</p>
   <div class="rules-box">
     <h3>Como jogar</h3>
     <ul>
@@ -85,6 +85,7 @@
     </ul>
   </div>
   <button class="btn-primary" onclick="startGame()">Iniciar Caça ▶</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <div id="screen-game" class="screen">
@@ -132,6 +133,7 @@
     <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros/Tempo</div></div>
   </div>
   <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <script>
@@ -209,7 +211,7 @@ function answer(sym,name){
   },400);
 }
 
-function nextQ(){document.getElementById('feedback').classList.remove('show');current++;setTimeout(loadQ,100)}
+function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
   show('screen-result');

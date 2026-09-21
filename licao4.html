@@ -80,6 +80,7 @@
     </ul>
   </div>
   <button class="btn-primary" onclick="startGame()">Entrar no Vale 🪞</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <div id="screen-game" class="screen">
@@ -118,28 +119,29 @@
     <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
   </div>
   <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <script>
 const QUESTIONS = [
   {
     prop:"Deus Pai é o Criador do céu e da terra.",
-    correct:"Deus Pai NÃO é o Criador do céu e da terra.",
+    correct:"Deus Pai não é o Criador do céu e da terra.",
     wrong:["Deus Pai talvez seja o Criador do céu e da terra.","Deus Pai pode ou não ser o Criador."]
   },
   {
     prop:"Jesus Cristo não é o único Filho de Deus.",
-    correct:"Jesus Cristo É o único Filho de Deus.",
+    correct:"Jesus Cristo é o único Filho de Deus.",
     wrong:["Jesus Cristo talvez seja o único Filho de Deus.","Jesus Cristo é mais um filho de Deus."]
   },
   {
     prop:"Jesus foi crucificado.",
-    correct:"Jesus NÃO foi crucificado.",
-    wrong:["Jesus foi quase crucificado.","Jesus foi crucificado e ressuscitou."]
+    correct:"Jesus não foi crucificado.",
+    wrong:["Jesus foi quase crucificado.","Não foi Jesus quem crucificou."]
   },
   {
     prop:"Jesus Cristo continua morto.",
-    correct:"Jesus Cristo NÃO continua morto.",
+    correct:"Jesus Cristo não continua morto.",
     wrong:["Jesus Cristo está vivo e morto ao mesmo tempo.","Jesus Cristo talvez continue morto."]
   },
   {
@@ -159,12 +161,12 @@ const QUESTIONS = [
   },
   {
     prop:"O céu está nublado.",
-    correct:"O céu NÃO está nublado.",
-    wrong:["O céu está talvez nublado.","O céu pode estar nublado."]
+    correct:"O céu não está nublado.",
+    wrong:["O céu está muito nublado.","O céu pode estar nublado."]
   },
   {
     prop:"Jesus não é Deus.",
-    correct:"Jesus É Deus.",
+    correct:"Jesus é Deus.",
     wrong:["Jesus talvez seja Deus.","Jesus não pode ser Deus."]
   },
   {
@@ -227,7 +229,7 @@ function showFeedback(ok,correctText){
   document.getElementById('feedback').classList.add('show');
 }
 
-function nextQ(){document.getElementById('feedback').classList.remove('show');current++;setTimeout(loadQ,100)}
+function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
   show('screen-result');

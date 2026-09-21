@@ -77,8 +77,8 @@
 <div id="screen-start" class="screen active">
   <div class="badge">No Mundo da Lógica · Lição X</div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">📊</div>
-  <div class="title">Construindo a<br><span>Tabela Verdade</span></div>
-  <p class="subtitle">O Senhor x precisa montar tabelas verdade com três proposições. Preencha cada célula com V ou F tocando nela!</p>
+  <div class="title">Construindo a<br><span>Tabela-Verdade</span></div>
+  <p class="subtitle">O Senhor x precisa montar tabelas-verdade com três proposições. Preencha cada célula com V ou F tocando nela!</p>
   <div class="rules-box">
     <h3>Como jogar</h3>
     <ul>
@@ -89,6 +89,7 @@
     </ul>
   </div>
   <button class="btn-primary" onclick="startGame()">Montar a Tabela 📊</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <div id="screen-game" class="screen">
@@ -98,7 +99,7 @@
   </div>
   <div class="progress-bar-wrap"><div id="progress-bar"></div></div>
   <div class="mission-card">
-    <div class="mission-title">📋 Complete a tabela verdade de:</div>
+    <div class="mission-title">📋 Complete a tabela-verdade de:</div>
     <div class="mission-formula" id="mission-formula"></div>
     <div class="prop-legend" id="prop-legend"></div>
   </div>
@@ -123,6 +124,7 @@
     <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
   </div>
   <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <script>
@@ -239,13 +241,16 @@ function toggleCell(key,t){
   const isV=(next==='V');
   if(isV===correct){
     btn.classList.add('correct');
-    score+=10;totalCorrect++;
+    // acerto de primeira vale 10; depois de um erro, vale só 2
+    score+=cellTries[key]?2:10; if(!cellTries[key])totalCorrect++;
     document.getElementById('live-score').textContent=score;
     showToast('✅ Correto! +10 pts');
     checkTableComplete(t);
   } else {
+    // conta o erro já na primeira tentativa errada (antes, como só há V e F, o erro nunca era contado)
+    if(!cellTries[key])totalWrong++;
     cellTries[key]=(cellTries[key]||0)+1;
-    if(cellTries[key]>=2){totalWrong++;btn.classList.add('wrong');setTimeout(()=>btn.classList.remove('wrong'),400)}
+    btn.classList.add('wrong');setTimeout(()=>btn.classList.remove('wrong'),400);
   }
 }
 
@@ -275,10 +280,10 @@ function endGame(){
   document.getElementById('final-score').textContent=score;
   document.getElementById('r-correct').textContent=totalCorrect;
   document.getElementById('r-wrong').textContent=totalWrong;
-  const pct=totalCorrect/(totalCorrect+Math.max(1,totalWrong));
-  let stars='⭐',msg='Continue praticando as tabelas verdade! 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='Mestre da tabela verdade! O Senhor x te contratou! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você está dominando as tabelas verdade! 😊'}
+  const pct=totalCorrect/Math.max(1,totalCorrect+totalWrong);
+  let stars='⭐',msg='Continue praticando as tabelas-verdade! 📖';
+  if(pct>=.9){stars='⭐⭐⭐';msg='Mestre da tabela-verdade! O Senhor x te contratou! 🏆'}
+  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você está dominando as tabelas-verdade! 😊'}
   else if(pct>=.5){stars='⭐½';msg='Bom esforço! Revise a ordem de prioridade dos conectivos. 💪'}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;

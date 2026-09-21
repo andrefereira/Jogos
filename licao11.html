@@ -99,6 +99,7 @@
     </ul>
   </div>
   <button class="btn-primary" onclick="startGame()">Iniciar Fila ⚡</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <div id="screen-game" class="screen">
@@ -158,6 +159,7 @@
     <div class="sum-item"><div class="val" id="r-best">—</div><div class="lbl">Melhor sequência</div></div>
   </div>
   <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <script>
@@ -262,7 +264,7 @@ function answer(userV){
   },300);
 }
 
-function nextQ(){document.getElementById('feedback').classList.remove('show');current++;setTimeout(loadQ,100)}
+function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
   clearInterval(timer);

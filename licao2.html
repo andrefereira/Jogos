@@ -74,10 +74,11 @@
       <li>Leia cada sentença com atenção</li>
       <li>Toque em ✅ <strong>ENTRA</strong> se for uma proposição</li>
       <li>Toque em ❌ <strong>NÃO ENTRA</strong> se não for</li>
-      <li>Lembre: proposição deve ter valor verdade (V ou F)</li>
+      <li>Lembre: proposição deve ter valor-verdade (V ou F)</li>
     </ul>
   </div>
   <button class="btn-primary" onclick="startGame()">Abrir o Portão ▶</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <div id="screen-game" class="screen">
@@ -123,6 +124,7 @@
     <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
   </div>
   <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <script>
@@ -184,7 +186,7 @@ function answer(userSays){
 function nextQ(){
   document.getElementById('feedback').classList.remove('show');
   current++;
-  setTimeout(loadQ,150);
+  loadQ();
 }
 
 function endGame(){

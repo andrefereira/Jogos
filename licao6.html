@@ -64,7 +64,8 @@
       <li>Bolha errada = 0 pontos. Mais rápido = mais pontos!</li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Recrutar no General E ▶</button>
+  <button class="btn-primary" onclick="startGame()">Apresentar-se ao General E ▶</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <div id="screen-game" class="screen" style="gap:10px">
@@ -103,6 +104,7 @@
     <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
   </div>
   <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
+  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
 </div>
 
 <script>
@@ -188,7 +190,7 @@ function animateBubbles(){
     gameActive=false;handleResult(false,0);return;
   }
   // check if bubbles escaped top
-  if(bubbles.every(b=>b.y<-60||b.popped)){gameActive=false;handleResult(false,0);return}
+  if(gameActive&&bubbles.every(b=>b.y<-60||b.popped)){gameActive=false;handleResult(false,0);return}
   animId=requestAnimationFrame(animateBubbles);
 }
 
@@ -200,16 +202,19 @@ canvas.addEventListener('pointerdown',e=>{
   const scaleY=canvas.height/rect.height;
   const mx=(e.clientX-rect.left)*scaleX;
   const my=(e.clientY-rect.top)*scaleY;
+  // escolhe só UMA bolha (a mais próxima do toque), evitando contar duas vezes quando as bolhas se sobrepõem
+  let hit=null,best=Infinity;
   bubbles.forEach(b=>{
     if(!b.popped){
       const d=Math.hypot(mx-b.x,my-b.y);
-      if(d<b.r){
-        b.popped=true;
-        gameActive=false;
-        handleResult(b.correct,(Date.now()-qStart)/1000);
-      }
+      if(d<b.r&&d<best){best=d;hit=b}
     }
   });
+  if(hit){
+    hit.popped=true;
+    gameActive=false;
+    handleResult(hit.correct,(Date.now()-qStart)/1000);
+  }
 });
 
 function handleResult(ok,elapsed){

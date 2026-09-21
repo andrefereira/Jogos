@@ -114,8 +114,8 @@ td.fixed{background:rgba(0,0,0,.2);color:rgba(255,255,255,.75);font-weight:700;p
   <div class="badge">No Mundo da Lógica · Lição XXII</div>
   <div class="mascot">✅</div>
   <div class="title">Ponte do<br><span>Afirmar</span></div>
-  <p class="subtitle">A primeira ferramenta do engenheiro Inferêncio é o Modus Ponens, a Ponte do Afirmar: se a promessa é verdadeira e a condição foi cumprida, o resultado precisa acontecer!</p>
-  <div class="rules-box"><h3>Como jogar</h3><ul><li>Complete a conclusão de cada ponte</li><li>Afirme o que vem antes do "então" e chegue ao que vem depois</li><li>Descubra também quando a ponte NÃO é o Modus Ponens</li><li>Quase sem pressa: pense com calma!</li></ul></div>
+  <p class="subtitle">A primeira ferramenta do Mestre Inferêncio é o Modus Ponens, a Ponte do Afirmar: se a promessa é verdadeira e a condição foi cumprida, o resultado precisa acontecer!</p>
+  <div class="rules-box"><h3>Como jogar</h3><ul><li>Complete a conclusão de cada ponte</li><li>Afirme o que vem antes do "então" e chegue ao que vem depois</li><li>Descubra também quando a ponte NÃO é o Modus Ponens</li><li>Sem pressa: pense com calma!</li></ul></div>
   <button class="btn-primary" onclick="startGame()">Jogar ▶</button>
   <a class="back" href="index.html">← Todas as lições</a>
 </div>
@@ -264,7 +264,7 @@ function renderOrder(it,stage){
 /* ---------- table ---------- */
 let cellOK, cellTries, cellDone, cellTotal, cellWrongOnce;
 function renderTable(it,stage){
-  const m=el('div','mission'); m.appendChild(el('div','t','📋 Complete a tabela verdade de:')); m.appendChild(el('div','f',it.formula));
+  const m=el('div','mission'); m.appendChild(el('div','t','📋 Complete a tabela-verdade de:')); m.appendChild(el('div','f',it.formula));
   if(it.legend&&it.legend.length){ const lg=el('div','legend'); it.legend.forEach(l=>{const d=el('div'); const s=el('strong',null,l.k+': '); d.appendChild(s); d.appendChild(document.createTextNode(l.t)); lg.appendChild(d)}); m.appendChild(lg) }
   stage.appendChild(m);
   const wrap=el('div','table-wrap'); const tb=el('table'); wrap.appendChild(tb); stage.appendChild(wrap);
@@ -283,10 +283,10 @@ function renderTable(it,stage){
           if(b.classList.contains('correct')) return;
           state=(state===''||state==='F')?'V':'F'; b.textContent=state; b.className='cell-btn '+(state==='V'?'sv':'sf');
           if((state==='V')===v){
-            b.classList.add('correct'); const p=cellWrongOnce[key]?5:10; score+=p; right++; cellDone++;
+            b.classList.add('correct'); const p=cellWrongOnce[key]?5:10; score+=p; cellDone++;
             $('live-score').textContent=score; toast('✅ +'+p);
-            if(cellDone===cellTotal){ score+=50; $('live-score').textContent=score; toast('🎉 Tabela completa! +50'); setTimeout(()=>{ if(it.exp){feedback(true,false,50,it.exp,()=>{idx++;next()})} else {idx++;next()} },700) }
-          } else { if(!cellWrongOnce[key]){cellWrongOnce[key]=1; wrong++} b.classList.add('wrong'); setTimeout(()=>b.classList.remove('wrong'),350) }
+            if(cellDone===cellTotal){ if(Object.keys(cellWrongOnce).length===0) right++; else wrong++; score+=50; $('live-score').textContent=score; toast('🎉 Tabela completa! +50'); setTimeout(()=>{ if(it.exp){feedback(true,false,50,it.exp,()=>{idx++;next()})} else {idx++;next()} },700) }
+          } else { if(!cellWrongOnce[key]){cellWrongOnce[key]=1} b.classList.add('wrong'); setTimeout(()=>b.classList.remove('wrong'),350) }
         };
         td.appendChild(b);
       }
