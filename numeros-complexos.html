@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+<title>Números Complexos — Animações</title>
+<style>
+  :root{
+    --azul:#1f6feb;
+    --vermelho:#e63946;
+    --laranja:#f2994a;
+    --verde:#2a9d8f;
+    --roxo:#8e5bd9;
+    --cinza:#333333;
+    --fundo:#f7f9fc;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--fundo);
+    color:var(--cinza);
+    line-height:1.5;
+  }
+  header{
+    background:var(--azul);
+    color:white;
+    padding:20px 16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1{margin:0; font-size:1.5rem;}
+  header p{margin:6px 0 0; font-size:1.15rem; opacity:.95;}
+
+  nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    padding:14px 10px;
+    background:white;
+    position:sticky;
+    top:82px;
+    z-index:40;
+    border-bottom:2px solid #e4e9f2;
+  }
+  nav a{
+    text-decoration:none;
+    background:#e8f0ff;
+    color:var(--azul);
+    font-weight:bold;
+    padding:12px 16px;
+    border-radius:999px;
+    font-size:1rem;
+  }
+
+  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+
+  section.concept{
+    background:white;
+    border-radius:20px;
+    padding:22px;
+    margin-bottom:30px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    scroll-margin-top:160px;
+  }
+  section.concept h2{
+    color:var(--azul);
+    font-size:1.5rem;
+    border-bottom:3px solid #e8f0ff;
+    padding-bottom:10px;
+    margin-top:0;
+    text-align:center;
+  }
+  h3.sub{
+    color:var(--laranja);
+    text-align:center;
+    font-size:1.3rem;
+    margin:26px 0 8px;
+  }
+  .caption{
+    font-size:1.3rem;
+    font-weight:600;
+    text-align:center;
+    background:#e8f0ff;
+    border-left:8px solid var(--azul);
+    border-radius:10px;
+    padding:16px;
+    margin:16px 0;
+    min-height:1.4em;
+  }
+  .btnrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    justify-content:center;
+    margin:16px 0;
+  }
+  button{
+    font-size:1.1rem;
+    font-weight:bold;
+    border:none;
+    border-radius:14px;
+    padding:15px 20px;
+    min-height:58px;
+    min-width:100px;
+    cursor:pointer;
+    color:white;
+    background:var(--azul);
+    transition:transform .1s ease;
+  }
+  button:active{transform:scale(0.95);}
+  button.laranja{background:var(--laranja);}
+  button.verde{background:var(--verde);}
+  button.roxo{background:var(--roxo);}
+  button.vermelho{background:var(--vermelho);}
+  button.secundario{background:#dfe6f5; color:var(--azul);}
+  button.grande{font-size:1.8rem; min-width:90px; min-height:72px; padding:12px 24px;}
+
+  .svgwrap{
+    background:#fbfcfe;
+    border-radius:16px;
+    padding:10px;
+    display:flex;
+    justify-content:center;
+  }
+  svg{max-width:100%; height:auto; display:block;}
+
+  .libras-note{
+    font-size:1.05rem;
+    color:#555;
+    background:#fff7e6;
+    border:2px dashed var(--laranja);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-top:16px;
+  }
+  .libras-note b{color:var(--laranja);}
+
+  .feedback{
+    font-size:1.3rem;
+    font-weight:bold;
+    text-align:center;
+    padding:14px;
+    border-radius:12px;
+    margin:14px 0;
+    min-height:1.4em;
+  }
+  .feedback.ok{background:#e6f7f1; color:var(--verde);}
+  .feedback.nao{background:#fff2e8; color:var(--laranja);}
+
+  /* ---------- peças coloridas dos números ---------- */
+  .peca{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:64px;
+    border-radius:14px;
+    font-size:clamp(1.6rem, 7.5vw, 2.2rem);
+    font-weight:800;
+    color:white;
+    transition:all .25s ease;
+    user-select:none;
+  }
+  .peca.real{background:var(--azul);}
+  .peca.imag{background:var(--laranja);}
+  .peca.i{background:var(--roxo);}
+  .peca.neutro{background:#dfe6f5; color:var(--azul);}
+  .peca.sinal{background:transparent; color:#9aa8c7;}
+  .peca.op{background:#eef2fa; color:var(--cinza);}
+  .peca.vazia{background:#eef2fa; color:#9aa8c7;}
+  .peca.dim{opacity:.2;}
+  .peca.lit{transform:scale(1.1); box-shadow:0 6px 14px rgba(0,0,0,.2);}
+
+  .numero{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    align-items:center;
+    margin:16px 0;
+  }
+  .numero .peca{min-width:64px; padding:0 14px;}
+  .numero .peca.sinal{min-width:24px; padding:0;}
+  button.peca{
+    height:64px; min-height:64px; min-width:64px; padding:0 14px;
+    font-size:clamp(1.6rem, 7.5vw, 2.2rem);
+  }
+
+  .grade{
+    display:grid;
+    grid-template-columns:34px 1fr 22px 1fr 40px;
+    gap:12px 6px;
+    max-width:340px;
+    margin:16px auto;
+    align-items:center;
+  }
+  .grade .peca{padding:0; height:60px;}
+  .linha-grade{grid-column:1 / -1; height:4px; background:#333; border-radius:2px; margin:4px 0;}
+
+  .dots{display:flex; gap:8px; justify-content:center; margin:12px 0; flex-wrap:wrap;}
+  .dot{width:18px; height:18px; border-radius:50%; background:#dfe6f5;}
+  .dot.certo{background:var(--verde);}
+
+  .pulso{transform-box:fill-box; transform-origin:center; animation:pulso 1s ease-in-out infinite;}
+  @keyframes pulso{50%{transform:scale(1.3);}}
+  @media (prefers-reduced-motion: reduce){
+    .pulso{animation:none;}
+    .peca{transition:none;}
+  }
+
+  .hidden{display:none;}
+
+  footer{
+    text-align:center;
+    font-size:.9rem;
+    color:#888;
+    padding:30px 16px 60px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Números complexos</h1>
+  <p>🤟 Vamos conhecer o número i!</p>
+</header>
+
+<nav>
+  <a href="#c1">① O número i</a>
+  <a href="#c2">② As partes</a>
+  <a href="#c3">③ Somar</a>
+  <a href="#c4">④ Pratique</a>
+</nav>
+
+<main>
+
+  <!-- ================= 1: O NÚMERO i ================= -->
+  <section class="concept" id="c1">
+    <h2>① Quem é o i?</h2>
+
+    <div class="svgwrap">
+      <svg id="svg1" viewBox="0 0 320 240" width="320" height="240"></svg>
+    </div>
+
+    <p class="caption" id="cap1">Os números moram na régua.</p>
+
+    <div class="btnrow">
+      <button onclick="estado1(1)">👀 Onde mora o i?</button>
+      <button class="laranja" onclick="estado1(2)">✨ Fazer a mágica</button>
+      <button class="secundario" onclick="estado1(0)">🔁 De novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras no canto da tela, depois toque na frase acima.</p>
+  </section>
+
+  <!-- ================= 2: AS PARTES ================= -->
+  <section class="concept" id="c2">
+    <h2>② O número complexo</h2>
+
+    <p class="caption" id="cap2">Este é um NÚMERO COMPLEXO: 3 + 2i.<br>Toque nos botões para conhecer as partes.</p>
+
+    <div class="numero">
+      <span class="peca real" id="p2real">3</span>
+      <span class="peca sinal">+</span>
+      <span class="peca imag" id="p2imag">2</span>
+      <span class="peca i" id="p2i">i</span>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="destacar2('real')">🔵 Parte real</button>
+      <button class="laranja" onclick="destacar2('imag')">🟠 Parte imaginária</button>
+      <button class="roxo" onclick="destacar2('i')">🟣 Letra i</button>
+      <button class="secundario" onclick="tudo2()">Mostrar tudo</button>
+    </div>
+
+    <h3 class="sub">🎯 Agora você!</h3>
+    <p class="feedback nao" id="pedido2"></p>
+    <div class="numero" id="pratica2"></div>
+    <p class="feedback hidden" id="fb2"></p>
+    <div class="dots" id="dots2"></div>
+    <div class="btnrow">
+      <button class="laranja hidden" id="btnProx2" onclick="proxima2()">Próxima ▶</button>
+      <button class="secundario hidden" id="btnRein2" onclick="reiniciar2()">🔁 Jogar de novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 3: SOMAR ================= -->
+  <section class="concept" id="c3">
+    <h2>③ Como somar?</h2>
+
+    <p class="caption" id="cap3"></p>
+
+    <div class="grade" id="grade3"></div>
+
+    <div class="btnrow">
+      <button onclick="passo3(1)">1️⃣ Juntar os AZUIS</button>
+      <button class="laranja" onclick="passo3(2)">2️⃣ Juntar os LARANJAS</button>
+      <button class="verde" onclick="passo3(3)">3️⃣ Resultado</button>
+      <button class="secundario" onclick="iniciar3()">🔁 De novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 4: PRATIQUE ================= -->
+  <section class="concept" id="c4">
+    <h2>④ Agora você soma!</h2>
+
+    <div class="dots" id="dots4"></div>
+
+    <div class="grade" id="grade4"></div>
+
+    <p class="caption" id="cap4"></p>
+    <div class="btnrow" id="opcoes4"></div>
+    <p class="feedback hidden" id="fb4"></p>
+
+    <div class="btnrow">
+      <button class="laranja hidden" id="btnProx4" onclick="proximo4()">Próxima ▶</button>
+      <button class="secundario hidden" id="btnRein4" onclick="montar4(true)">🔁 Jogar de novo</button>
+    </div>
+
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+</main>
+
+<footer>
+  Material de apoio — Matemática, 3ª série do Ensino Médio.<br>
+  Página pronta para ser hospedada e acessada por QR Code.
+</footer>
+
+<script>
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs){
+    const e = document.createElementNS(NS, tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function $(id){ return document.getElementById(id); }
+
+  // ---------- ① Quem é o i? ----------
+  const U = 40, X0 = 140, YR = 180;   // unidade, posição do zero, altura da régua
+  function xr(k){ return X0 + k*U; }
+
+  function desenharRegua(svg){
+    svg.innerHTML = "";
+    const defs = el("defs", {});
+    const m = el("marker", {id:"seta", markerWidth:6, markerHeight:6, refX:3, refY:3, orient:"auto", markerUnits:"strokeWidth"});
+    m.appendChild(el("path", {d:"M0,0 L0,6 L6,3 z", fill:"#d98200"}));
+    defs.appendChild(m);
+    svg.appendChild(defs);
+
+    svg.appendChild(el("line", {x1:15, y1:YR, x2:305, y2:YR, stroke:"#555", "stroke-width":4, "stroke-linecap":"round"}));
+    for(let k=-3; k<=3; k++){
+      svg.appendChild(el("line", {x1:xr(k), y1:YR-8, x2:xr(k), y2:YR+8, stroke:"#555", "stroke-width":3}));
+      const t = el("text", {x:xr(k), y:YR+30, "text-anchor":"middle", "font-size":18, "font-weight":"bold", fill:"#333"});
+      t.textContent = k < 0 ? "−" + Math.abs(k) : String(k);
+      svg.appendChild(t);
+    }
+    const nome = el("text", {x:160, y:232, "text-anchor":"middle", "font-size":14, fill:"#888"});
+    nome.textContent = "a régua dos números";
+    svg.appendChild(nome);
+  }
+
+  function desenharI(svg){
+    svg.appendChild(el("line", {x1:xr(0), y1:YR-14, x2:xr(0), y2:40, stroke:"#8e5bd9", "stroke-width":3, "stroke-dasharray":"6 6"}));
+    svg.appendChild(el("circle", {cx:xr(0), cy:YR-U, r:24, fill:"#8e5bd9"}));
+    const ti = el("text", {x:xr(0), y:YR-U+10, "text-anchor":"middle", "font-size":28, "font-weight":"bold", fill:"white"});
+    ti.textContent = "i";
+    svg.appendChild(ti);
+    const l1 = el("text", {x:xr(0)+34, y:YR-U-2, "font-size":15, "font-weight":"bold", fill:"#8e5bd9"});
+    l1.textContent = "número mágico";
+    svg.appendChild(l1);
+    const l2 = el("text", {x:xr(0)+34, y:YR-U+16, "font-size":15, fill:"#8e5bd9"});
+    l2.textContent = "fora da régua";
+    svg.appendChild(l2);
+    const s1 = el("text", {x:70, y:90, "font-size":22}); s1.textContent = "✨"; svg.appendChild(s1);
+    const s2 = el("text", {x:230, y:80, "font-size":22}); s2.textContent = "✨"; svg.appendChild(s2);
+  }
+
+  function desenharMagica(svg){
+    // destaque no −1
+    svg.appendChild(el("circle", {class:"pulso", cx:xr(-1), cy:YR, r:13, fill:"none", stroke:"#d98200", "stroke-width":4}));
+    // seta do i para o −1
+    const seta = el("path", {d:"M 114 128 C 70 108, 58 150, 92 166", fill:"none", stroke:"#d98200", "stroke-width":5, "marker-end":"url(#seta)"});
+    svg.appendChild(seta);
+    const len = seta.getTotalLength();
+    seta.style.strokeDasharray = len;
+    seta.style.strokeDashoffset = len;
+    seta.getBoundingClientRect();
+    seta.style.transition = "stroke-dashoffset .9s ease";
+    requestAnimationFrame(()=>{ seta.style.strokeDashoffset = 0; });
+    // conta
+    const t = el("text", {x:160, y:62, "text-anchor":"middle", "font-size":34, "font-weight":"bold", fill:"#333"});
+    t.appendChild(document.createTextNode("i × i = "));
+    const ts = el("tspan", {fill:"#d98200"});
+    ts.textContent = "−1";
+    t.appendChild(ts);
+    svg.appendChild(t);
+  }
+
+  function estado1(n){
+    const svg = $("svg1");
+    desenharRegua(svg);
+    if(n >= 1) desenharI(svg);
+    if(n >= 2) desenharMagica(svg);
+    const textos = [
+      "Os números moram na régua.",
+      "Este é o número mágico i.<br>O nome dele é UNIDADE IMAGINÁRIA.<br>Ele mora lá em cima, fora da régua.",
+      "Mágica! i vezes i dá MENOS UM.<br>i × i = −1"
+    ];
+    $("cap1").innerHTML = textos[n];
+  }
+  estado1(0);
+
+  // ---------- ② As partes do número complexo ----------
+  const textos2 = {
+    real: "O 3 é a PARTE REAL.<br>É o número da régua, sozinho.",
+    imag: "O 2 é a PARTE IMAGINÁRIA.<br>É o número que fica junto do i.",
+    i: "O i é a UNIDADE IMAGINÁRIA.<br>É a letra mágica."
+  };
+  const ids2 = {real:"p2real", imag:"p2imag", i:"p2i"};
+  function destacar2(qual){
+    Object.keys(ids2).forEach(k=>{
+      const e = $(ids2[k]);
+      e.classList.toggle("dim", k !== qual);
+      e.classList.toggle("lit", k === qual);
+    });
+    $("cap2").innerHTML = textos2[qual];
+  }
+  function tudo2(){
+    Object.keys(ids2).forEach(k=>{
+      $(ids2[k]).classList.remove("dim", "lit");
+    });
+    $("cap2").innerHTML = "Um NÚMERO COMPLEXO tem duas partes:<br>a parte REAL (azul) e a parte IMAGINÁRIA (laranja).";
+  }
+
+  // jogo: toque na parte pedida
+  const rodadas2 = [
+    {r:5, i:4, pedir:"real"},
+    {r:2, i:6, pedir:"imag"},
+    {r:7, i:3, pedir:"real"},
+    {r:4, i:5, pedir:"imag"}
+  ];
+  let r2 = 0, travado2 = false;
+  const feitos2 = [];
+
+  function dots(boxId, total, feitos){
+    const box = $(boxId);
+    box.innerHTML = "";
+    for(let i=0; i<total; i++){
+      const d = document.createElement("div");
+      d.className = "dot" + (feitos[i] ? " certo" : "");
+      box.appendChild(d);
+    }
+  }
+
+  function montarRodada2(){
+    const R = rodadas2[r2];
+    travado2 = false;
+    $("pedido2").className = "feedback nao";
+    $("pedido2").textContent = R.pedir === "real" ? "Toque na PARTE REAL!" : "Toque na PARTE IMAGINÁRIA!";
+    const area = $("pratica2");
+    area.innerHTML = "";
+    const b1 = document.createElement("button"); b1.className = "peca neutro"; b1.textContent = R.r; b1.id = "q2real";
+    b1.onclick = ()=>tocar2("real");
+    const sinal = document.createElement("span"); sinal.className = "peca sinal"; sinal.textContent = "+";
+    const b2 = document.createElement("button"); b2.className = "peca neutro"; b2.textContent = R.i; b2.id = "q2imag";
+    b2.onclick = ()=>tocar2("imag");
+    const b3 = document.createElement("button"); b3.className = "peca neutro"; b3.textContent = "i"; b3.id = "q2i";
+    b3.onclick = ()=>tocar2("i");
+    area.append(b1, sinal, b2, b3);
+    $("fb2").classList.add("hidden");
+    $("btnProx2").classList.add("hidden");
+    $("btnRein2").classList.add("hidden");
+    $("pratica2").classList.remove("hidden");
+    $("pedido2").classList.remove("hidden");
+    dots("dots2", rodadas2.length, feitos2);
+  }
+
+  function tocar2(k){
+    if(travado2) return;
+    const R = rodadas2[r2];
+    const fb = $("fb2");
+    fb.classList.remove("hidden");
+    if(k === R.pedir){
+      travado2 = true;
+      $("q2real").className = "peca real";
+      $("q2imag").className = "peca imag";
+      $("q2i").className = "peca i";
+      fb.className = "feedback ok";
+      fb.textContent = R.pedir === "real"
+        ? "🎉 Isso mesmo! O " + R.r + " é a PARTE REAL."
+        : "🎉 Isso mesmo! O " + R.i + " é a PARTE IMAGINÁRIA.";
+      feitos2[r2] = true;
+      dots("dots2", rodadas2.length, feitos2);
+      $("btnProx2").textContent = (r2 === rodadas2.length-1) ? "Ver resultado 🏁" : "Próxima ▶";
+      $("btnProx2").classList.remove("hidden");
+    } else {
+      fb.className = "feedback nao";
+      if(k === "i") fb.textContent = "😊 Esse é o i, a letra mágica. Procure um número!";
+      else if(R.pedir === "real") fb.textContent = "😊 Quase! A parte real é o número que está sozinho, sem o i.";
+      else fb.textContent = "😊 Quase! A parte imaginária é o número que fica junto do i.";
+    }
+  }
+
+  function proxima2(){
+    r2++;
+    if(r2 >= rodadas2.length){
+      $("pedido2").classList.add("hidden");
+      $("pratica2").classList.add("hidden");
+      $("btnProx2").classList.add("hidden");
+      const fb = $("fb2");
+      fb.className = "feedback ok";
+      fb.textContent = "🎉 Você acertou tudo! Muito bem!";
+      $("btnRein2").classList.remove("hidden");
+      return;
+    }
+    montarRodada2();
+  }
+  function reiniciar2(){
+    r2 = 0;
+    feitos2.length = 0;
+    montarRodada2();
+  }
+  montarRodada2();
+
+  // ---------- grade de soma (usada em ③ e ④) ----------
+  const gradeRefs = {};
+
+  function criarGrade(id){
+    const g = $(id);
+    g.innerHTML = "";
+    const refs = {};
+    function cel(cls, txt, col, key){
+      const d = document.createElement("div");
+      d.className = "peca " + cls;
+      d.textContent = txt;
+      if(col) d.dataset.col = col;
+      if(key) refs[key] = d;
+      g.appendChild(d);
+      return d;
+    }
+    cel("sinal", "");   cel("real", "", "real", "ar"); cel("sinal", "+"); cel("imag", "", "imag", "ai"); cel("i", "i", "imag");
+    cel("op", "+");     cel("real", "", "real", "br"); cel("sinal", "+"); cel("imag", "", "imag", "bi"); cel("i", "i", "imag");
+    const l = document.createElement("div"); l.className = "linha-grade"; g.appendChild(l);
+    cel("op", "=");     cel("vazia", "?", "real", "rr"); cel("sinal", "+"); cel("vazia", "?", "imag", "ri"); cel("i", "i", "imag");
+    gradeRefs[id] = refs;
+  }
+  function preencher(id, A, B){
+    const R = gradeRefs[id];
+    R.ar.textContent = A.r; R.ai.textContent = A.i;
+    R.br.textContent = B.r; R.bi.textContent = B.i;
+  }
+  function foco(id, col){
+    $(id).querySelectorAll("[data-col]").forEach(c=>{
+      if(c.dataset.col === col){
+        c.classList.remove("dim"); c.classList.add("lit");
+      } else {
+        c.classList.remove("lit");
+        if(!c.classList.contains("feito")) c.classList.add("dim");
+      }
+    });
+  }
+  function limparFoco(id){
+    $(id).querySelectorAll("[data-col]").forEach(c=>c.classList.remove("dim", "lit"));
+  }
+  function setResultado(id, chave, valor, tipo){
+    const c = gradeRefs[id][chave];
+    c.textContent = valor;
+    c.classList.remove("vazia");
+    c.classList.add(tipo, "feito");
+  }
+
+  // ---------- ③ Como somar ----------
+  const A3 = {r:3, i:2}, B3 = {r:1, i:4};
+  function iniciar3(){
+    criarGrade("grade3");
+    preencher("grade3", A3, B3);
+    $("cap3").innerHTML = "Vamos somar dois números complexos.<br>Regra mágica: AZUL com AZUL.<br>LARANJA com LARANJA.";
+  }
+  function passo3(n){
+    const sr = A3.r + B3.r, si = A3.i + B3.i;
+    if(n === 1){
+      foco("grade3", "real");
+      setResultado("grade3", "rr", sr, "real");
+      $("cap3").innerHTML = "Juntamos os AZUIS (partes reais):<br>" + A3.r + " + " + B3.r + " = " + sr;
+    } else if(n === 2){
+      foco("grade3", "imag");
+      setResultado("grade3", "ri", si, "imag");
+      $("cap3").innerHTML = "Juntamos os LARANJAS (partes imaginárias):<br>" + A3.i + " + " + B3.i + " = " + si;
+    } else {
+      setResultado("grade3", "rr", sr, "real");
+      setResultado("grade3", "ri", si, "imag");
+      limparFoco("grade3");
+      $("cap3").innerHTML = "🎉 Resultado: " + sr + " + " + si + "i";
+    }
+  }
+  iniciar3();
+
+  // ---------- ④ Agora você soma ----------
+  const prob4 = [
+    {A:{r:1, i:2}, B:{r:2, i:3}},
+    {A:{r:2, i:3}, B:{r:4, i:2}},
+    {A:{r:3, i:4}, B:{r:2, i:2}}
+  ];
+  let p4 = 0, etapa4 = 0;
+  const feitos4 = [];
+
+  function embaralhar(v){
+    const a = v.slice();
+    for(let i=a.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function montar4(zerar){
+    if(zerar){ p4 = 0; feitos4.length = 0; }
+    const P = prob4[p4];
+    etapa4 = 0;
+    criarGrade("grade4");
+    preencher("grade4", P.A, P.B);
+    $("fb4").classList.add("hidden");
+    $("btnProx4").classList.add("hidden");
+    $("btnRein4").classList.add("hidden");
+    $("grade4").classList.remove("hidden");
+    dots("dots4", prob4.length, feitos4);
+    mostrarEtapa4();
+  }
+
+  function mostrarEtapa4(){
+    const P = prob4[p4];
+    let a, b, col;
+    if(etapa4 === 0){ a = P.A.r; b = P.B.r; col = "real"; $("cap4").innerHTML = "Some os AZUIS:<br>" + a + " + " + b + " = ?"; }
+    else            { a = P.A.i; b = P.B.i; col = "imag"; $("cap4").innerHTML = "Some os LARANJAS:<br>" + a + " + " + b + " = ?"; }
+    foco("grade4", col);
+    const certo = a + b;
+    const dist = (certo - 1 >= 1) ? [certo-1, certo+1] : [certo+1, certo+2];
+    const box = $("opcoes4");
+    box.innerHTML = "";
+    embaralhar([certo, ...dist]).forEach(v=>{
+      const btn = document.createElement("button");
+      btn.className = "grande secundario";
+      btn.textContent = v;
+      btn.onclick = ()=>escolher4(v, certo, a, b);
+      box.appendChild(btn);
+    });
+    box.classList.remove("hidden");
+  }
+
+  function escolher4(v, certo, a, b){
+    const fb = $("fb4");
+    fb.classList.remove("hidden");
+    if(v !== certo){
+      fb.className = "feedback nao";
+      fb.textContent = "😊 Quase! Conte de novo: " + a + " e mais " + b + ".";
+      return;
+    }
+    if(etapa4 === 0){
+      setResultado("grade4", "rr", certo, "real");
+      fb.className = "feedback ok";
+      fb.textContent = "🎉 Isso mesmo! " + certo;
+      etapa4 = 1;
+      mostrarEtapa4();
+    } else {
+      const P = prob4[p4];
+      setResultado("grade4", "ri", certo, "imag");
+      limparFoco("grade4");
+      $("opcoes4").classList.add("hidden");
+      fb.className = "feedback ok";
+      fb.textContent = "🎉 Muito bem! Resposta: " + (P.A.r + P.B.r) + " + " + (P.A.i + P.B.i) + "i";
+      $("cap4").textContent = "Você somou!";
+      feitos4[p4] = true;
+      dots("dots4", prob4.length, feitos4);
+      $("btnProx4").textContent = (p4 === prob4.length-1) ? "Ver resultado 🏁" : "Próxima ▶";
+      $("btnProx4").classList.remove("hidden");
+    }
+  }
+
+  function proximo4(){
+    p4++;
+    if(p4 >= prob4.length){
+      $("grade4").classList.add("hidden");
+      $("opcoes4").classList.add("hidden");
+      $("btnProx4").classList.add("hidden");
+      $("cap4").textContent = "🎉 Você somou 3 números complexos!";
+      const fb = $("fb4");
+      fb.className = "feedback ok";
+      fb.textContent = "Muito bem! 🌟";
+      $("btnRein4").classList.remove("hidden");
+      return;
+    }
+    montar4(false);
+  }
+  montar4(true);
+</script>
+
+<!-- ============ VLIBRAS (tradutor de Libras oficial do Governo Federal) ============ -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+</body>
+</html>
