@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>No Mundo da Lógica — Lição IV</title>
+  <title>No Mundo da Lógica / In the World of Logic — Lição IV / Lesson IV</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a2a3a,#0d3a4f,#1a4a5c);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
     .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
     .screen.active{display:flex}
+
+    /* LANGUAGE SWITCH */
+    .lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+    .lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+    .lang-btn.active{background:#aaccff;color:#0d1a2a}
+
     .badge{background:rgba(255,255,255,.12);border:1px solid rgba(200,200,255,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#c8c8ff}
     .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
     .title span{color:#aaccff}
@@ -66,33 +72,37 @@
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição IV</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🪞</div>
-  <div class="title">Vale do<br><span>Espelho</span></div>
-  <p class="subtitle">No Vale do Espelho Inversor, cada proposição vê sua própria negação. Mas qual das três reflexões é a verdadeira negação?</p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li>Leia a proposição original</li>
-      <li>Três reflexões aparecem no espelho</li>
-      <li>Toque na negação correta</li>
-      <li>Negação errada = espelho se estilhaça!</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
+      <li id="t-rule4"></li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Entrar no Vale 🪞</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <div id="screen-game" class="screen">
   <div class="top-bar">
     <span class="counter" id="counter">1 / 10</span>
-    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> <span id="t-pts-label"></span></span>
   </div>
   <div class="mirror-scene">
-    <p class="prop-label">Proposição original</p>
+    <p class="prop-label" id="t-prop-label"></p>
     <div class="prop-card" id="prop-card"></div>
     <div class="arrow-down">↕️</div>
-    <p class="mirror-label">Qual é a negação?</p>
+    <p class="mirror-label" id="t-mirror-label"></p>
     <div class="mirrors-row" id="mirrors-row"></div>
   </div>
 </div>
@@ -102,150 +112,305 @@
     <div class="fb-icon" id="fb-icon"></div>
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-correct" id="fb-correct"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-fb-tap"></p>
   </div>
 </div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">Espelho<br><span>revelado!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div style="font-size:2.2rem" id="result-stars"></div>
   <div class="score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1000 pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="sum-grid">
-    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl">Acertos</div></div>
-    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
+    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl" id="t-correct-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
+/* TEXTOS DA INTERFACE / UI STRINGS */
+const STRINGS = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição IV",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição IV",
+    title: 'Vale do<br><span>Espelho</span>',
+    subtitle: "No Vale do Espelho Inversor, cada proposição vê sua própria negação. Mas qual das três reflexões é a verdadeira negação?",
+    rulesTitle: "Como jogar",
+    rule1: "Leia a proposição original",
+    rule2: "Três reflexões aparecem no espelho",
+    rule3: "Toque na negação correta",
+    rule4: "Negação errada = espelho se estilhaça!",
+    btnStart: "Entrar no Vale 🪞",
+    backLink: "← Todas as lições",
+    propLabel: "Proposição original",
+    mirrorLabel: "Qual é a negação?",
+    ptsLabel: "pts",
+    fbTap: "Toque para continuar",
+    fbOkTitle: "Reflexo correto!",
+    fbNoTitle: "Espelho estilhaçado!",
+    correctNegationPrefix: "Negação correta:",
+    resultTitle: 'Espelho<br><span>revelado!</span>',
+    maxScore: n => `de ${n} pontos`,
+    correctLabel: "Acertos",
+    wrongLabel: "Erros",
+    btnRestart: "Jogar novamente 🔄",
+    msgLow: "Continue praticando a negação! 📖",
+    msgMid: "Bom esforço! Revise as regras de negação. 💪",
+    msgGood: "Muito bom! Quase dominando a negação! 😊",
+    msgGreat: "Reflexo perfeito! Você domina o Vale do Espelho! 🏆"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson IV",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson IV",
+    title: 'Valley of the<br><span>Mirror</span>',
+    subtitle: "In the Valley of the Inverting Mirror, every proposition meets its own negation. But which of the three reflections is the true negation?",
+    rulesTitle: "How to play",
+    rule1: "Read the original proposition",
+    rule2: "Three reflections appear in the mirror",
+    rule3: "Tap the correct negation",
+    rule4: "Wrong negation = the mirror shatters!",
+    btnStart: "Enter the Valley 🪞",
+    backLink: "← All lessons",
+    propLabel: "Original proposition",
+    mirrorLabel: "Which one is the negation?",
+    ptsLabel: "pts",
+    fbTap: "Tap to continue",
+    fbOkTitle: "Correct reflection!",
+    fbNoTitle: "Mirror shattered!",
+    correctNegationPrefix: "Correct negation:",
+    resultTitle: 'Mirror<br><span>revealed!</span>',
+    maxScore: n => `out of ${n} points`,
+    correctLabel: "Correct",
+    wrongLabel: "Wrong",
+    btnRestart: "Play again 🔄",
+    msgLow: "Keep practicing negation! 📖",
+    msgMid: "Good effort! Review the rules of negation. 💪",
+    msgGood: "Very good! Almost mastering negation! 😊",
+    msgGreat: "Perfect reflection! You've mastered the Valley of the Mirror! 🏆"
+  }
+};
+
+/* QUESTÕES / QUESTIONS (bilíngue) */
 const QUESTIONS = [
   {
-    prop:"Deus Pai é o Criador do céu e da terra.",
-    correct:"Deus Pai não é o Criador do céu e da terra.",
-    wrong:["Deus Pai talvez seja o Criador do céu e da terra.","Deus Pai pode ou não ser o Criador."]
+    prop:    { pt: "Deus Pai é o Criador do céu e da terra.", en: "God the Father is the Creator of heaven and earth." },
+    correct: { pt: "Deus Pai não é o Criador do céu e da terra.", en: "God the Father is not the Creator of heaven and earth." },
+    wrong: [
+      { pt: "Deus Pai talvez seja o Criador do céu e da terra.", en: "God the Father might be the Creator of heaven and earth." },
+      { pt: "Deus Pai pode ou não ser o Criador.", en: "God the Father may or may not be the Creator." }
+    ]
   },
   {
-    prop:"Jesus Cristo não é o único Filho de Deus.",
-    correct:"Jesus Cristo é o único Filho de Deus.",
-    wrong:["Jesus Cristo talvez seja o único Filho de Deus.","Jesus Cristo é mais um filho de Deus."]
+    prop:    { pt: "Jesus Cristo não é o único Filho de Deus.", en: "Jesus Christ is not the only Son of God." },
+    correct: { pt: "Jesus Cristo é o único Filho de Deus.", en: "Jesus Christ is the only Son of God." },
+    wrong: [
+      { pt: "Jesus Cristo talvez seja o único Filho de Deus.", en: "Jesus Christ might be the only Son of God." },
+      { pt: "Jesus Cristo é mais um filho de Deus.", en: "Jesus Christ is just one more son of God." }
+    ]
   },
   {
-    prop:"Jesus foi crucificado.",
-    correct:"Jesus não foi crucificado.",
-    wrong:["Jesus foi quase crucificado.","Não foi Jesus quem crucificou."]
+    prop:    { pt: "Jesus foi crucificado.", en: "Jesus was crucified." },
+    correct: { pt: "Jesus não foi crucificado.", en: "Jesus was not crucified." },
+    wrong: [
+      { pt: "Jesus foi quase crucificado.", en: "Jesus was almost crucified." },
+      { pt: "Não foi Jesus quem crucificou.", en: "It wasn't Jesus who crucified." }
+    ]
   },
   {
-    prop:"Jesus Cristo continua morto.",
-    correct:"Jesus Cristo não continua morto.",
-    wrong:["Jesus Cristo está vivo e morto ao mesmo tempo.","Jesus Cristo talvez continue morto."]
+    prop:    { pt: "Jesus Cristo continua morto.", en: "Jesus Christ remains dead." },
+    correct: { pt: "Jesus Cristo não continua morto.", en: "Jesus Christ does not remain dead." },
+    wrong: [
+      { pt: "Jesus Cristo está vivo e morto ao mesmo tempo.", en: "Jesus Christ is alive and dead at the same time." },
+      { pt: "Jesus Cristo talvez continue morto.", en: "Jesus Christ might still be dead." }
+    ]
   },
   {
-    prop:"7 × 8 = 56",
-    correct:"7 × 8 ≠ 56",
-    wrong:["7 × 8 < 56","7 × 8 > 56"]
+    prop:    { pt: "7 × 8 = 56", en: "7 × 8 = 56" },
+    correct: { pt: "7 × 8 ≠ 56", en: "7 × 8 ≠ 56" },
+    wrong: [
+      { pt: "7 × 8 < 56", en: "7 × 8 < 56" },
+      { pt: "7 × 8 > 56", en: "7 × 8 > 56" }
+    ]
   },
   {
-    prop:"27 + 3 > 2",
-    correct:"27 + 3 ≤ 2",
-    wrong:["27 + 3 < 2","27 + 3 ≠ 2"]
+    prop:    { pt: "27 + 3 > 2", en: "27 + 3 > 2" },
+    correct: { pt: "27 + 3 ≤ 2", en: "27 + 3 ≤ 2" },
+    wrong: [
+      { pt: "27 + 3 < 2", en: "27 + 3 < 2" },
+      { pt: "27 + 3 ≠ 2", en: "27 + 3 ≠ 2" }
+    ]
   },
   {
-    prop:"3² ≤ 9",
-    correct:"3² > 9",
-    wrong:["3² < 9","3² ≥ 9"]
+    prop:    { pt: "3² ≤ 9", en: "3² ≤ 9" },
+    correct: { pt: "3² > 9", en: "3² > 9" },
+    wrong: [
+      { pt: "3² < 9", en: "3² < 9" },
+      { pt: "3² ≥ 9", en: "3² ≥ 9" }
+    ]
   },
   {
-    prop:"O céu está nublado.",
-    correct:"O céu não está nublado.",
-    wrong:["O céu está muito nublado.","O céu pode estar nublado."]
+    prop:    { pt: "O céu está nublado.", en: "The sky is cloudy." },
+    correct: { pt: "O céu não está nublado.", en: "The sky is not cloudy." },
+    wrong: [
+      { pt: "O céu está muito nublado.", en: "The sky is very cloudy." },
+      { pt: "O céu pode estar nublado.", en: "The sky might be cloudy." }
+    ]
   },
   {
-    prop:"Jesus não é Deus.",
-    correct:"Jesus é Deus.",
-    wrong:["Jesus talvez seja Deus.","Jesus não pode ser Deus."]
+    prop:    { pt: "Jesus não é Deus.", en: "Jesus is not God." },
+    correct: { pt: "Jesus é Deus.", en: "Jesus is God." },
+    wrong: [
+      { pt: "Jesus talvez seja Deus.", en: "Jesus might be God." },
+      { pt: "Jesus não pode ser Deus.", en: "Jesus cannot be God." }
+    ]
   },
   {
-    prop:"4 ≠ 2²",
-    correct:"4 = 2²",
-    wrong:["4 < 2²","4 > 2²"]
+    prop:    { pt: "4 ≠ 2²", en: "4 ≠ 2²" },
+    correct: { pt: "4 = 2²", en: "4 = 2²" },
+    wrong: [
+      { pt: "4 < 2²", en: "4 < 2²" },
+      { pt: "4 > 2²", en: "4 > 2²" }
+    ]
   },
 ];
 
-let questions, current, score, correct, wrong;
+let LANG = 'pt';
+try {
+  const saved = localStorage.getItem('nml_lang');
+  if (saved === 'pt' || saved === 'en') LANG = saved;
+} catch (e) { /* localStorage indisponível / unavailable — mantém pt / keep default */ }
+
+let questions, current, score, correct, wrong, currentOpts;
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* IDIOMA / LANGUAGE */
+function setLang(lang){
+  LANG = lang;
+  try { localStorage.setItem('nml_lang', lang); } catch (e) { /* ignore */ }
+  applyLanguage();
+}
+
+function applyLanguage(){
+  const s = STRINGS[LANG];
+  document.documentElement.lang = s.htmlLang;
+  document.title = s.pageTitle;
+
+  document.getElementById('lang-btn-pt').classList.toggle('active', LANG === 'pt');
+  document.getElementById('lang-btn-en').classList.toggle('active', LANG === 'en');
+
+  document.getElementById('t-badge').textContent = s.badge;
+  document.getElementById('t-title').innerHTML = s.title;
+  document.getElementById('t-subtitle').innerHTML = s.subtitle;
+  document.getElementById('t-rules-title').textContent = s.rulesTitle;
+  document.getElementById('t-rule1').textContent = s.rule1;
+  document.getElementById('t-rule2').textContent = s.rule2;
+  document.getElementById('t-rule3').textContent = s.rule3;
+  document.getElementById('t-rule4').textContent = s.rule4;
+  document.getElementById('t-btn-start').textContent = s.btnStart;
+  document.getElementById('t-back-1').textContent = s.backLink;
+  document.getElementById('t-back-2').textContent = s.backLink;
+  document.getElementById('t-pts-label').textContent = s.ptsLabel;
+  document.getElementById('t-prop-label').textContent = s.propLabel;
+  document.getElementById('t-mirror-label').textContent = s.mirrorLabel;
+  document.getElementById('t-fb-tap').textContent = s.fbTap;
+  document.getElementById('t-result-title').innerHTML = s.resultTitle;
+  document.getElementById('t-max-score').textContent = s.maxScore(QUESTIONS.length * 100);
+  document.getElementById('t-correct-label').textContent = s.correctLabel;
+  document.getElementById('t-wrong-label').textContent = s.wrongLabel;
+  document.getElementById('t-btn-restart').textContent = s.btnRestart;
+
+  // Se o jogo já estiver em andamento, atualiza o conteúdo dinâmico também
+  // If the game is already in progress, refresh its dynamic content too
+  if (document.getElementById('screen-game').classList.contains('active') &&
+      typeof questions !== 'undefined' && questions && questions[current]) {
+    document.getElementById('prop-card').textContent = questions[current].prop[LANG];
+    if (currentOpts) renderOpts();
+  }
+}
 
 function startGame(){questions=shuffle(QUESTIONS);current=0;score=0;correct=0;wrong=0;show('screen-game');loadQ()}
 
 function loadQ(){
   if(current>=questions.length){endGame();return}
   const q=questions[current];
-  document.getElementById('prop-card').textContent=q.prop;
+  document.getElementById('prop-card').textContent=q.prop[LANG];
   document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
   document.getElementById('live-score').textContent=score;
 
   // Build shuffled options
-  const opts=shuffle([
+  currentOpts=shuffle([
     {text:q.correct,isCorrect:true},
     {text:q.wrong[0],isCorrect:false},
     {text:q.wrong[1],isCorrect:false},
   ]);
+  renderOpts();
+}
+
+function renderOpts(){
   const row=document.getElementById('mirrors-row');
   row.innerHTML='';
-  opts.forEach(o=>{
+  currentOpts.forEach(o=>{
     const btn=document.createElement('button');
     btn.className='mirror-opt';
-    btn.textContent=o.text;
-    btn.onclick=()=>answer(btn,o.isCorrect,q.correct);
+    btn.textContent=o.text[LANG];
+    btn.onclick=()=>answer(btn,o.isCorrect,questions[current].correct);
     row.appendChild(btn);
   });
 }
 
-function answer(btn,isCorrect,correctText){
+function answer(btn,isCorrect,correctTextObj){
   // disable all
   document.querySelectorAll('.mirror-opt').forEach(b=>b.onclick=null);
   if(isCorrect){
     btn.classList.add('correct');
     score+=100;correct++;
-    setTimeout(()=>showFeedback(true,correctText),400);
+    setTimeout(()=>showFeedback(true,correctTextObj),400);
   } else {
     btn.classList.add('wrong');
     wrong++;
-    setTimeout(()=>showFeedback(false,correctText),500);
+    setTimeout(()=>showFeedback(false,correctTextObj),500);
   }
 }
 
-function showFeedback(ok,correctText){
+function showFeedback(ok,correctTextObj){
+  const s=STRINGS[LANG];
   document.getElementById('fb-icon').textContent=ok?'🪞✨':'💥';
-  document.getElementById('fb-title').textContent=ok?'Reflexo correto!':'Espelho estilhaçado!';
+  document.getElementById('fb-title').textContent=ok?s.fbOkTitle:s.fbNoTitle;
   document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
-  document.getElementById('fb-correct').textContent='Negação correta: "'+correctText+'"';
+  document.getElementById('fb-correct').textContent=s.correctNegationPrefix+' "'+correctTextObj[LANG]+'"';
   document.getElementById('feedback').classList.add('show');
 }
 
 function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
+  const s=STRINGS[LANG];
   show('screen-result');
   document.getElementById('final-score').textContent=score;
   document.getElementById('r-correct').textContent=correct;
   document.getElementById('r-wrong').textContent=wrong;
   const pct=score/(QUESTIONS.length*100);
-  let stars='⭐',msg='Continue praticando a negação! 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='Reflexo perfeito! Você domina o Vale do Espelho! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Quase dominando a negação! 😊'}
-  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Revise as regras de negação. 💪'}
+  let stars='⭐',msg=s.msgLow;
+  if(pct>=.9){stars='⭐⭐⭐';msg=s.msgGreat}
+  else if(pct>=.7){stars='⭐⭐';msg=s.msgGood}
+  else if(pct>=.5){stars='⭐½';msg=s.msgMid}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;
 }
 
 function restartGame(){startGame()}
+
+/* INICIALIZAÇÃO / INIT */
+applyLanguage();
 </script>
 </body>
 </html>

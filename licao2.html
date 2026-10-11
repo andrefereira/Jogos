@@ -9,6 +9,12 @@
     body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a3a2a,#0d4f3c,#1a5c4a);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
     .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
     .screen.active{display:flex}
+
+    /* LANGUAGE SWITCH */
+    .lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+    .lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+    .lang-btn.active{background:#ffd700;color:#1a3a2a}
+
     .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,215,0,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#ffd700}
     .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
     .title span{color:#7effd4}
@@ -63,41 +69,45 @@
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição II</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🚪</div>
   <style>@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}</style>
-  <div class="title">Portão de<br><span>Proposia</span></div>
-  <p class="subtitle">O Senhor x precisa da sua ajuda! Decida quem pode entrar em Proposia e quem não pode.</p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li>Leia cada sentença com atenção</li>
-      <li>Toque em ✅ <strong>ENTRA</strong> se for uma proposição</li>
-      <li>Toque em ❌ <strong>NÃO ENTRA</strong> se não for</li>
-      <li>Lembre: proposição deve ter valor-verdade (V ou F)</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
+      <li id="t-rule4"></li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Abrir o Portão ▶</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <div id="screen-game" class="screen">
   <div class="top-bar">
     <span class="counter" id="counter">1 / 12</span>
-    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> <span id="t-pts-label"></span></span>
   </div>
-  <p style="font-size:.8rem;color:rgba(255,255,255,.5);text-align:center">Esta sentença é uma proposição?</p>
+  <p style="font-size:.8rem;color:rgba(255,255,255,.5);text-align:center" id="t-prompt"></p>
   <div class="card-area">
     <div class="sentence-card" id="sentence-card"></div>
   </div>
   <div class="answer-row">
     <button class="btn-answer" id="btn-yes" onclick="answer(true)">
       <span class="icon">✅</span>
-      <span>ENTRA</span>
+      <span id="t-yes-label"></span>
     </button>
     <button class="btn-answer" id="btn-no" onclick="answer(false)">
       <span class="icon">❌</span>
-      <span>NÃO ENTRA</span>
+      <span id="t-no-label"></span>
     </button>
   </div>
 </div>
@@ -107,46 +117,156 @@
     <div class="fb-icon" id="fb-icon"></div>
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-why"  id="fb-why"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-tap-continue"></p>
   </div>
 </div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">Portão<br><span>encerrado!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div style="font-size:2.2rem" id="result-stars"></div>
   <div class="score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1200 pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="sum-grid">
-    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl">Acertos</div></div>
-    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
+    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl" id="t-correct-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
+const STRINGS = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição II",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição II",
+    title: 'Portão de<br><span>Proposia</span>',
+    subtitle: 'O Senhor x precisa da sua ajuda! Decida quem pode entrar em Proposia e quem não pode.',
+    rulesTitle: "Como jogar",
+    rule1: "Leia cada sentença com atenção",
+    rule2: 'Toque em ✅ <strong>ENTRA</strong> se for uma proposição',
+    rule3: 'Toque em ❌ <strong>NÃO ENTRA</strong> se não for',
+    rule4: "Lembre: proposição deve ter valor-verdade (V ou F)",
+    btnStart: "Abrir o Portão ▶",
+    backLink: "← Todas as lições",
+    prompt: "Esta sentença é uma proposição?",
+    yesLabel: "ENTRA",
+    noLabel: "NÃO ENTRA",
+    ptsLabel: "pts",
+    correctTitle: "Correto!",
+    wrongTitle: "Errado!",
+    tapContinue: "Toque para continuar",
+    resultTitle: 'Portão<br><span>encerrado!</span>',
+    maxScore: n => `de ${n} pontos`,
+    correctLabel: "Acertos",
+    wrongLabel: "Erros",
+    btnRestart: "Jogar novamente 🔄",
+    msgLow: "Continue praticando! Revise a Lição II. 📖",
+    msgMid: "Bom esforço! Revise as regras de Proposia e tente de novo. 💪",
+    msgGood: "Muito bom! Mais um pouco e você vira especialista em imigração. 😊",
+    msgGreat: "Incrível! O Senhor x está orgulhoso de você! 🏆"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson II",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson II",
+    title: "Propositia's<br><span>Gate</span>",
+    subtitle: "Mr. x needs your help! Decide who may enter Propositia and who may not.",
+    rulesTitle: "How to play",
+    rule1: "Read each sentence carefully",
+    rule2: 'Tap ✅ <strong>ENTERS</strong> if it is a proposition',
+    rule3: 'Tap ❌ <strong>DOESN\'T ENTER</strong> if it isn\'t',
+    rule4: "Remember: a proposition must have a truth value (T or F)",
+    btnStart: "Open the Gate ▶",
+    backLink: "← All lessons",
+    prompt: "Is this sentence a proposition?",
+    yesLabel: "ENTERS",
+    noLabel: "DOESN'T ENTER",
+    ptsLabel: "pts",
+    correctTitle: "Correct!",
+    wrongTitle: "Wrong!",
+    tapContinue: "Tap to continue",
+    resultTitle: "Gate<br><span>closed!</span>",
+    maxScore: n => `out of ${n} points`,
+    correctLabel: "Correct",
+    wrongLabel: "Wrong",
+    btnRestart: "Play again 🔄",
+    msgLow: "Keep practicing! Review Lesson II. 📖",
+    msgMid: "Good effort! Review Propositia's rules and try again. 💪",
+    msgGood: "Very good! A bit more and you'll be an immigration expert. 😊",
+    msgGreat: "Amazing! Mr. x is proud of you! 🏆"
+  }
+};
+
 const ITEMS = [
-  {text:"O Senhor é todo poderoso.", isProp:true, why:"Afirmação com valor de verdade definido — proposição verdadeira!"},
-  {text:"Qual é a raiz quadrada de 144?", isProp:false, why:"Frase interrogativa — perguntas não têm valor de verdade."},
-  {text:"x + 7 = 12", isProp:false, why:"Contém a variável x — é um predicado, não uma proposição."},
-  {text:"Honra a teu pai e a tua mãe.", isProp:false, why:"Frase imperativa (ordem) — não tem valor de verdade."},
-  {text:"Que alegria ver a criação de Deus!", isProp:false, why:"Frase exclamativa — não tem valor de verdade."},
-  {text:"Sete é maior do que dez.", isProp:true, why:"É uma proposição falsa, mas ainda é uma proposição!"},
-  {text:"A cidade de Jerusalém.", isProp:false, why:"Não é sentença completa — não tem verbo nem valor de verdade."},
-  {text:"15 × 3 = 40.", isProp:true, why:"Proposição falsa (15×3=45), mas tem valor de verdade definido."},
-  {text:"Existem animais que vivem tanto na terra quanto na água.", isProp:true, why:"Afirmação verdadeira e bem definida — entra em Proposia!"},
-  {text:"Abra o livro na página dez.", isProp:false, why:"Frase imperativa — expressa uma ordem, não tem valor de verdade."},
-  {text:"Ele foi um dos doze apóstolos de Jesus.", isProp:false, why:"Sujeito vago ('Ele') — funciona como predicado, não proposição."},
-  {text:"Deus criou os céus e a terra.", isProp:true, why:"Afirmação com valor de verdade definido — bem-vinda a Proposia!"},
+  {text:{pt:"O Senhor é todo poderoso.",en:"The LORD is almighty."}, isProp:true, why:{pt:"Afirmação com valor de verdade definido — proposição verdadeira!",en:"A statement with a definite truth value — a true proposition!"}},
+  {text:{pt:"Qual é a raiz quadrada de 144?",en:"What is the square root of 144?"}, isProp:false, why:{pt:"Frase interrogativa — perguntas não têm valor de verdade.",en:"An interrogative sentence — questions have no truth value."}},
+  {text:{pt:"x + 7 = 12",en:"x + 7 = 12"}, isProp:false, why:{pt:"Contém a variável x — é um predicado, não uma proposição.",en:"It contains the variable x — it's a predicate, not a proposition."}},
+  {text:{pt:"Honra a teu pai e a tua mãe.",en:"Honor your father and your mother."}, isProp:false, why:{pt:"Frase imperativa (ordem) — não tem valor de verdade.",en:"An imperative sentence (a command) — it has no truth value."}},
+  {text:{pt:"Que alegria ver a criação de Deus!",en:"What joy it is to see God's creation!"}, isProp:false, why:{pt:"Frase exclamativa — não tem valor de verdade.",en:"An exclamatory sentence — it has no truth value."}},
+  {text:{pt:"Sete é maior do que dez.",en:"Seven is greater than ten."}, isProp:true, why:{pt:"É uma proposição falsa, mas ainda é uma proposição!",en:"It's a false proposition, but still a proposition!"}},
+  {text:{pt:"A cidade de Jerusalém.",en:"The city of Jerusalem."}, isProp:false, why:{pt:"Não é sentença completa — não tem verbo nem valor de verdade.",en:"Not a complete sentence — it has no verb or truth value."}},
+  {text:{pt:"15 × 3 = 40.",en:"15 × 3 = 40."}, isProp:true, why:{pt:"Proposição falsa (15×3=45), mas tem valor de verdade definido.",en:"A false proposition (15×3=45), but it has a definite truth value."}},
+  {text:{pt:"Existem animais que vivem tanto na terra quanto na água.",en:"There are animals that live on both land and water."}, isProp:true, why:{pt:"Afirmação verdadeira e bem definida — entra em Proposia!",en:"A true, well-defined statement — it enters Propositia!"}},
+  {text:{pt:"Abra o livro na página dez.",en:"Open the book to page ten."}, isProp:false, why:{pt:"Frase imperativa — expressa uma ordem, não tem valor de verdade.",en:"An imperative sentence — it expresses a command, not a truth value."}},
+  {text:{pt:"Ele foi um dos doze apóstolos de Jesus.",en:"He was one of the twelve apostles of Jesus."}, isProp:false, why:{pt:"Sujeito vago ('Ele') — funciona como predicado, não proposição.",en:"A vague subject ('He') — it functions as a predicate, not a proposition."}},
+  {text:{pt:"Deus criou os céus e a terra.",en:"God created the heavens and the earth."}, isProp:true, why:{pt:"Afirmação com valor de verdade definido — bem-vinda a Proposia!",en:"A statement with a definite truth value — welcome to Propositia!"}},
 ];
+
+let LANG = 'pt';
+try {
+  const saved = localStorage.getItem('nml_lang');
+  if (saved === 'pt' || saved === 'en') LANG = saved;
+} catch (e) { /* localStorage indisponível — mantém pt */ }
 
 let questions, current, score, correct, wrong;
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+function setLang(lang){
+  LANG = lang;
+  try { localStorage.setItem('nml_lang', lang); } catch (e) { /* ignore */ }
+  applyChrome();
+  if (typeof questions !== 'undefined' && questions && questions[current] &&
+      document.getElementById('screen-game').classList.contains('active')) {
+    document.getElementById('sentence-card').textContent = questions[current].text[LANG];
+  }
+}
+
+function applyChrome(){
+  const s = STRINGS[LANG];
+  document.documentElement.lang = s.htmlLang;
+  document.title = s.pageTitle;
+
+  document.getElementById('lang-btn-pt').classList.toggle('active', LANG === 'pt');
+  document.getElementById('lang-btn-en').classList.toggle('active', LANG === 'en');
+
+  document.getElementById('t-badge').textContent = s.badge;
+  document.getElementById('t-title').innerHTML = s.title;
+  document.getElementById('t-subtitle').textContent = s.subtitle;
+  document.getElementById('t-rules-title').textContent = s.rulesTitle;
+  document.getElementById('t-rule1').textContent = s.rule1;
+  document.getElementById('t-rule2').innerHTML = s.rule2;
+  document.getElementById('t-rule3').innerHTML = s.rule3;
+  document.getElementById('t-rule4').textContent = s.rule4;
+  document.getElementById('t-btn-start').textContent = s.btnStart;
+  document.getElementById('t-back-1').textContent = s.backLink;
+  document.getElementById('t-back-2').textContent = s.backLink;
+  document.getElementById('t-prompt').textContent = s.prompt;
+  document.getElementById('t-pts-label').textContent = s.ptsLabel;
+  document.getElementById('t-yes-label').textContent = s.yesLabel;
+  document.getElementById('t-no-label').textContent = s.noLabel;
+  document.getElementById('t-tap-continue').textContent = s.tapContinue;
+  document.getElementById('t-result-title').innerHTML = s.resultTitle;
+  document.getElementById('t-max-score').textContent = s.maxScore(ITEMS.length * 100);
+  document.getElementById('t-correct-label').textContent = s.correctLabel;
+  document.getElementById('t-wrong-label').textContent = s.wrongLabel;
+  document.getElementById('t-btn-restart').textContent = s.btnRestart;
+}
 
 function startGame(){
   questions=shuffle(ITEMS); current=0; score=0; correct=0; wrong=0;
@@ -160,7 +280,7 @@ function loadQ(){
   card.classList.remove('fly-right','fly-left');
   card.style.opacity='1';
   card.style.transform='none';
-  card.textContent=q.text;
+  card.textContent=q.text[LANG];
   document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
   document.getElementById('live-score').textContent=score;
   document.getElementById('btn-yes').disabled=false;
@@ -175,11 +295,12 @@ function answer(userSays){
   const card=document.getElementById('sentence-card');
   card.classList.add(userSays?'fly-right':'fly-left');
   if(ok){score+=100;correct++}else{wrong++}
+  const s=STRINGS[LANG];
   const fb=document.getElementById('feedback');
   document.getElementById('fb-icon').textContent=ok?'😊':'😢';
-  document.getElementById('fb-title').textContent=ok?'Correto!':'Errado!';
+  document.getElementById('fb-title').textContent=ok?s.correctTitle:s.wrongTitle;
   document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
-  document.getElementById('fb-why').textContent=q.why;
+  document.getElementById('fb-why').textContent=q.why[LANG];
   setTimeout(()=>fb.classList.add('show'),200);
 }
 
@@ -190,20 +311,23 @@ function nextQ(){
 }
 
 function endGame(){
+  const s=STRINGS[LANG];
   show('screen-result');
   document.getElementById('final-score').textContent=score;
   document.getElementById('r-correct').textContent=correct;
   document.getElementById('r-wrong').textContent=wrong;
   const pct=score/(ITEMS.length*100);
-  let stars='⭐',msg='Continue praticando! Revise a Lição II. 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='Incrível! O Senhor x está orgulhoso de você! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Mais um pouco e você vira especialista em imigração. 😊'}
-  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Revise as regras de Proposia e tente de novo. 💪'}
+  let stars='⭐',msg=s.msgLow;
+  if(pct>=.9){stars='⭐⭐⭐';msg=s.msgGreat}
+  else if(pct>=.7){stars='⭐⭐';msg=s.msgGood}
+  else if(pct>=.5){stars='⭐½';msg=s.msgMid}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;
 }
 
 function restartGame(){startGame()}
+
+applyChrome();
 </script>
 </body>
 </html>

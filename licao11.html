@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>No Mundo da Lógica — Lição XI</title>
+  <title>No Mundo da Lógica / In the World of Logic — Lição XI / Lesson XI</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#0a2a0a,#1a4a1a,#0a3a2a);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
     .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:14px}
     .screen.active{display:flex}
+
+    /* LANGUAGE SWITCH */
+    .lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+    .lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+    .lang-btn.active{background:#7effd4;color:#0a2a0a}
+
     .badge{background:rgba(255,255,255,.12);border:1px solid rgba(100,255,150,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#7effd4}
     .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
     .title span{color:#7effd4}
@@ -85,21 +91,25 @@
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição XI</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">⚡</div>
-  <div class="title">Fila Urgente<br><span>do Senhor x</span></div>
-  <p class="subtitle">O Governador de Proposia está esperando! Avalie as proposições compostas o mais rápido possível, sem montar a tabela!</p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li>Cada proposição tem <strong>8 segundos</strong></li>
-      <li>Toque 😊 se for Verdadeira, 😢 se for Falsa</li>
-      <li>Sequência de acertos multiplica os pontos!</li>
-      <li>Resista até o fim da fila!</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
+      <li id="t-rule4"></li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Iniciar Fila ⚡</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <div id="screen-game" class="screen">
@@ -120,15 +130,15 @@
   </div>
 
   <!-- Active card + queue -->
-  <div class="queue-label">Fila de proposições:</div>
+  <div class="queue-label" id="t-queue-label"></div>
   <div class="queue-cards" id="queue-cards"></div>
 
   <div class="answer-row">
     <button class="btn-answer" id="btn-v" onclick="answer(true)">
-      <span class="face">😊</span><span>VERDADEIRA</span>
+      <span class="face">😊</span><span id="t-true-label"></span>
     </button>
     <button class="btn-answer" id="btn-f" onclick="answer(false)">
-      <span class="face">😢</span><span>FALSA</span>
+      <span class="face">😢</span><span id="t-false-label"></span>
     </button>
   </div>
 </div>
@@ -141,55 +151,178 @@
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-pts"  id="fb-pts"></div>
     <div class="fb-exp"  id="fb-exp"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-tap-continue"></p>
   </div>
 </div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">Fila<br><span>atendida!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div style="font-size:2.2rem" id="result-stars"></div>
   <div class="score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1000+ pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="sum-grid">
-    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl">Acertos</div></div>
-    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
-    <div class="sum-item"><div class="val" id="r-best">—</div><div class="lbl">Melhor sequência</div></div>
+    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl" id="t-correct-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-best">—</div><div class="lbl" id="t-best-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
+/* ── TEXTOS DA INTERFACE / UI STRINGS ─────────────── */
+const STRINGS = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição XI",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição XI",
+    title: 'Fila Urgente<br><span>do Senhor x</span>',
+    subtitle: "O Governador de Proposia está esperando! Avalie as proposições compostas o mais rápido possível, sem montar a tabela!",
+    rulesTitle: "Como jogar",
+    rule1: 'Cada proposição tem <strong>8 segundos</strong>',
+    rule2: "Toque 😊 se for Verdadeira, 😢 se for Falsa",
+    rule3: "Sequência de acertos multiplica os pontos!",
+    rule4: "Resista até o fim da fila!",
+    btnStart: "Iniciar Fila ⚡",
+    backLink: "← Todas as lições",
+    trueLabel: "VERDADEIRA",
+    falseLabel: "FALSA",
+    queueLabel: "Fila de proposições:",
+    tapContinue: "Toque para continuar",
+    resultTitle: 'Fila<br><span>atendida!</span>',
+    maxScore: n => `de ${n}+ pontos`,
+    correctLabel: "Acertos",
+    wrongLabel: "Erros",
+    bestLabel: "Melhor sequência",
+    btnRestart: "Jogar novamente 🔄",
+    timeUp: "Tempo esgotado!",
+    correctTitle: streak => "Correto!" + (streak >= 3 ? " 🔥x" + streak : ""),
+    wrongTitle: "Errado!",
+    ptsEarned: (pts, streak) => "+" + pts + " pontos" + (streak >= 3 ? " (bônus de sequência!)" : ""),
+    ptsZero: "",
+    msgLow: "Continue treinando a avaliação rápida! 📖",
+    msgMid: "Bom esforço! Revise as regras de ouro de cada conectivo. 💪",
+    msgGood: "Muito bom! Você avalia proposições como um profissional! 😊",
+    msgGreat: "O Governador está impressionado! Você é veloz e preciso! 🏆"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson XI",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson XI",
+    title: 'Urgent Line<br><span>of Mr. x</span>',
+    subtitle: "The Governor of Propositia is waiting! Evaluate the compound propositions as fast as possible, without building the table!",
+    rulesTitle: "How to play",
+    rule1: 'Each proposition gives you <strong>8 seconds</strong>',
+    rule2: "Tap 😊 if it's True, 😢 if it's False",
+    rule3: "A streak of correct answers multiplies your points!",
+    rule4: "Hold on until the end of the line!",
+    btnStart: "Start the Line ⚡",
+    backLink: "← All lessons",
+    trueLabel: "TRUE",
+    falseLabel: "FALSE",
+    queueLabel: "Queue of propositions:",
+    tapContinue: "Tap to continue",
+    resultTitle: 'Line<br><span>cleared!</span>',
+    maxScore: n => `out of ${n}+ points`,
+    correctLabel: "Correct",
+    wrongLabel: "Wrong",
+    bestLabel: "Best streak",
+    btnRestart: "Play again 🔄",
+    timeUp: "Time's up!",
+    correctTitle: streak => "Correct!" + (streak >= 3 ? " 🔥x" + streak : ""),
+    wrongTitle: "Wrong!",
+    ptsEarned: (pts, streak) => "+" + pts + " points" + (streak >= 3 ? " (streak bonus!)" : ""),
+    ptsZero: "",
+    msgLow: "Keep practicing quick evaluation! 📖",
+    msgMid: "Good effort! Review the golden rules of each connective. 💪",
+    msgGood: "Very good! You evaluate propositions like a professional! 😊",
+    msgGreat: "The Governor is impressed! You're fast and precise! 🏆"
+  }
+};
+
+/* ── FILA DE PROPOSIÇÕES / QUEUE (bilíngue) ───────── */
 const QUEUE=[
-  {values:"p=V, q=V, r=V, s=F",expr:"p ∧ q",result:true,exp:"V ∧ V = V. Conjunção: ambas V → V."},
-  {values:"p=V, q=V, r=V, s=F",expr:"p ∧ s",result:false,exp:"V ∧ F = F. Conjunção: uma delas é F → F."},
-  {values:"p=V, q=V, r=V, s=F",expr:"q ∨ s",result:true,exp:"V ∨ F = V. Disjunção: ao menos uma é V → V."},
-  {values:"p=V, q=V, r=V, s=F",expr:"r ∨ s",result:true,exp:"V ∨ F = V. Disjunção: r é V → V."},
-  {values:"p=V, q=V, r=V, s=F",expr:"p → q",result:true,exp:"V → V = V. Condicional: não é quebrada."},
-  {values:"p=V, q=V, r=V, s=F",expr:"p → s",result:false,exp:"V → F = F. Condicional: p=V e s=F → quebrada!"},
-  {values:"p=V, q=V, r=V, s=F",expr:"s → p",result:true,exp:"F → V = V. Condicional: antecedente F → sempre V."},
-  {values:"p=V, q=V, r=V, s=F",expr:"p ↔ q",result:true,exp:"V ↔ V = V. Bicondicional: iguais → V."},
-  {values:"p=V, q=V, r=V, s=F",expr:"p ↔ s",result:false,exp:"V ↔ F = F. Bicondicional: diferentes → F."},
-  {values:"p=V, q=V, r=V, s=F",expr:"¬p",result:false,exp:"¬V = F. Negação: sempre o oposto."},
-  {values:"p=V, q=F, r=V, s=F",expr:"p ∧ q",result:false,exp:"V ∧ F = F. Conjunção: uma é F → F."},
-  {values:"p=V, q=F, r=V, s=F",expr:"p ∨ q",result:true,exp:"V ∨ F = V. Disjunção: p é V → V."},
-  {values:"p=V, q=F, r=V, s=F",expr:"q ∨ s",result:false,exp:"F ∨ F = F. Disjunção: ambas F → F."},
-  {values:"p=V, q=F, r=V, s=F",expr:"¬q",result:true,exp:"¬F = V. Negação de F é V."},
-  {values:"p=V, q=F, r=V, s=F",expr:"q → p",result:true,exp:"F → V = V. Antecedente é F → condicional V."},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"p ∧ q",result:true,exp:{pt:"V ∧ V = V. Conjunção: ambas V → V.",en:"T ∧ T = T. Conjunction: both T → T."}},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"p ∧ s",result:false,exp:{pt:"V ∧ F = F. Conjunção: uma delas é F → F.",en:"T ∧ F = F. Conjunction: one of them is F → F."}},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"q ∨ s",result:true,exp:{pt:"V ∨ F = V. Disjunção: ao menos uma é V → V.",en:"T ∨ F = T. Disjunction: at least one is T → T."}},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"r ∨ s",result:true,exp:{pt:"V ∨ F = V. Disjunção: r é V → V.",en:"T ∨ F = T. Disjunction: r is T → T."}},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"p → q",result:true,exp:{pt:"V → V = V. Condicional: não é quebrada.",en:"T → T = T. Conditional: it isn't broken."}},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"p → s",result:false,exp:{pt:"V → F = F. Condicional: p=V e s=F → quebrada!",en:"T → F = F. Conditional: p=T and s=F → broken!"}},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"s → p",result:true,exp:{pt:"F → V = V. Condicional: antecedente F → sempre V.",en:"F → T = T. Conditional: antecedent F → always T."}},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"p ↔ q",result:true,exp:{pt:"V ↔ V = V. Bicondicional: iguais → V.",en:"T ↔ T = T. Biconditional: equal → T."}},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"p ↔ s",result:false,exp:{pt:"V ↔ F = F. Bicondicional: diferentes → F.",en:"T ↔ F = F. Biconditional: different → F."}},
+  {values:{pt:"p=V, q=V, r=V, s=F",en:"p=T, q=T, r=T, s=F"},expr:"¬p",result:false,exp:{pt:"¬V = F. Negação: sempre o oposto.",en:"¬T = F. Negation: always the opposite."}},
+  {values:{pt:"p=V, q=F, r=V, s=F",en:"p=T, q=F, r=T, s=F"},expr:"p ∧ q",result:false,exp:{pt:"V ∧ F = F. Conjunção: uma é F → F.",en:"T ∧ F = F. Conjunction: one is F → F."}},
+  {values:{pt:"p=V, q=F, r=V, s=F",en:"p=T, q=F, r=T, s=F"},expr:"p ∨ q",result:true,exp:{pt:"V ∨ F = V. Disjunção: p é V → V.",en:"T ∨ F = T. Disjunction: p is T → T."}},
+  {values:{pt:"p=V, q=F, r=V, s=F",en:"p=T, q=F, r=T, s=F"},expr:"q ∨ s",result:false,exp:{pt:"F ∨ F = F. Disjunção: ambas F → F.",en:"F ∨ F = F. Disjunction: both F → F."}},
+  {values:{pt:"p=V, q=F, r=V, s=F",en:"p=T, q=F, r=T, s=F"},expr:"¬q",result:true,exp:{pt:"¬F = V. Negação de F é V.",en:"¬F = T. Negation of F is T."}},
+  {values:{pt:"p=V, q=F, r=V, s=F",en:"p=T, q=F, r=T, s=F"},expr:"q → p",result:true,exp:{pt:"F → V = V. Antecedente é F → condicional V.",en:"F → T = T. Antecedent is F → conditional T."}},
 ];
 
 const TIME=8;
+const NUM_Q=10;
+const MAX_PTS_BASE=100;
 const CIRCUMFERENCE=163.4; // 2π×26
 let questions,current,score,streak,maxStreak,correctCount,wrongCount,timer,qStart;
+
+let LANG='pt';
+try{
+  const saved=localStorage.getItem('nml_lang');
+  if(saved==='pt'||saved==='en')LANG=saved;
+}catch(e){ /* localStorage indisponível / unavailable — mantém pt / keep default */ }
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
 
+/* ── IDIOMA / LANGUAGE ────────────────────────────── */
+function setLang(lang){
+  LANG=lang;
+  try{localStorage.setItem('nml_lang',lang)}catch(e){ /* ignore */ }
+  applyChrome();
+  // Se o jogo já estiver em andamento, atualiza a fila exibida
+  // If the game is already running, refresh the displayed queue
+  if(typeof questions!=='undefined' && questions && questions[current] &&
+     document.getElementById('screen-game').classList.contains('active')){
+    loadQ();
+  }
+}
+
+function applyChrome(){
+  const s=STRINGS[LANG];
+  document.documentElement.lang=s.htmlLang;
+  document.title=s.pageTitle;
+
+  document.getElementById('lang-btn-pt').classList.toggle('active',LANG==='pt');
+  document.getElementById('lang-btn-en').classList.toggle('active',LANG==='en');
+
+  document.getElementById('t-badge').textContent=s.badge;
+  document.getElementById('t-title').innerHTML=s.title;
+  document.getElementById('t-subtitle').textContent=s.subtitle;
+  document.getElementById('t-rules-title').textContent=s.rulesTitle;
+  document.getElementById('t-rule1').innerHTML=s.rule1;
+  document.getElementById('t-rule2').textContent=s.rule2;
+  document.getElementById('t-rule3').textContent=s.rule3;
+  document.getElementById('t-rule4').textContent=s.rule4;
+  document.getElementById('t-btn-start').textContent=s.btnStart;
+  document.getElementById('t-back-1').textContent=s.backLink;
+  document.getElementById('t-back-2').textContent=s.backLink;
+  document.getElementById('t-true-label').textContent=s.trueLabel;
+  document.getElementById('t-false-label').textContent=s.falseLabel;
+  document.getElementById('t-queue-label').textContent=s.queueLabel;
+  document.getElementById('t-tap-continue').textContent=s.tapContinue;
+  document.getElementById('t-result-title').innerHTML=s.resultTitle;
+  document.getElementById('t-max-score').textContent=s.maxScore(NUM_Q*MAX_PTS_BASE);
+  document.getElementById('t-correct-label').textContent=s.correctLabel;
+  document.getElementById('t-wrong-label').textContent=s.wrongLabel;
+  document.getElementById('t-best-label').textContent=s.bestLabel;
+  document.getElementById('t-btn-restart').textContent=s.btnRestart;
+}
+
 function startGame(){
-  questions=shuffle(QUEUE).slice(0,10);
+  questions=shuffle(QUEUE).slice(0,NUM_Q);
   current=0;score=0;streak=0;maxStreak=0;correctCount=0;wrongCount=0;
   show('screen-game');loadQ();
 }
@@ -210,7 +343,7 @@ function loadQ(){
     const qc=questions[i];
     const div=document.createElement('div');
     div.className='queue-card'+(i===current?' active':'');
-    div.innerHTML=`<div class="card-values">${qc.values}</div>
+    div.innerHTML=`<div class="card-values">${qc.values[LANG]}</div>
       <div class="card-expr">${qc.expr} <span class="card-eq">= ?</span></div>`;
     cards.appendChild(div);
   }
@@ -236,6 +369,7 @@ function answer(userV){
   clearInterval(timer);
   document.getElementById('btn-v').disabled=true;
   document.getElementById('btn-f').disabled=true;
+  const s=STRINGS[LANG];
   const q=questions[current];
   const ok=(userV===q.result);
   const timeout=(userV===null);
@@ -256,10 +390,10 @@ function answer(userV){
 
   setTimeout(()=>{
     document.getElementById('fb-icon').textContent=ok?'⚡✅':timeout?'⏱️':'❌';
-    document.getElementById('fb-title').textContent=ok?'Correto!'+( streak>=3?' 🔥x'+streak:''):timeout?'Tempo esgotado!':'Errado!';
+    document.getElementById('fb-title').textContent=ok?s.correctTitle(streak):timeout?s.timeUp:s.wrongTitle;
     document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
-    document.getElementById('fb-pts').textContent=ok?'+'+pts+' pontos'+(streak>=3?' (bônus de sequência!)':''):'';
-    document.getElementById('fb-exp').textContent=q.exp;
+    document.getElementById('fb-pts').textContent=ok?s.ptsEarned(pts,streak):s.ptsZero;
+    document.getElementById('fb-exp').textContent=q.exp[LANG];
     document.getElementById('feedback').classList.add('show');
   },300);
 }
@@ -267,6 +401,7 @@ function answer(userV){
 function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
+  const s=STRINGS[LANG];
   clearInterval(timer);
   show('screen-result');
   document.getElementById('final-score').textContent=score;
@@ -274,14 +409,17 @@ function endGame(){
   document.getElementById('r-wrong').textContent=wrongCount;
   document.getElementById('r-best').textContent=maxStreak+'🔥';
   const pct=correctCount/questions.length;
-  let stars='⭐',msg='Continue treinando a avaliação rápida! 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='O Governador está impressionado! Você é veloz e preciso! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você avalia proposições como um profissional! 😊'}
-  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Revise as regras de ouro de cada conectivo. 💪'}
+  let stars='⭐',msg=s.msgLow;
+  if(pct>=.9){stars='⭐⭐⭐';msg=s.msgGreat}
+  else if(pct>=.7){stars='⭐⭐';msg=s.msgGood}
+  else if(pct>=.5){stars='⭐½';msg=s.msgMid}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;
 }
 function restartGame(){startGame()}
+
+/* ── INICIALIZAÇÃO / INIT ─────────────────────────── */
+applyChrome();
 </script>
 </body>
 </html>

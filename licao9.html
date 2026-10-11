@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>No Mundo da Lógica — Lição IX</title>
+  <title>No Mundo da Lógica / In the World of Logic — Lição IX / Lesson IX</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#0a1a2a,#0d2a4a,#1a2a5a);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff;overflow-x:hidden}
     .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
     .screen.active{display:flex}
+
+    /* LANGUAGE SWITCH */
+    .lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+    .lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+    .lang-btn.active{background:#c0c8ff;color:#0a1a2a}
+
     .badge{background:rgba(255,255,255,.12);border:1px solid rgba(180,180,255,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#c0c8ff}
     .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
     .title span{color:#c0c8ff}
@@ -79,36 +85,40 @@
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição IX</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">💫</div>
-  <div class="title">Salão dos<br><span>Espelhos Gêmeos</span></div>
-  <p class="subtitle">A bicondicional (↔) ama a harmonia! Iguais dançam juntos (V). Diferentes se repelem (F).</p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li>Toque nos cards para revelar V ou F</li>
-      <li>Se p e q forem <strong>iguais</strong> → dançam juntos (V)</li>
-      <li>Se forem <strong>diferentes</strong> → se repelem (F)</li>
-      <li>Toque, pense e responda!</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
+      <li id="t-rule4"></li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Entrar no Salão ✨</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <div id="screen-game" class="screen">
   <div class="top-bar">
     <span class="counter" id="counter">1 / 10</span>
-    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> <span id="t-pts-label"></span></span>
   </div>
   <div class="dance-hall">
-    <div class="hall-title">✨ Salão dos Espelhos Gêmeos ✨</div>
+    <div class="hall-title" id="t-hall-title"></div>
     <div class="tiles-row">
       <div class="tile" id="tile-p" onclick="flipTile('p')">
         <div class="tile-front">
           <span class="tile-name">p</span>
           <span class="tile-question">?</span>
-          <span style="font-size:.65rem;color:rgba(255,255,255,.3)">toque para revelar</span>
+          <span class="tap-sub" id="t-tap-reveal-p" style="font-size:.65rem;color:rgba(255,255,255,.3)"></span>
         </div>
         <div class="tile-back">
           <span class="tile-name">p</span>
@@ -121,7 +131,7 @@
         <div class="tile-front">
           <span class="tile-name">q</span>
           <span class="tile-question">?</span>
-          <span style="font-size:.65rem;color:rgba(255,255,255,.3)">toque para revelar</span>
+          <span class="tap-sub" id="t-tap-reveal-q" style="font-size:.65rem;color:rgba(255,255,255,.3)"></span>
         </div>
         <div class="tile-back">
           <span class="tile-name">q</span>
@@ -131,14 +141,14 @@
       </div>
     </div>
     <div class="result-formula">p ↔ q = ?</div>
-    <div class="tap-hint">Revele as duas cartas antes de responder</div>
+    <div class="tap-hint" id="t-tap-hint"></div>
   </div>
   <div class="answer-row">
     <button class="btn-answer btn-dance" id="btn-dance" onclick="answer(true)" disabled>
-      <span class="icon">💃🕺</span><span>DANÇAM JUNTOS (V)</span>
+      <span class="icon">💃🕺</span><span id="t-dance-label"></span>
     </button>
     <button class="btn-answer btn-repel" id="btn-repel" onclick="answer(false)" disabled>
-      <span class="icon">↔💥</span><span>SE REPELEM (F)</span>
+      <span class="icon">↔💥</span><span id="t-repel-label"></span>
     </button>
   </div>
 </div>
@@ -148,58 +158,198 @@
     <div class="fb-icon" id="fb-icon"></div>
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-rule"  id="fb-rule"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-fb-continue"></p>
   </div>
 </div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">Salão<br><span>encerrado!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div style="font-size:2.2rem" id="result-stars"></div>
   <div class="score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1000 pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="sum-grid">
-    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl">Acertos</div></div>
-    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
+    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl" id="t-correct-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
+/* ── TEXTOS DA INTERFACE / UI STRINGS ─────────────── */
+const STRINGS = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição IX",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição IX",
+    title: 'Salão dos<br><span>Espelhos Gêmeos</span>',
+    subtitle: 'A bicondicional (↔) ama a harmonia! Iguais dançam juntos (V). Diferentes se repelem (F).',
+    rulesTitle: "Como jogar",
+    rule1: "Toque nos cards para revelar V ou F",
+    rule2: 'Se p e q forem <strong>iguais</strong> → dançam juntos (V)',
+    rule3: 'Se forem <strong>diferentes</strong> → se repelem (F)',
+    rule4: "Toque, pense e responda!",
+    btnStart: "Entrar no Salão ✨",
+    backLink: "← Todas as lições",
+    hallTitle: "✨ Salão dos Espelhos Gêmeos ✨",
+    tapToReveal: "toque para revelar",
+    tapHint: "Revele as duas cartas antes de responder",
+    ptsLabel: "pts",
+    trueLetter: "V",
+    falseLetter: "F",
+    danceLabel: "DANÇAM JUNTOS (V)",
+    repelLabel: "SE REPELEM (F)",
+    fbTitleOk: "Harmonia perfeita! +100",
+    fbTitleNo: "Discordância!",
+    fbContinue: "Toque para continuar",
+    ruleSame: (pL, qL) => `p=${pL} e q=${qL} → são iguais! Os iguais se atraem no Salão → ↔ = V. 💃`,
+    ruleDiff: (pL, qL) => `p=${pL} e q=${qL} → são diferentes! Os diferentes se repelem → ↔ = F. 💥`,
+    resultTitle: 'Salão<br><span>encerrado!</span>',
+    maxScore: n => `de ${n} pontos`,
+    correctLabel: "Acertos",
+    wrongLabel: "Erros",
+    btnRestart: "Jogar novamente 🔄",
+    msgLow: "Continue praticando a bicondicional! 📖",
+    msgMid: "Bom esforço! Lembre: ↔ é V quando p e q são iguais. 💪",
+    msgGood: "Muito bom! Você domina a bicondicional! 😊",
+    msgGreat: "Você é o mestre do Salão dos Espelhos Gêmeos! 🏆"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson IX",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson IX",
+    title: 'Hall of<br><span>Twin Mirrors</span>',
+    subtitle: 'The biconditional (↔) loves harmony! Equals dance together (T). Different ones repel (F).',
+    rulesTitle: "How to play",
+    rule1: "Tap the cards to reveal T or F",
+    rule2: 'If p and q are the <strong>same</strong> → they dance together (T)',
+    rule3: 'If they are <strong>different</strong> → they repel (F)',
+    rule4: "Tap, think, and answer!",
+    btnStart: "Enter the Hall ✨",
+    backLink: "← All lessons",
+    hallTitle: "✨ Hall of Twin Mirrors ✨",
+    tapToReveal: "tap to reveal",
+    tapHint: "Reveal both cards before answering",
+    ptsLabel: "pts",
+    trueLetter: "T",
+    falseLetter: "F",
+    danceLabel: "DANCE TOGETHER (T)",
+    repelLabel: "REPEL (F)",
+    fbTitleOk: "Perfect harmony! +100",
+    fbTitleNo: "Disagreement!",
+    fbContinue: "Tap to continue",
+    ruleSame: (pL, qL) => `p=${pL} and q=${qL} → they're the same! Equals attract in the Hall → ↔ = T. 💃`,
+    ruleDiff: (pL, qL) => `p=${pL} and q=${qL} → they're different! Different ones repel → ↔ = F. 💥`,
+    resultTitle: 'Hall<br><span>closed!</span>',
+    maxScore: n => `out of ${n} points`,
+    correctLabel: "Correct",
+    wrongLabel: "Wrong",
+    btnRestart: "Play again 🔄",
+    msgLow: "Keep practicing the biconditional! 📖",
+    msgMid: "Good effort! Remember: ↔ is T when p and q are the same. 💪",
+    msgGood: "Very good! You've mastered the biconditional! 😊",
+    msgGreat: "You are the master of the Hall of Twin Mirrors! 🏆"
+  }
+};
+
+/* ── QUESTÕES / QUESTIONS (bilíngue) ──────────────── */
 const QUESTIONS=[
-  {p:"Deus é Santo.",pV:true,  q:"Jesus ressuscitou.",qV:true},
-  {p:"O triângulo tem 3 lados.",pV:true, q:"O sol é feito de gelo.",qV:false},
-  {p:"O pecado é bom.",pV:false, q:"Jesus é mentiroso.",qV:false},
-  {p:"2 + 2 = 5",pV:false, q:"Judas foi fiel.",qV:false},
-  {p:"Deus é o Criador.",pV:true, q:"Jesus não é Deus.",qV:false},
-  {p:"O fogo queima.",pV:true, q:"A neve é quente.",qV:false},
-  {p:"3 + 3 = 6",pV:true, q:"2 × 3 = 6",qV:true},
-  {p:"O homem pecou.",pV:true, q:"O homem precisa de salvação.",qV:true},
-  {p:"O quadrado tem 4 lados.",pV:true, q:"11 não é primo.",qV:false},
-  {p:"Moisés escreveu os Evangelhos.",pV:false, q:"Jesus nasceu em Roma.",qV:false},
+  {p:{pt:"Deus é Santo.",en:"God is Holy."},pV:true,  q:{pt:"Jesus ressuscitou.",en:"Jesus rose from the dead."},qV:true},
+  {p:{pt:"O triângulo tem 3 lados.",en:"A triangle has 3 sides."},pV:true, q:{pt:"O sol é feito de gelo.",en:"The sun is made of ice."},qV:false},
+  {p:{pt:"O pecado é bom.",en:"Sin is good."},pV:false, q:{pt:"Jesus é mentiroso.",en:"Jesus is a liar."},qV:false},
+  {p:{pt:"2 + 2 = 5",en:"2 + 2 = 5"},pV:false, q:{pt:"Judas foi fiel.",en:"Judas was faithful."},qV:false},
+  {p:{pt:"Deus é o Criador.",en:"God is the Creator."},pV:true, q:{pt:"Jesus não é Deus.",en:"Jesus is not God."},qV:false},
+  {p:{pt:"O fogo queima.",en:"Fire burns."},pV:true, q:{pt:"A neve é quente.",en:"Snow is hot."},qV:false},
+  {p:{pt:"3 + 3 = 6",en:"3 + 3 = 6"},pV:true, q:{pt:"2 × 3 = 6",en:"2 × 3 = 6"},qV:true},
+  {p:{pt:"O homem pecou.",en:"Man sinned."},pV:true, q:{pt:"O homem precisa de salvação.",en:"Man needs salvation."},qV:true},
+  {p:{pt:"O quadrado tem 4 lados.",en:"A square has 4 sides."},pV:true, q:{pt:"11 não é primo.",en:"11 is not prime."},qV:false},
+  {p:{pt:"Moisés escreveu os Evangelhos.",en:"Moses wrote the Gospels."},pV:false, q:{pt:"Jesus nasceu em Roma.",en:"Jesus was born in Rome."},qV:false},
 ];
 
 let questions,current,score,correctCount,wrongCount;
 let flippedP=false,flippedQ=false,answered=false;
 
+let LANG='pt';
+try{
+  const saved=localStorage.getItem('nml_lang');
+  if(saved==='pt'||saved==='en')LANG=saved;
+}catch(e){ /* localStorage indisponível / unavailable — mantém pt / keep default */ }
+
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* ── IDIOMA / LANGUAGE ───────────────────────────── */
+function setLang(lang){
+  LANG=lang;
+  try{localStorage.setItem('nml_lang',lang)}catch(e){ /* ignore */ }
+  applyChrome();
+  // Se já houver uma questão carregada, atualiza o texto dela também
+  // If a question is already loaded, refresh its text too
+  if(typeof questions!=='undefined'&&questions&&questions[current]&&
+     document.getElementById('screen-game').classList.contains('active')){
+    refreshQuestionText();
+  }
+}
+
+function applyChrome(){
+  const s=STRINGS[LANG];
+  document.documentElement.lang=s.htmlLang;
+  document.title=s.pageTitle;
+
+  document.getElementById('lang-btn-pt').classList.toggle('active',LANG==='pt');
+  document.getElementById('lang-btn-en').classList.toggle('active',LANG==='en');
+
+  document.getElementById('t-badge').textContent=s.badge;
+  document.getElementById('t-title').innerHTML=s.title;
+  document.getElementById('t-subtitle').textContent=s.subtitle;
+  document.getElementById('t-rules-title').textContent=s.rulesTitle;
+  document.getElementById('t-rule1').textContent=s.rule1;
+  document.getElementById('t-rule2').innerHTML=s.rule2;
+  document.getElementById('t-rule3').innerHTML=s.rule3;
+  document.getElementById('t-rule4').textContent=s.rule4;
+  document.getElementById('t-btn-start').textContent=s.btnStart;
+  document.getElementById('t-back-1').textContent=s.backLink;
+  document.getElementById('t-back-2').textContent=s.backLink;
+  document.getElementById('t-hall-title').textContent=s.hallTitle;
+  document.getElementById('t-tap-reveal-p').textContent=s.tapToReveal;
+  document.getElementById('t-tap-reveal-q').textContent=s.tapToReveal;
+  document.getElementById('t-tap-hint').textContent=s.tapHint;
+  document.getElementById('t-pts-label').textContent=s.ptsLabel;
+  document.getElementById('t-dance-label').textContent=s.danceLabel;
+  document.getElementById('t-repel-label').textContent=s.repelLabel;
+  document.getElementById('t-fb-continue').textContent=s.fbContinue;
+  document.getElementById('t-result-title').innerHTML=s.resultTitle;
+  document.getElementById('t-max-score').textContent=s.maxScore(QUESTIONS.length*100);
+  document.getElementById('t-correct-label').textContent=s.correctLabel;
+  document.getElementById('t-wrong-label').textContent=s.wrongLabel;
+  document.getElementById('t-btn-restart').textContent=s.btnRestart;
+}
+
+function refreshQuestionText(){
+  const s=STRINGS[LANG];
+  const q=questions[current];
+  document.getElementById('text-p-back').textContent=q.p[LANG];
+  document.getElementById('text-q-back').textContent=q.q[LANG];
+  const vfp=document.getElementById('vf-p');vfp.textContent=q.pV?s.trueLetter:s.falseLetter;
+  const vfq=document.getElementById('vf-q');vfq.textContent=q.qV?s.trueLetter:s.falseLetter;
+}
 
 function startGame(){questions=shuffle(QUESTIONS);current=0;score=0;correctCount=0;wrongCount=0;show('screen-game');loadQ()}
 
 function loadQ(){
   if(current>=questions.length){endGame();return}
+  const s=STRINGS[LANG];
   const q=questions[current];
   flippedP=false;flippedQ=false;answered=false;
   document.getElementById('tile-p').className='tile';
   document.getElementById('tile-q').className='tile';
-  document.getElementById('text-p-back').textContent=q.p;
-  document.getElementById('text-q-back').textContent=q.q;
-  const vfp=document.getElementById('vf-p');vfp.textContent=q.pV?'V':'F';vfp.className='tile-vf '+(q.pV?'v':'f');
-  const vfq=document.getElementById('vf-q');vfq.textContent=q.qV?'V':'F';vfq.className='tile-vf '+(q.qV?'v':'f');
+  document.getElementById('text-p-back').textContent=q.p[LANG];
+  document.getElementById('text-q-back').textContent=q.q[LANG];
+  const vfp=document.getElementById('vf-p');vfp.textContent=q.pV?s.trueLetter:s.falseLetter;vfp.className='tile-vf '+(q.pV?'v':'f');
+  const vfq=document.getElementById('vf-q');vfq.textContent=q.qV?s.trueLetter:s.falseLetter;vfq.className='tile-vf '+(q.qV?'v':'f');
   document.getElementById('btn-dance').disabled=true;
   document.getElementById('btn-repel').disabled=true;
   document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
@@ -218,6 +368,7 @@ function flipTile(which){
 
 function answer(userDance){
   if(answered)return;answered=true;
+  const s=STRINGS[LANG];
   document.getElementById('btn-dance').disabled=true;
   document.getElementById('btn-repel').disabled=true;
   const q=questions[current];
@@ -225,11 +376,13 @@ function answer(userDance){
   const ok=(userDance===result);
   let pts=0;
   if(ok){pts=100;score+=pts;correctCount++}else wrongCount++;
+  const pL=q.pV?s.trueLetter:s.falseLetter;
+  const qL=q.qV?s.trueLetter:s.falseLetter;
   let rule;
-  if(q.pV===q.qV)rule=`p=${q.pV?'V':'F'} e q=${q.qV?'V':'F'} → são iguais! Os iguais se atraem no Salão → ↔ = V. 💃`;
-  else rule=`p=${q.pV?'V':'F'} e q=${q.qV?'V':'F'} → são diferentes! Os diferentes se repelem → ↔ = F. 💥`;
+  if(q.pV===q.qV)rule=s.ruleSame(pL,qL);
+  else rule=s.ruleDiff(pL,qL);
   document.getElementById('fb-icon').textContent=ok?'💫✨':'💥';
-  document.getElementById('fb-title').textContent=ok?'Harmonia perfeita! +100':'Discordância!';
+  document.getElementById('fb-title').textContent=ok?s.fbTitleOk:s.fbTitleNo;
   document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
   document.getElementById('fb-rule').textContent=rule;
   document.getElementById('feedback').classList.add('show');
@@ -238,19 +391,23 @@ function answer(userDance){
 function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
+  const s=STRINGS[LANG];
   show('screen-result');
   document.getElementById('final-score').textContent=score;
   document.getElementById('r-correct').textContent=correctCount;
   document.getElementById('r-wrong').textContent=wrongCount;
   const pct=correctCount/QUESTIONS.length;
-  let stars='⭐',msg='Continue praticando a bicondicional! 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='Você é o mestre do Salão dos Espelhos Gêmeos! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você domina a bicondicional! 😊'}
-  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Lembre: ↔ é V quando p e q são iguais. 💪'}
+  let stars='⭐',msg=s.msgLow;
+  if(pct>=.9){stars='⭐⭐⭐';msg=s.msgGreat}
+  else if(pct>=.7){stars='⭐⭐';msg=s.msgGood}
+  else if(pct>=.5){stars='⭐½';msg=s.msgMid}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;
 }
 function restartGame(){startGame()}
+
+/* ── INICIALIZAÇÃO / INIT ────────────────────────── */
+applyChrome();
 </script>
 </body>
 </html>

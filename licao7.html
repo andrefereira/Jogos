@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>No Mundo da Lógica — Lição VII</title>
+  <title>No Mundo da Lógica / In the World of Logic — Lição VII / Lesson VII</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',sans-serif;background:linear-gradient(160deg,#0a2a4a,#0d3d6b,#1a5080);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
     .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
     .screen.active{display:flex}
+
+    /* LANGUAGE SWITCH */
+    .lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+    .lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+    .lang-btn.active{background:#ffd700;color:#0a2a4a}
+
     .badge{background:rgba(255,255,255,.12);border:1px solid rgba(100,180,255,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#7ec8ff}
     .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
     .title span{color:#7ec8ff}
@@ -78,27 +84,31 @@
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição VII</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🏖️</div>
-  <div class="title">Praia de<br><span>Proposia</span></div>
-  <p class="subtitle">Na praia de Proposia, a disjunção (∨) é o conectivo da alegria! Basta UMA proposição ser verdadeira para a festa começar.</p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li>Veja o estado de <strong>p</strong> e <strong>q</strong> na praia</li>
-      <li>Determine: <strong>p ∨ q</strong> é Verdadeiro ou Falso?</li>
-      <li>Falsa só se <strong>AMBAS</strong> estiverem tristes (F)</li>
-      <li>Cada questão vale até 100 pontos!</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
+      <li id="t-rule4"></li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Ir para a Praia ☀️</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <div id="screen-game" class="screen">
   <div class="top-bar">
     <span class="counter" id="counter">1 / 10</span>
-    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> <span id="t-pts-label"></span></span>
   </div>
   <div class="timer-wrap"><div id="timer-bar"></div></div>
   <div class="beach-scene">
@@ -125,10 +135,10 @@
   </div>
   <div class="answer-row">
     <button class="btn-answer" id="btn-v" onclick="answer(true)">
-      <span class="face">😊</span><span>VERDADEIRA</span>
+      <span class="face">😊</span><span id="t-true-label"></span>
     </button>
     <button class="btn-answer" id="btn-f" onclick="answer(false)">
-      <span class="face">😢</span><span>FALSA</span>
+      <span class="face">😢</span><span id="t-false-label"></span>
     </button>
   </div>
 </div>
@@ -138,57 +148,181 @@
     <div class="fb-icon" id="fb-icon"></div>
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-rule"  id="fb-rule"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-fb-continue"></p>
   </div>
 </div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">De volta<br><span>à praia!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div style="font-size:2.2rem" id="result-stars"></div>
   <div class="score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1000 pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="sum-grid">
-    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl">Acertos</div></div>
-    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros/Tempo</div></div>
+    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl" id="t-correct-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
+/* TEXTOS DA INTERFACE / UI STRINGS */
+const STRINGS = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição VII",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição VII",
+    title: 'Praia de<br><span>Proposia</span>',
+    subtitle: "Na praia de Proposia, a disjunção (∨) é o conectivo da alegria! Basta UMA proposição ser verdadeira para a festa começar.",
+    rulesTitle: "Como jogar",
+    rule1: 'Veja o estado de <strong>p</strong> e <strong>q</strong> na praia',
+    rule2: 'Determine: <strong>p ∨ q</strong> é Verdadeiro ou Falso?',
+    rule3: 'Falsa só se <strong>AMBAS</strong> estiverem tristes (F)',
+    rule4: "Cada questão vale até 100 pontos!",
+    btnStart: "Ir para a Praia ☀️",
+    backLink: "← Todas as lições",
+    ptsLabel: "pts",
+    trueLabel: "VERDADEIRA",
+    falseLabel: "FALSA",
+    letterTrue: "V",
+    letterFalse: "F",
+    fbContinue: "Toque para continuar",
+    resultTitle: 'De volta<br><span>à praia!</span>',
+    maxScore: n => `de ${n} pontos`,
+    correctLabel: "Acertos",
+    wrongLabel: "Erros/Tempo",
+    btnRestart: "Jogar novamente 🔄",
+    timeUp: "Tempo esgotado!",
+    correctFeedback: pts => `Correto! +${pts} pts`,
+    wrongFeedback: "Errado!",
+    ruleTrue: "Ao menos uma das proposições é verdadeira → disjunção = V! ☀️",
+    ruleFalse: "Ambas as proposições são falsas → disjunção = F. 🌧️",
+    msgLow: "Continue praticando a disjunção! 📖",
+    msgMid: "Bom esforço! Lembre: ∨ só é F se AMBAS forem F. 💪",
+    msgGood: "Muito bom! Você domina a disjunção! 😊",
+    msgGreat: "A praia de Proposia está em festa por você! 🏆"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson VII",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson VII",
+    title: 'Propositia<br><span>Beach</span>',
+    subtitle: "On Propositia Beach, disjunction (∨) is the connective of joy! Just ONE proposition needs to be true for the party to start.",
+    rulesTitle: "How to play",
+    rule1: 'Check the state of <strong>p</strong> and <strong>q</strong> on the beach',
+    rule2: 'Determine: is <strong>p ∨ q</strong> True or False?',
+    rule3: 'False only if <strong>BOTH</strong> are sad (F)',
+    rule4: "Each question is worth up to 100 points!",
+    btnStart: "Go to the Beach ☀️",
+    backLink: "← All lessons",
+    ptsLabel: "pts",
+    trueLabel: "TRUE",
+    falseLabel: "FALSE",
+    letterTrue: "T",
+    letterFalse: "F",
+    fbContinue: "Tap to continue",
+    resultTitle: 'Back<br><span>to the beach!</span>',
+    maxScore: n => `out of ${n} points`,
+    correctLabel: "Correct",
+    wrongLabel: "Wrong/Timeout",
+    btnRestart: "Play again 🔄",
+    timeUp: "Time's up!",
+    correctFeedback: pts => `Correct! +${pts} pts`,
+    wrongFeedback: "Wrong!",
+    ruleTrue: "At least one of the propositions is true → disjunction = T! ☀️",
+    ruleFalse: "Both propositions are false → disjunction = F. 🌧️",
+    msgLow: "Keep practicing disjunction! 📖",
+    msgMid: "Good effort! Remember: ∨ is only F when BOTH are F. 💪",
+    msgGood: "Very good! You've mastered disjunction! 😊",
+    msgGreat: "Propositia Beach is celebrating for you! 🏆"
+  }
+};
+
 const QUESTIONS=[
-  {p:"Deus é Santo.",pV:true,  q:"Jesus ressuscitou.",qV:true},
-  {p:"O triângulo tem 3 lados.",pV:true,  q:"O sol é feito de gelo.",qV:false},
-  {p:"O pecado é bom.",pV:false, q:"Deus é o Criador.",qV:true},
-  {p:"2 + 2 = 5",pV:false, q:"Judas foi fiel.",qV:false},
-  {p:"O fogo queima.",pV:true,  q:"A neve é quente.",qV:false},
-  {p:"10 + 5 ≠ 15",pV:false, q:"2 + 2 = 3",qV:false},
-  {p:"Jesus nasceu em Belém.",pV:true,  q:"A lua é feita de queijo.",qV:false},
-  {p:"7 × 7 = 49",pV:true,  q:"3 é maior que 10",qV:false},
-  {p:"Adão pecou.",pV:true,  q:"Maria era mãe de Jesus.",qV:true},
-  {p:"O quadrado tem 5 lados.",pV:false, q:"O triângulo tem 4 lados.",qV:false},
+  {p:{pt:"Deus é Santo.",en:"God is Holy."},pV:true,  q:{pt:"Jesus ressuscitou.",en:"Jesus rose from the dead."},qV:true},
+  {p:{pt:"O triângulo tem 3 lados.",en:"The triangle has 3 sides."},pV:true,  q:{pt:"O sol é feito de gelo.",en:"The sun is made of ice."},qV:false},
+  {p:{pt:"O pecado é bom.",en:"Sin is good."},pV:false, q:{pt:"Deus é o Criador.",en:"God is the Creator."},qV:true},
+  {p:{pt:"2 + 2 = 5",en:"2 + 2 = 5"},pV:false, q:{pt:"Judas foi fiel.",en:"Judas was faithful."},qV:false},
+  {p:{pt:"O fogo queima.",en:"Fire burns."},pV:true,  q:{pt:"A neve é quente.",en:"Snow is hot."},qV:false},
+  {p:{pt:"10 + 5 ≠ 15",en:"10 + 5 ≠ 15"},pV:false, q:{pt:"2 + 2 = 3",en:"2 + 2 = 3"},qV:false},
+  {p:{pt:"Jesus nasceu em Belém.",en:"Jesus was born in Bethlehem."},pV:true,  q:{pt:"A lua é feita de queijo.",en:"The moon is made of cheese."},qV:false},
+  {p:{pt:"7 × 7 = 49",en:"7 × 7 = 49"},pV:true,  q:{pt:"3 é maior que 10",en:"3 is greater than 10"},qV:false},
+  {p:{pt:"Adão pecou.",en:"Adam sinned."},pV:true,  q:{pt:"Maria era mãe de Jesus.",en:"Mary was the mother of Jesus."},qV:true},
+  {p:{pt:"O quadrado tem 5 lados.",en:"The square has 5 sides."},pV:false, q:{pt:"O triângulo tem 4 lados.",en:"The triangle has 4 sides."},qV:false},
 ];
 
 const TIME=8;
 let questions,current,score,correctCount,wrongCount,timer,qStart;
 
+let LANG='pt';
+try{const saved=localStorage.getItem('nml_lang');if(saved==='pt'||saved==='en')LANG=saved;}catch(e){/* localStorage indisponível / unavailable */}
+
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* IDIOMA / LANGUAGE */
+function setLang(lang){
+  LANG=lang;
+  try{localStorage.setItem('nml_lang',lang);}catch(e){/* ignore */}
+  applyChrome();
+  if(typeof questions!=='undefined' && questions && questions[current] &&
+     document.getElementById('screen-game').classList.contains('active')){
+    refreshQuestionText();
+  }
+}
+
+function applyChrome(){
+  const s=STRINGS[LANG];
+  document.documentElement.lang=s.htmlLang;
+  document.title=s.pageTitle;
+  document.getElementById('lang-btn-pt').classList.toggle('active',LANG==='pt');
+  document.getElementById('lang-btn-en').classList.toggle('active',LANG==='en');
+  document.getElementById('t-badge').textContent=s.badge;
+  document.getElementById('t-title').innerHTML=s.title;
+  document.getElementById('t-subtitle').textContent=s.subtitle;
+  document.getElementById('t-rules-title').textContent=s.rulesTitle;
+  document.getElementById('t-rule1').innerHTML=s.rule1;
+  document.getElementById('t-rule2').innerHTML=s.rule2;
+  document.getElementById('t-rule3').innerHTML=s.rule3;
+  document.getElementById('t-rule4').textContent=s.rule4;
+  document.getElementById('t-btn-start').textContent=s.btnStart;
+  document.getElementById('t-back-1').textContent=s.backLink;
+  document.getElementById('t-back-2').textContent=s.backLink;
+  document.getElementById('t-pts-label').textContent=s.ptsLabel;
+  document.getElementById('t-true-label').textContent=s.trueLabel;
+  document.getElementById('t-false-label').textContent=s.falseLabel;
+  document.getElementById('t-fb-continue').textContent=s.fbContinue;
+  document.getElementById('t-result-title').innerHTML=s.resultTitle;
+  document.getElementById('t-max-score').textContent=s.maxScore(QUESTIONS.length*100);
+  document.getElementById('t-correct-label').textContent=s.correctLabel;
+  document.getElementById('t-wrong-label').textContent=s.wrongLabel;
+  document.getElementById('t-btn-restart').textContent=s.btnRestart;
+}
+
+function refreshQuestionText(){
+  const q=questions[current];
+  const s=STRINGS[LANG];
+  document.getElementById('text-p').textContent=q.p[LANG];
+  document.getElementById('text-q').textContent=q.q[LANG];
+  const bp=document.getElementById('badge-p');bp.textContent=q.pV?s.letterTrue:s.letterFalse;
+  const bq=document.getElementById('badge-q');bq.textContent=q.qV?s.letterTrue:s.letterFalse;
+}
 
 function startGame(){questions=shuffle(QUESTIONS);current=0;score=0;correctCount=0;wrongCount=0;show('screen-game');loadQ()}
 
 function loadQ(){
   if(current>=questions.length){endGame();return}
   const q=questions[current];
-  document.getElementById('text-p').textContent=q.p;
-  document.getElementById('text-q').textContent=q.q;
+  const s=STRINGS[LANG];
+  document.getElementById('text-p').textContent=q.p[LANG];
+  document.getElementById('text-q').textContent=q.q[LANG];
   document.getElementById('face-p').textContent=q.pV?'😊':'😢';
   document.getElementById('face-q').textContent=q.qV?'😊':'😢';
-  const bp=document.getElementById('badge-p');bp.textContent=q.pV?'V':'F';bp.className='friend-badge '+(q.pV?'badge-v':'badge-f');
-  const bq=document.getElementById('badge-q');bq.textContent=q.qV?'V':'F';bq.className='friend-badge '+(q.qV?'badge-v':'badge-f');
+  const bp=document.getElementById('badge-p');bp.textContent=q.pV?s.letterTrue:s.letterFalse;bp.className='friend-badge '+(q.pV?'badge-v':'badge-f');
+  const bq=document.getElementById('badge-q');bq.textContent=q.qV?s.letterTrue:s.letterFalse;bq.className='friend-badge '+(q.qV?'badge-v':'badge-f');
   document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
   document.getElementById('live-score').textContent=score;
   document.getElementById('btn-v').disabled=false;
@@ -208,17 +342,16 @@ function answer(userV){
   clearInterval(timer);
   document.getElementById('btn-v').disabled=true;document.getElementById('btn-f').disabled=true;
   const q=questions[current];
+  const s=STRINGS[LANG];
   const result=q.pV||q.qV;
   const ok=(userV===result);
   const timeout=(userV===null);
   let pts=0;
   if(ok){const e=(Date.now()-qStart)/1000;pts=Math.max(20,Math.round(100-e/TIME*80));score+=pts;correctCount++}
   else wrongCount++;
-  let rule=result
-    ?"Ao menos uma das proposições é verdadeira → disjunção = V! ☀️"
-    :"Ambas as proposições são falsas → disjunção = F. 🌧️";
+  let rule=result?s.ruleTrue:s.ruleFalse;
   document.getElementById('fb-icon').textContent=ok?'🏖️✨':timeout?'⏱️':'🌧️';
-  document.getElementById('fb-title').textContent=ok?'Correto! +'+pts+' pts':timeout?'Tempo esgotado!':'Errado!';
+  document.getElementById('fb-title').textContent=ok?s.correctFeedback(pts):timeout?s.timeUp:s.wrongFeedback;
   document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
   document.getElementById('fb-rule').textContent=rule;
   document.getElementById('feedback').classList.add('show');
@@ -227,19 +360,23 @@ function answer(userV){
 function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
+  const s=STRINGS[LANG];
   show('screen-result');
   document.getElementById('final-score').textContent=score;
   document.getElementById('r-correct').textContent=correctCount;
   document.getElementById('r-wrong').textContent=wrongCount;
   const pct=correctCount/QUESTIONS.length;
-  let stars='⭐',msg='Continue praticando a disjunção! 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='A praia de Proposia está em festa por você! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você domina a disjunção! 😊'}
-  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Lembre: ∨ só é F se AMBAS forem F. 💪'}
+  let stars='⭐',msg=s.msgLow;
+  if(pct>=.9){stars='⭐⭐⭐';msg=s.msgGreat}
+  else if(pct>=.7){stars='⭐⭐';msg=s.msgGood}
+  else if(pct>=.5){stars='⭐½';msg=s.msgMid}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;
 }
 function restartGame(){startGame()}
+
+/* INICIALIZAÇÃO / INIT */
+applyChrome();
 </script>
 </body>
 </html>

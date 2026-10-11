@@ -3,13 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>No Mundo da Lógica — Lição XIV</title>
+<title>No Mundo da Lógica / In the World of Logic — Lição XIV / Lesson XIV</title>
 <style>
 :root{--bg1:#06282e;--bg2:#0b4a52;--bg3:#0a3a40;--acc:#7ff0e6;--acc2:#ffe08a;--btn1:#7ff0e6;--btn2:#2bc4b8;--ink:#06282e;--card:#06282e}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
 .screen{display:none;width:100%;max-width:480px;flex-direction:column;align-items:center;gap:14px}
 .screen.active{display:flex}
+.lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+.lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+.lang-btn.active{background:var(--acc2);color:var(--ink)}
 .badge{background:rgba(255,255,255,.12);border:1px solid var(--acc2);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--acc2);text-align:center}
 .mascot{font-size:4.5rem;animation:float 3s ease-in-out infinite}
 .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15;text-shadow:0 2px 10px rgba(0,0,0,.35)}
@@ -111,19 +114,25 @@ td.fixed{background:rgba(0,0,0,.2);color:rgba(255,255,255,.75);font-weight:700;p
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição XIV</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div class="mascot">🏗️</div>
-  <div class="title">Mestre<br><span>Construtor</span></div>
-  <p class="subtitle">O Senhor x quer formar mestres construtores de tabelas! Siga o método passo a passo e nenhuma proposição vai escapar.</p>
-  <div class="rules-box"><h3>Como jogar</h3><ul><li>Responda sobre o método de construção</li><li>Monte as tabelas completas, coluna por coluna</li><li>Comece pelos parênteses e termine na última coluna</li><li>Tabelas certas valem pontos extras!</li></ul></div>
-  <button class="btn-primary" onclick="startGame()">Jogar ▶</button>
-  <a class="back" href="index.html">← Todas as lições</a>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
+  <div class="rules-box"><h3 id="t-rules-title"></h3><ul>
+    <li id="t-rule1"></li><li id="t-rule2"></li><li id="t-rule3"></li><li id="t-rule4"></li>
+  </ul></div>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a class="back" href="index.html" id="t-back"></a>
 </div>
 
 <div id="screen-game" class="screen">
   <div class="top-bar">
     <span class="counter" id="counter"></span>
-    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> <span id="t-pts-label"></span></span>
   </div>
   <div class="bar-wrap" id="progress-wrap"><div id="progress-bar"></div></div>
   <div class="bar-wrap" id="timer-wrap" style="display:none"><div id="timer-bar"></div></div>
@@ -135,25 +144,226 @@ td.fixed{background:rgba(0,0,0,.2);color:rgba(255,255,255,.75);font-weight:700;p
   <div class="feedback-title" id="fb-title"></div>
   <div class="feedback-pts" id="fb-pts"></div>
   <div class="feedback-exp" id="fb-exp"></div>
-  <button class="btn-primary" id="fb-next">Continuar ▶</button>
+  <button class="btn-primary" id="fb-next"></button>
 </div></div>
 <div id="toast"></div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">Jogo<br><span>concluído!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div class="result-stars" id="result-stars"></div>
   <div class="result-score-box"><div class="big-score" id="final-score">0</div><div class="max-score" id="max-score"></div></div>
   <p class="result-msg" id="result-msg"></p>
   <div class="summary-grid">
-    <div class="summary-item"><div class="val" id="res-correct">0</div><div class="lbl">Acertos</div></div>
-    <div class="summary-item"><div class="val" id="res-wrong">0</div><div class="lbl">Erros</div></div>
+    <div class="summary-item"><div class="val" id="res-correct">0</div><div class="lbl" id="t-correct-label"></div></div>
+    <div class="summary-item"><div class="val" id="res-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="startGame()">Jogar novamente 🔄</button>
-  <a class="back" href="index.html">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="startGame()"></button>
+  <a class="back" href="index.html" id="t-back2"></a>
 </div>
 
 <script>
-const CFG = {"items": [{"type": "choice", "q": "§c Uma tabela com 4 proposições simples (p, q, r e s) tem quantas linhas?", "opts": ["8", "12", "16", "32"], "a": 2, "exp": "2 × 2 × 2 × 2 = 2⁴ = 16 linhas. Cada nova proposição dobra o número de linhas!", "fix": true}, {"type": "choice", "q": "§c Numa tabela com p, q e r (8 linhas), como fica a coluna de p ?", "opts": ["4 V seguidos e depois 4 F", "V, F, V, F, V, F, V, F", "2 V, 2 F, 2 V, 2 F", "8 V"], "a": 0, "exp": "A primeira coluna tem a metade das linhas com V e a outra metade com F: 4 V e depois 4 F.", "fix": true}, {"type": "choice", "q": "§c Numa tabela com p, q e r (8 linhas), como fica a coluna de q ?", "opts": ["4 V seguidos e depois 4 F", "V, F, V, F, V, F, V, F", "2 V, 2 F, 2 V, 2 F", "8 V"], "a": 2, "exp": "Cada coluna seguinte alterna em blocos que são a metade do anterior: 2 V, 2 F, 2 V, 2 F.", "fix": true}, {"type": "order", "q": "Coloque as etapas do método do Mestre Construtor na ordem certa:", "steps": ["Contar as proposições simples e calcular o número de linhas (2ⁿ).", "Preencher as colunas de p, q e r com o padrão de V e F.", "Preencher as colunas do meio, começando pelos parênteses.", "Preencher a última coluna, com o valor da proposição inteira."], "exp": "Primeiro planejamos (quantas linhas?), depois preenchemos as letras, depois as partes menores e só no fim a proposição inteira."}, {"type": "table", "formula": "(p → q) ∧ (q → r)", "legend": [{"k": "p", "t": "Eu creio em Jesus."}, {"k": "q", "t": "Eu sou filho de Deus."}, {"k": "r", "t": "Eu sou herdeiro de Deus."}], "headers": ["p", "q", "r", "p → q", "q → r", "(p → q) ∧ (q → r)"], "rows": [[true, true, true, true, true, true], [true, true, false, true, false, false], [true, false, true, false, true, false], [true, false, false, false, true, false], [false, true, true, true, true, true], [false, true, false, true, false, false], [false, false, true, true, true, true], [false, false, false, true, true, true]], "fixed": [0, 1, 2], "exp": "A proposição só é verdadeira quando nenhuma das duas promessas (p → q e q → r) é quebrada."}, {"type": "table", "formula": "(p ∨ q) → r", "legend": [{"k": "p", "t": "Davi venceu Golias."}, {"k": "q", "t": "Israel foi salvo."}, {"k": "r", "t": "O povo louvou a Deus."}], "headers": ["p", "q", "r", "p ∨ q", "(p ∨ q) → r"], "rows": [[true, true, true, true, true], [true, true, false, true, false], [true, false, true, true, true], [true, false, false, true, false], [false, true, true, true, true], [false, true, false, true, false], [false, false, true, false, true], [false, false, false, false, true]], "fixed": [0, 1, 2], "exp": "Primeiro o \"ou\" dentro do parêntese; depois a condicional. Lembre: a condicional só é F quando vai de V para F."}, {"type": "table", "formula": "(p ∨ ¬q) ∧ r", "legend": [{"k": "p", "t": "Noé obedeceu."}, {"k": "q", "t": "O dilúvio veio."}, {"k": "r", "t": "A arca flutuou."}], "headers": ["p", "q", "r", "¬q", "p ∨ ¬q", "(p ∨ ¬q) ∧ r"], "rows": [[true, true, true, false, true, true], [true, true, false, false, true, false], [true, false, true, true, true, true], [true, false, false, true, true, false], [false, true, true, false, false, false], [false, true, false, false, false, false], [false, false, true, true, true, true], [false, false, false, true, true, false]], "fixed": [0, 1, 2], "exp": "Três colunas do meio: ¬q, depois p ∨ ¬q, e por fim a conjunção com r."}], "timer": null, "shuffle": false, "revise": "Revise a Lição XIV", "win": "Você já é um Mestre Construtor de tabelas! 🏆"};
+/* ── TEXTOS DA INTERFACE / UI STRINGS ─────────────── */
+const UI = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição XIV",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição XIV",
+    title: 'Mestre<br><span>Construtor</span>',
+    subtitle: "O Senhor x quer formar mestres construtores de tabelas! Siga o método passo a passo e nenhuma proposição vai escapar.",
+    rulesTitle: "Como jogar",
+    rule1: "Responda sobre o método de construção",
+    rule2: "Monte as tabelas completas, coluna por coluna",
+    rule3: "Comece pelos parênteses e termine na última coluna",
+    rule4: "Tabelas certas valem pontos extras!",
+    btnStart: "Jogar ▶",
+    back: "← Todas as lições",
+    ptsLabel: "pts",
+    fbNext: "Continuar ▶",
+    resultTitle: 'Jogo<br><span>concluído!</span>',
+    correctLabel: "Acertos",
+    wrongLabel: "Erros",
+    btnRestart: "Jogar novamente 🔄",
+    tableWord: "Tabela ",
+    challengeWord: "Desafio ",
+    timeUp: "Tempo esgotado!",
+    wellDone: "Muito bem!",
+    almostThere: "Quase lá!",
+    ptsEarned: p => `+<strong>${p} pontos</strong>`,
+    ptsZero: "<strong>+0 pontos</strong>",
+    missionLabel: "📋 Complete a tabela-verdade de:",
+    orderHint: "Toque nas frases na ordem certa",
+    tableHint: "Toque nas células para alternar entre V e F",
+    orderToast: "Ainda não é essa. Pense na ordem!",
+    cellToast: p => "✅ +" + p,
+    tableCompleteToast: "🎉 Tabela completa! +50",
+    maxScore: n => `de ${n} pontos`,
+    msgLow: revise => `Continue estudando! ${revise} e tente de novo. 💪`,
+    msgMid: () => "Muito bom! Mais um pouco de treino e você chega lá. 😊",
+    msgOk: revise => `Bom esforço! ${revise} e jogue outra vez. 📖`,
+    trueLabel: "V"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson XIV",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson XIV",
+    title: 'Master<br><span>Table-Builder</span>',
+    subtitle: "Mr. x wants to train master table-builders! Follow the method step by step and no proposition will escape.",
+    rulesTitle: "How to play",
+    rule1: "Answer questions about the construction method",
+    rule2: "Build the complete tables, column by column",
+    rule3: "Start with the parentheses and finish with the last column",
+    rule4: "Correct tables earn extra points!",
+    btnStart: "Play ▶",
+    back: "← All lessons",
+    ptsLabel: "pts",
+    fbNext: "Continue ▶",
+    resultTitle: 'Game<br><span>complete!</span>',
+    correctLabel: "Correct",
+    wrongLabel: "Wrong",
+    btnRestart: "Play again 🔄",
+    tableWord: "Table ",
+    challengeWord: "Challenge ",
+    timeUp: "Time's up!",
+    wellDone: "Well done!",
+    almostThere: "Almost there!",
+    ptsEarned: p => `+<strong>${p} points</strong>`,
+    ptsZero: "<strong>+0 points</strong>",
+    missionLabel: "📋 Complete the truth table for:",
+    orderHint: "Tap the sentences in the right order",
+    tableHint: "Tap the cells to toggle between T and F",
+    orderToast: "Not quite yet. Think about the order!",
+    cellToast: p => "✅ +" + p,
+    tableCompleteToast: "🎉 Table complete! +50",
+    maxScore: n => `out of ${n} points`,
+    msgLow: revise => `Keep studying! ${revise} and try again. 💪`,
+    msgMid: () => "Very good! A little more practice and you'll get there. 😊",
+    msgOk: revise => `Good effort! ${revise} and play again. 📖`,
+    trueLabel: "T"
+  }
+};
+
+/* ── CONTEÚDO BILÍNGUE / BILINGUAL CONTENT ────────── */
+const CFG = {
+  revise: {pt: "Revise a Lição XIV", en: "Review Lesson XIV"},
+  win: {pt: "Você já é um Mestre Construtor de tabelas! 🏆", en: "You are already a Master Table-Builder! 🏆"},
+  shuffle: false,
+  timer: null,
+  items: [
+    {type:"choice",
+      q:{pt:"§c Uma tabela com 4 proposições simples (p, q, r e s) tem quantas linhas?", en:"§c A table with 4 simple propositions (p, q, r and s) has how many rows?"},
+      opts:["8","12","16","32"], a:2,
+      exp:{pt:"2 × 2 × 2 × 2 = 2⁴ = 16 linhas. Cada nova proposição dobra o número de linhas!",
+           en:"2 × 2 × 2 × 2 = 2⁴ = 16 rows. Each new proposition doubles the number of rows!"},
+      fix:true},
+    {type:"choice",
+      q:{pt:"§c Numa tabela com p, q e r (8 linhas), como fica a coluna de p ?", en:"§c In a table with p, q and r (8 rows), what does the p column look like?"},
+      opts:[
+        {pt:"4 V seguidos e depois 4 F", en:"4 Ts in a row, then 4 Fs"},
+        {pt:"V, F, V, F, V, F, V, F", en:"T, F, T, F, T, F, T, F"},
+        {pt:"2 V, 2 F, 2 V, 2 F", en:"2 Ts, 2 Fs, 2 Ts, 2 Fs"},
+        {pt:"8 V", en:"8 Ts"}
+      ], a:0,
+      exp:{pt:"A primeira coluna tem a metade das linhas com V e a outra metade com F: 4 V e depois 4 F.",
+           en:"The first column has half the rows with T and the other half with F: 4 Ts, then 4 Fs."},
+      fix:true},
+    {type:"choice",
+      q:{pt:"§c Numa tabela com p, q e r (8 linhas), como fica a coluna de q ?", en:"§c In a table with p, q and r (8 rows), what does the q column look like?"},
+      opts:[
+        {pt:"4 V seguidos e depois 4 F", en:"4 Ts in a row, then 4 Fs"},
+        {pt:"V, F, V, F, V, F, V, F", en:"T, F, T, F, T, F, T, F"},
+        {pt:"2 V, 2 F, 2 V, 2 F", en:"2 Ts, 2 Fs, 2 Ts, 2 Fs"},
+        {pt:"8 V", en:"8 Ts"}
+      ], a:2,
+      exp:{pt:"Cada coluna seguinte alterna em blocos que são a metade do anterior: 2 V, 2 F, 2 V, 2 F.",
+           en:"Each following column alternates in blocks that are half the size of the previous one: 2 Ts, 2 Fs, 2 Ts, 2 Fs."},
+      fix:true},
+    {type:"order",
+      q:{pt:"Coloque as etapas do método do Mestre Construtor na ordem certa:", en:"Put the Master Table-Builder's method steps in the correct order:"},
+      steps:[
+        {pt:"Contar as proposições simples e calcular o número de linhas (2ⁿ).", en:"Count the simple propositions and calculate the number of rows (2ⁿ)."},
+        {pt:"Preencher as colunas de p, q e r com o padrão de V e F.", en:"Fill in the p, q and r columns with the pattern of T and F."},
+        {pt:"Preencher as colunas do meio, começando pelos parênteses.", en:"Fill in the middle columns, starting with the parentheses."},
+        {pt:"Preencher a última coluna, com o valor da proposição inteira.", en:"Fill in the last column, with the value of the whole proposition."}
+      ],
+      exp:{pt:"Primeiro planejamos (quantas linhas?), depois preenchemos as letras, depois as partes menores e só no fim a proposição inteira.",
+           en:"First we plan (how many rows?), then we fill in the letters, then the smaller parts, and only at the end the whole proposition."}},
+    {type:"table", formula:"(p → q) ∧ (q → r)",
+      legend:[
+        {k:"p",t:{pt:"Eu creio em Jesus.",en:"I believe in Jesus."}},
+        {k:"q",t:{pt:"Eu sou filho de Deus.",en:"I am a child of God."}},
+        {k:"r",t:{pt:"Eu sou herdeiro de Deus.",en:"I am an heir of God."}}
+      ],
+      headers:["p","q","r","p → q","q → r","(p → q) ∧ (q → r)"],
+      rows:[[true,true,true,true,true,true],[true,true,false,true,false,false],[true,false,true,false,true,false],[true,false,false,false,true,false],[false,true,true,true,true,true],[false,true,false,true,false,false],[false,false,true,true,true,true],[false,false,false,true,true,true]],
+      fixed:[0,1,2],
+      exp:{pt:"A proposição só é verdadeira quando nenhuma das duas promessas (p → q e q → r) é quebrada.",
+           en:"The proposition is only true when neither of the two promises (p → q and q → r) is broken."}},
+    {type:"table", formula:"(p ∨ q) → r",
+      legend:[
+        {k:"p",t:{pt:"Davi venceu Golias.",en:"David defeated Goliath."}},
+        {k:"q",t:{pt:"Israel foi salvo.",en:"Israel was saved."}},
+        {k:"r",t:{pt:"O povo louvou a Deus.",en:"The people praised God."}}
+      ],
+      headers:["p","q","r","p ∨ q","(p ∨ q) → r"],
+      rows:[[true,true,true,true,true],[true,true,false,true,false],[true,false,true,true,true],[true,false,false,true,false],[false,true,true,true,true],[false,true,false,true,false],[false,false,true,false,true],[false,false,false,false,true]],
+      fixed:[0,1,2],
+      exp:{pt:"Primeiro o \"ou\" dentro do parêntese; depois a condicional. Lembre: a condicional só é F quando vai de V para F.",
+           en:"First the \"or\" inside the parentheses; then the conditional. Remember: the conditional is only F when it goes from T to F."}},
+    {type:"table", formula:"(p ∨ ¬q) ∧ r",
+      legend:[
+        {k:"p",t:{pt:"Noé obedeceu.",en:"Noah obeyed."}},
+        {k:"q",t:{pt:"O dilúvio veio.",en:"The flood came."}},
+        {k:"r",t:{pt:"A arca flutuou.",en:"The ark floated."}}
+      ],
+      headers:["p","q","r","¬q","p ∨ ¬q","(p ∨ ¬q) ∧ r"],
+      rows:[[true,true,true,false,true,true],[true,true,false,false,true,false],[true,false,true,true,true,true],[true,false,false,true,true,false],[false,true,true,false,false,false],[false,true,false,false,false,false],[false,false,true,true,true,true],[false,false,false,true,true,false]],
+      fixed:[0,1,2],
+      exp:{pt:"Três colunas do meio: ¬q, depois p ∨ ¬q, e por fim a conjunção com r.",
+           en:"Three middle columns: ¬q, then p ∨ ¬q, and finally the conjunction with r."}}
+  ]
+};
+
+/* ── IDIOMA / LANGUAGE ───────────────────────────── */
+let LANG = 'pt';
+try { const saved = localStorage.getItem('nml_lang'); if (saved === 'pt' || saved === 'en') LANG = saved; } catch(e){}
+function tr(v){ return (v && typeof v === 'object' && (('pt' in v) || ('en' in v))) ? v[LANG] : v; }
+function TLabel(){ return UI[LANG].trueLabel; }
+
+function setLang(lang){
+  LANG = lang;
+  try { localStorage.setItem('nml_lang', lang); } catch(e){}
+  applyChrome();
+  // re-renderiza a tela atual, se o jogo já tiver começado
+  if (document.getElementById('screen-game').classList.contains('active') && typeof items !== 'undefined' && items) {
+    next(true);
+  }
+}
+
+function applyChrome(){
+  const s = UI[LANG];
+  document.documentElement.lang = s.htmlLang;
+  document.title = s.pageTitle;
+  $('lang-btn-pt').classList.toggle('active', LANG==='pt');
+  $('lang-btn-en').classList.toggle('active', LANG==='en');
+  $('t-badge').textContent = s.badge;
+  $('t-title').innerHTML = s.title;
+  $('t-subtitle').textContent = s.subtitle;
+  $('t-rules-title').textContent = s.rulesTitle;
+  $('t-rule1').textContent = s.rule1;
+  $('t-rule2').textContent = s.rule2;
+  $('t-rule3').textContent = s.rule3;
+  $('t-rule4').textContent = s.rule4;
+  $('t-btn-start').textContent = s.btnStart;
+  $('t-back').textContent = s.back;
+  $('t-back2').textContent = s.back;
+  $('t-pts-label').textContent = s.ptsLabel;
+  $('fb-next').textContent = s.fbNext;
+  $('t-result-title').innerHTML = s.resultTitle;
+  $('t-correct-label').textContent = s.correctLabel;
+  $('t-wrong-label').textContent = s.wrongLabel;
+  $('t-btn-restart').textContent = s.btnRestart;
+}
+
 let items, idx, score, right, wrong, timerInt, tStart, maxScore, curTimer;
 const $ = id => document.getElementById(id);
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
@@ -169,11 +379,11 @@ function startGame(){
   idx=0; score=0; right=0; wrong=0;
   show('screen-game'); next();
 }
-function next(){
+function next(redrawOnly){
   clearInterval(timerInt);
   if(idx>=items.length){ endGame(); return }
   const it = items[idx];
-  $('counter').textContent = (it.type==='table'?'Tabela ':'Desafio ')+(idx+1)+' / '+items.length;
+  $('counter').textContent = (it.type==='table'?UI[LANG].tableWord:UI[LANG].challengeWord)+(idx+1)+' / '+items.length;
   $('live-score').textContent = score;
   $('progress-bar').style.width = (idx/items.length*100)+'%';
   const stage = $('stage'); stage.innerHTML='';
@@ -194,9 +404,10 @@ function lines(container,text){
 }
 /* ---------- feedback ---------- */
 function feedback(ok, timeout, pts, exp, done){
+  const s = UI[LANG];
   $('fb-icon').textContent = timeout?'⏱️':(ok?'😊':'🤔');
-  const t=$('fb-title'); t.textContent = timeout?'Tempo esgotado!':(ok?'Muito bem!':'Quase lá!'); t.className='feedback-title '+(ok?'correct':'wrong');
-  $('fb-pts').innerHTML = ok?('+<strong>'+pts+' pontos</strong>'):'<strong>+0 pontos</strong>';
+  const t=$('fb-title'); t.textContent = timeout?s.timeUp:(ok?s.wellDone:s.almostThere); t.className='feedback-title '+(ok?'correct':'wrong');
+  $('fb-pts').innerHTML = ok?s.ptsEarned(pts):s.ptsZero;
   $('fb-exp').textContent = exp;
   $('feedback').classList.add('show');
   $('fb-next').onclick = ()=>{ $('feedback').classList.remove('show'); done(); };
@@ -204,13 +415,13 @@ function feedback(ok, timeout, pts, exp, done){
 /* ---------- choice ---------- */
 function renderChoice(it,stage){
   const secs = it.t || CFG.timer;
-  if(it.label) stage.appendChild(el('div','tag',it.label));
-  const card = el('div','question-card'); lines(card,it.q); stage.appendChild(card);
-  let opts = it.opts.map((t,i)=>({t,ok:i===it.a}));
+  if(it.label) stage.appendChild(el('div','tag',tr(it.label)));
+  const card = el('div','question-card'); lines(card,tr(it.q)); stage.appendChild(card);
+  let opts = it.opts.map((t,i)=>({t:tr(t),ok:i===it.a}));
   if(!it.fix) opts = shuffle(opts);
   const box = el('div','opts'+((opts.length===2&&opts.every(o=>o.t.length<26))?' two':''));
   opts.forEach(o=>{
-    const b = el('button','opt'); 
+    const b = el('button','opt');
     if(o.t.startsWith('§e ')){ const parts=o.t.slice(3).split('|'); b.appendChild(el('span','em',parts[0])); b.appendChild(document.createTextNode(parts[1])); }
     else b.textContent=o.t;
     b.onclick=()=>{ clearInterval(timerInt); box.querySelectorAll('button').forEach(x=>x.disabled=true); resolveChoice(it,o.ok,false,tStart?(Date.now()-tStart)/1000:0,secs) };
@@ -231,41 +442,42 @@ function resolveChoice(it,ok,timeout,elapsed,secs){
   let pts=0;
   if(ok){ pts = secs? Math.max(30,Math.round(100-(elapsed/secs)*70)) : 100; score+=pts; right++ } else wrong++;
   $('live-score').textContent=score;
-  feedback(ok,timeout,pts,it.exp,()=>{idx++;next()});
+  feedback(ok,timeout,pts,tr(it.exp),()=>{idx++;next()});
 }
 /* ---------- order ---------- */
 function renderOrder(it,stage){
-  const card = el('div','question-card'); lines(card,it.q); stage.appendChild(card);
+  const card = el('div','question-card'); lines(card,tr(it.q)); stage.appendChild(card);
   const slots = el('div','slots'); stage.appendChild(slots);
-  const slotEls = it.steps.map((s,i)=>{ const d=el('div','slot'); d.appendChild(el('span','n',String(i+1))); const t=el('span','tx','…'); d.appendChild(t); slots.appendChild(d); return d });
+  const steps = it.steps.map(tr);
+  const slotEls = steps.map((s,i)=>{ const d=el('div','slot'); d.appendChild(el('span','n',String(i+1))); const t=el('span','tx','…'); d.appendChild(t); slots.appendChild(d); return d });
   const pool = el('div','pool'); stage.appendChild(pool);
-  stage.appendChild(el('div','hint','Toque nas frases na ordem certa'));
+  stage.appendChild(el('div','hint',UI[LANG].orderHint));
   let placed=0, errs=0; const usedSet=new Set();
-  shuffle(it.steps).forEach(s=>{
+  shuffle(steps).forEach(s=>{
     const b=el('button','opt',s);
     b.onclick=()=>{
-      const fr = it.free||0; const used = it.steps.slice(0,fr).filter(x=>usedSet.has(x));
-      const okStep = (placed<fr) ? (it.steps.indexOf(s)>=0 && it.steps.indexOf(s)<fr && !usedSet.has(s)) : (s===it.steps[placed]);
+      const fr = it.free||0; const used = steps.slice(0,fr).filter(x=>usedSet.has(x));
+      const okStep = (placed<fr) ? (steps.indexOf(s)>=0 && steps.indexOf(s)<fr && !usedSet.has(s)) : (s===steps[placed]);
       if(okStep){
         usedSet.add(s);
         const d=slotEls[placed]; d.classList.add('ok'); d.querySelector('.tx').textContent=s; b.remove(); placed++;
-        if(placed===it.steps.length){
+        if(placed===steps.length){
           const pts=Math.max(20,100-25*errs); score+=pts; if(errs===0) right++; else wrong++;
           $('live-score').textContent=score;
-          setTimeout(()=>feedback(true,false,pts,it.exp,()=>{idx++;next()}),400);
+          setTimeout(()=>feedback(true,false,pts,tr(it.exp),()=>{idx++;next()}),400);
         }
       } else {
-        errs++; b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),350); toast('Ainda não é essa. Pense na ordem!');
+        errs++; b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),350); toast(UI[LANG].orderToast);
       }
     };
     pool.appendChild(b);
   });
 }
 /* ---------- table ---------- */
-let cellOK, cellTries, cellDone, cellTotal, cellWrongOnce;
+let cellDone, cellTotal, cellWrongOnce;
 function renderTable(it,stage){
-  const m=el('div','mission'); m.appendChild(el('div','t','📋 Complete a tabela-verdade de:')); m.appendChild(el('div','f',it.formula));
-  if(it.legend&&it.legend.length){ const lg=el('div','legend'); it.legend.forEach(l=>{const d=el('div'); const s=el('strong',null,l.k+': '); d.appendChild(s); d.appendChild(document.createTextNode(l.t)); lg.appendChild(d)}); m.appendChild(lg) }
+  const m=el('div','mission'); m.appendChild(el('div','t',UI[LANG].missionLabel)); m.appendChild(el('div','f',it.formula));
+  if(it.legend&&it.legend.length){ const lg=el('div','legend'); it.legend.forEach(l=>{const d=el('div'); const s=el('strong',null,l.k+': '); d.appendChild(s); d.appendChild(document.createTextNode(tr(l.t))); lg.appendChild(d)}); m.appendChild(lg) }
   stage.appendChild(m);
   const wrap=el('div','table-wrap'); const tb=el('table'); wrap.appendChild(tb); stage.appendChild(wrap);
   const hr=el('tr'); it.headers.forEach((h,i)=>{const th=el('th',it.fixed.includes(i)?'fixed':'',h); hr.appendChild(th)});
@@ -273,42 +485,47 @@ function renderTable(it,stage){
   const tbody=el('tbody'); tb.appendChild(tbody);
   cellDone=0; cellTotal=it.rows.length*(it.headers.length-it.fixed.length); cellWrongOnce={};
   it.rows.forEach((row,ri)=>{
-    const tr=el('tr');
+    const tr_=el('tr');
     row.forEach((v,ci)=>{
       const td=el('td');
-      if(it.fixed.includes(ci)){ td.className='fixed'; td.textContent=v?'V':'F' }
+      if(it.fixed.includes(ci)){ td.className='fixed'; td.textContent=v?TLabel():'F' }
       else{
-        const b=el('button','cell-btn','—'); const key=ri+'-'+ci; let state='';
+        const b=el('button','cell-btn','—'); const key=ri+'-'+ci; let state=null;
         b.onclick=()=>{
           if(b.classList.contains('correct')) return;
-          state=(state===''||state==='F')?'V':'F'; b.textContent=state; b.className='cell-btn '+(state==='V'?'sv':'sf');
-          if((state==='V')===v){
+          state = (state===null || state===false) ? true : false;
+          b.textContent = state?TLabel():'F'; b.className='cell-btn '+(state?'sv':'sf');
+          if(state===v){
             b.classList.add('correct'); const p=cellWrongOnce[key]?5:10; score+=p; cellDone++;
-            $('live-score').textContent=score; toast('✅ +'+p);
-            if(cellDone===cellTotal){ if(Object.keys(cellWrongOnce).length===0) right++; else wrong++; score+=50; $('live-score').textContent=score; toast('🎉 Tabela completa! +50'); setTimeout(()=>{ if(it.exp){feedback(true,false,50,it.exp,()=>{idx++;next()})} else {idx++;next()} },700) }
+            $('live-score').textContent=score; toast(UI[LANG].cellToast(p));
+            if(cellDone===cellTotal){ if(Object.keys(cellWrongOnce).length===0) right++; else wrong++; score+=50; $('live-score').textContent=score; toast(UI[LANG].tableCompleteToast); setTimeout(()=>{ if(it.exp){feedback(true,false,50,tr(it.exp),()=>{idx++;next()})} else {idx++;next()} },700) }
           } else { if(!cellWrongOnce[key]){cellWrongOnce[key]=1} b.classList.add('wrong'); setTimeout(()=>b.classList.remove('wrong'),350) }
         };
         td.appendChild(b);
       }
-      tr.appendChild(td);
+      tr_.appendChild(td);
     });
-    tbody.appendChild(tr);
+    tbody.appendChild(tr_);
   });
-  stage.appendChild(el('div','hint','Toque nas células para alternar entre V e F'));
+  stage.appendChild(el('div','hint',UI[LANG].tableHint));
 }
 let toastT; function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1100)}
 /* ---------- fim ---------- */
 function endGame(){
+  const s = UI[LANG];
   clearInterval(timerInt); show('screen-result');
   $('progress-bar').style.width='100%';
-  $('final-score').textContent=score; $('max-score').textContent='de '+maxScore+' pontos';
+  $('final-score').textContent=score; $('max-score').textContent=s.maxScore(maxScore);
   $('res-correct').textContent=right; $('res-wrong').textContent=wrong;
-  const pct=score/maxScore; let stars='⭐', msg='Continue estudando! '+CFG.revise+' e tente de novo. 💪';
-  if(pct>=.9){stars='⭐⭐⭐'; msg=CFG.win}
-  else if(pct>=.7){stars='⭐⭐'; msg='Muito bom! Mais um pouco de treino e você chega lá. 😊'}
-  else if(pct>=.5){stars='⭐½'; msg='Bom esforço! '+CFG.revise+' e jogue outra vez. 📖'}
+  const pct=score/maxScore; let stars='⭐', msg=s.msgLow(tr(CFG.revise));
+  if(pct>=.9){stars='⭐⭐⭐'; msg=tr(CFG.win)}
+  else if(pct>=.7){stars='⭐⭐'; msg=s.msgMid()}
+  else if(pct>=.5){stars='⭐½'; msg=s.msgOk(tr(CFG.revise))}
   $('result-stars').textContent=stars; $('result-msg').textContent=msg;
 }
+
+/* ── INIT ─────────────────────────────────────────── */
+applyChrome();
 </script>
 </body>
 </html>

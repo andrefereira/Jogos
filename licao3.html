@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>No Mundo da Lógica — Lição III</title>
+  <title>No Mundo da Lógica / In the World of Logic — Lição III / Lesson III</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a3a2a,#0d4f3c,#1a5c4a);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
     .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
     .screen.active{display:flex}
+
+    /* LANGUAGE SWITCH */
+    .lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+    .lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+    .lang-btn.active{background:#ffd700;color:#1a3a2a}
+
     .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,215,0,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#ffd700}
     .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
     .title span{color:#7effd4}
@@ -52,6 +58,7 @@
     .fb-title.ok{color:#00a862}.fb-title.partial{color:#f59e0b}.fb-title.no{color:#e0303a}
     .fb-why{font-size:.82rem;color:#555;line-height:1.5;background:#f5f5f5;border-radius:10px;padding:10px 12px;margin-top:8px}
     .fb-pts{font-size:.9rem;color:#888;margin-top:6px}
+    .fb-tap{font-size:.75rem;color:#aaa;margin-top:12px}
 
     /* RESULT */
     #screen-result{text-align:center}
@@ -70,26 +77,30 @@
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição III</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🔍</div>
-  <div class="title">Triagem<br><span>Dupla</span></div>
-  <p class="subtitle">O Senhor x faz duas perguntas sobre cada sentença. Você consegue responder as duas?</p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li><strong>Passo 1:</strong> É uma proposição? ✓ ou ✗</li>
-      <li><strong>Passo 2:</strong> Se sim, é Verdadeira ou Falsa?</li>
-      <li>Acerte as duas = 100 pts. Só a 1ª = 50 pts.</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Iniciar Triagem ▶</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <div id="screen-game" class="screen">
   <div class="top-bar">
     <span class="counter" id="counter">1 / 12</span>
-    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> <span id="t-pts-label"></span></span>
   </div>
   <div class="step-indicator">
     <div class="step-dot active" id="dot1"></div>
@@ -97,15 +108,8 @@
     <div class="step-dot" id="dot2"></div>
   </div>
   <div class="sentence-card" id="sentence-card"></div>
-  <p class="step-label" id="step-label">Passo 1: <strong>É uma proposição?</strong></p>
-  <div class="answer-row" id="answer-row">
-    <button class="btn-answer btn-green" onclick="answerStep1(true)">
-      <span class="icon">✅</span><span>SIM</span>
-    </button>
-    <button class="btn-answer btn-red" onclick="answerStep1(false)">
-      <span class="icon">❌</span><span>NÃO</span>
-    </button>
-  </div>
+  <p class="step-label" id="step-label"></p>
+  <div class="answer-row" id="answer-row"></div>
 </div>
 
 <div id="feedback" onclick="nextQ()">
@@ -114,49 +118,193 @@
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-pts"  id="fb-pts"></div>
     <div class="fb-why"  id="fb-why"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+    <p class="fb-tap" id="t-fb-tap"></p>
   </div>
 </div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">Triagem<br><span>concluída!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div style="font-size:2.2rem" id="result-stars"></div>
   <div class="score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1200 pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="sum-grid">
-    <div class="sum-item"><div class="val" id="r-full">0</div><div class="lbl">Duplo acerto</div></div>
-    <div class="sum-item"><div class="val" id="r-half">0</div><div class="lbl">Meio acerto</div></div>
-    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
+    <div class="sum-item"><div class="val" id="r-full">0</div><div class="lbl" id="t-full-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-half">0</div><div class="lbl" id="t-half-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
-// isProp: true=proposition | value: 'V','F',null(if not prop)
+/* ── TEXTOS DA INTERFACE / UI STRINGS ─────────────── */
+const STRINGS = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição III",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição III",
+    title: 'Triagem<br><span>Dupla</span>',
+    subtitle: "O Senhor x faz duas perguntas sobre cada sentença. Você consegue responder as duas?",
+    rulesTitle: "Como jogar",
+    rule1: "<strong>Passo 1:</strong> É uma proposição? ✓ ou ✗",
+    rule2: "<strong>Passo 2:</strong> Se sim, é Verdadeira ou Falsa?",
+    rule3: "Acerte as duas = 100 pts. Só a 1ª = 50 pts.",
+    btnStart: "Iniciar Triagem ▶",
+    backLink: "← Todas as lições",
+    ptsLabel: "pts",
+    step1Label: 'Passo 1: <strong>É uma proposição?</strong>',
+    step2Label: 'Passo 2: <strong>Qual o valor-verdade?</strong>',
+    yesLabel: "SIM",
+    noLabel: "NÃO",
+    trueLabel: "VERDADEIRA",
+    falseLabel: "FALSA",
+    fbTap: "Toque para continuar",
+    fbWrong: "Errado!",
+    fbCorrectSimple: "Correto! +100 pts",
+    fbDoubleCorrect: "Duplo acerto! +100 pts",
+    fbPartial: "Quase! É uma proposição, mas o valor está errado. +50 pts",
+    resultTitle: 'Triagem<br><span>concluída!</span>',
+    maxScore: n => `de ${n} pontos`,
+    fullLabel: "Duplo acerto",
+    halfLabel: "Meio acerto",
+    wrongLabel: "Erros",
+    btnRestart: "Jogar novamente 🔄",
+    msgLow: "Continue praticando! Revise a Lição III. 📖",
+    msgMid: "Bom esforço! Revise as lições I e II e tente novamente. 💪",
+    msgGood: "Muito bom! Você está dominando a triagem de Proposia! 😊",
+    msgGreat: "Excelente triagem! O Senhor x te contratou! 🏆"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson III",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson III",
+    title: 'Double<br><span>Screening</span>',
+    subtitle: "Mr. x asks two questions about each sentence. Can you answer both?",
+    rulesTitle: "How to play",
+    rule1: "<strong>Step 1:</strong> Is it a proposition? ✓ or ✗",
+    rule2: "<strong>Step 2:</strong> If so, is it True or False?",
+    rule3: "Get both right = 100 pts. Only the 1st = 50 pts.",
+    btnStart: "Start Screening ▶",
+    backLink: "← All lessons",
+    ptsLabel: "pts",
+    step1Label: 'Step 1: <strong>Is it a proposition?</strong>',
+    step2Label: 'Step 2: <strong>What is the truth value?</strong>',
+    yesLabel: "YES",
+    noLabel: "NO",
+    trueLabel: "TRUE",
+    falseLabel: "FALSE",
+    fbTap: "Tap to continue",
+    fbWrong: "Wrong!",
+    fbCorrectSimple: "Correct! +100 pts",
+    fbDoubleCorrect: "Double correct! +100 pts",
+    fbPartial: "Almost! It is a proposition, but the truth value is wrong. +50 pts",
+    resultTitle: 'Double Screening<br><span>complete!</span>',
+    maxScore: n => `out of ${n} points`,
+    fullLabel: "Double correct",
+    halfLabel: "Half correct",
+    wrongLabel: "Wrong",
+    btnRestart: "Play again 🔄",
+    msgLow: "Keep practicing! Review Lesson III. 📖",
+    msgMid: "Good effort! Review Lessons I and II and try again. 💪",
+    msgGood: "Very good! You're mastering the screening of Propositia! 😊",
+    msgGreat: "Excellent screening! Mr. x hired you! 🏆"
+  }
+};
+
+/* isProp: true=proposition | truthValue: true(Verdadeira/True), false(Falsa/False), null (if not a proposition) */
 const ITEMS = [
-  {text:"Deus Pai é o Criador Todo-Poderoso do céu e da terra.", isProp:true, value:'V', why:"Proposição verdadeira — afirmação central da fé cristã."},
-  {text:"A criação de Deus é bela?", isProp:false, value:null, why:"Frase interrogativa — não tem valor de verdade definido."},
-  {text:"Jesus Cristo não é o único Filho de Deus.", isProp:true, value:'F', why:"É uma proposição falsa — Jesus é sim o único Filho unigênito de Deus."},
-  {text:"Jesus Cristo foi concebido pelo poder do Espírito Santo.", isProp:true, value:'V', why:"Proposição verdadeira, conforme Lucas 1:35."},
-  {text:"Jesus nasceu da Virgem Marta.", isProp:true, value:'F', why:"Falsa — Jesus nasceu da Virgem Maria, não Marta."},
-  {text:"Jesus Cristo padeceu sob o poder de Pôncio Felipe.", isProp:true, value:'F', why:"Falsa — foi Pôncio Pilatos, não Pôncio Felipe."},
-  {text:"Jesus foi crucificado.", isProp:true, value:'V', why:"Proposição verdadeira, um dos fatos centrais do Evangelho."},
-  {text:"10 + 7 + 5 − 6 = 12", isProp:true, value:'F', why:"Falsa — o resultado correto é 16, não 12."},
-  {text:"x² + x + 1 = 0", isProp:false, value:null, why:"Contém a variável x — é um predicado, não uma proposição."},
-  {text:"Jesus Cristo continua morto.", isProp:true, value:'F', why:"Falsa — Jesus ressuscitou no terceiro dia!"},
-  {text:"Jesus subiu ao céu e está sentado à direita de Deus Pai.", isProp:true, value:'V', why:"Proposição verdadeira, conforme o Credo Apostólico."},
-  {text:"Vinde a mim, todos os que estais cansados e sobrecarregados.", isProp:false, value:null, why:"Frase imperativa (convite/ordem) — não tem valor de verdade."},
+  {text:{pt:"Deus Pai é o Criador Todo-Poderoso do céu e da terra.", en:"God the Father is the Almighty Creator of heaven and earth."}, isProp:true, truthValue:true, why:{pt:"Proposição verdadeira — afirmação central da fé cristã.", en:"True proposition — a central affirmation of the Christian faith."}},
+  {text:{pt:"A criação de Deus é bela?", en:"Is God's creation beautiful?"}, isProp:false, truthValue:null, why:{pt:"Frase interrogativa — não tem valor de verdade definido.", en:"An interrogative sentence — it has no definite truth value."}},
+  {text:{pt:"Jesus Cristo não é o único Filho de Deus.", en:"Jesus Christ is not the only Son of God."}, isProp:true, truthValue:false, why:{pt:"É uma proposição falsa — Jesus é sim o único Filho unigênito de Deus.", en:"It is a false proposition — Jesus is indeed the only begotten Son of God."}},
+  {text:{pt:"Jesus Cristo foi concebido pelo poder do Espírito Santo.", en:"Jesus Christ was conceived by the power of the Holy Spirit."}, isProp:true, truthValue:true, why:{pt:"Proposição verdadeira, conforme Lucas 1:35.", en:"A true proposition, according to Luke 1:35."}},
+  {text:{pt:"Jesus nasceu da Virgem Marta.", en:"Jesus was born of the Virgin Martha."}, isProp:true, truthValue:false, why:{pt:"Falsa — Jesus nasceu da Virgem Maria, não Marta.", en:"False — Jesus was born of the Virgin Mary, not Martha."}},
+  {text:{pt:"Jesus Cristo padeceu sob o poder de Pôncio Felipe.", en:"Jesus Christ suffered under the power of Pontius Felipe."}, isProp:true, truthValue:false, why:{pt:"Falsa — foi Pôncio Pilatos, não Pôncio Felipe.", en:"False — it was Pontius Pilate, not Pontius Felipe."}},
+  {text:{pt:"Jesus foi crucificado.", en:"Jesus was crucified."}, isProp:true, truthValue:true, why:{pt:"Proposição verdadeira, um dos fatos centrais do Evangelho.", en:"A true proposition, one of the central facts of the Gospel."}},
+  {text:{pt:"10 + 7 + 5 − 6 = 12", en:"10 + 7 + 5 − 6 = 12"}, isProp:true, truthValue:false, why:{pt:"Falsa — o resultado correto é 16, não 12.", en:"False — the correct result is 16, not 12."}},
+  {text:{pt:"x² + x + 1 = 0", en:"x² + x + 1 = 0"}, isProp:false, truthValue:null, why:{pt:"Contém a variável x — é um predicado, não uma proposição.", en:"It contains the variable x — it is a predicate, not a proposition."}},
+  {text:{pt:"Jesus Cristo continua morto.", en:"Jesus Christ is still dead."}, isProp:true, truthValue:false, why:{pt:"Falsa — Jesus ressuscitou no terceiro dia!", en:"False — Jesus rose again on the third day!"}},
+  {text:{pt:"Jesus subiu ao céu e está sentado à direita de Deus Pai.", en:"Jesus ascended into heaven and is seated at the right hand of God the Father."}, isProp:true, truthValue:true, why:{pt:"Proposição verdadeira, conforme o Credo Apostólico.", en:"A true proposition, according to the Apostles' Creed."}},
+  {text:{pt:"Vinde a mim, todos os que estais cansados e sobrecarregados.", en:"Come to me, all who labor and are heavy laden."}, isProp:false, truthValue:null, why:{pt:"Frase imperativa (convite/ordem) — não tem valor de verdade.", en:"An imperative sentence (an invitation/command) — it has no truth value."}},
 ];
+
+let LANG = 'pt';
+try {
+  const saved = localStorage.getItem('nml_lang');
+  if (saved === 'pt' || saved === 'en') LANG = saved;
+} catch (e) { /* localStorage indisponível / unavailable — mantém pt / keep default */ }
 
 let questions, current, score, fullRight, halfRight, wrong;
 let step1Correct=false;
+let gameStep=1; // 1 or 2 — tracks which step UI is currently shown, for language refresh
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* ── IDIOMA / LANGUAGE ───────────────────────────── */
+function setLang(lang){
+  LANG = lang;
+  try { localStorage.setItem('nml_lang', lang); } catch (e) { /* ignore */ }
+  applyChrome();
+  // Se já houver uma questão carregada, atualiza o texto dela também
+  // If a question is already loaded, refresh its text too
+  if (typeof questions !== 'undefined' && questions && questions[current] &&
+      document.getElementById('screen-game').classList.contains('active')) {
+    document.getElementById('sentence-card').textContent = questions[current].text[LANG];
+    renderStepUI();
+  }
+}
+
+function applyChrome(){
+  const s = STRINGS[LANG];
+  document.documentElement.lang = s.htmlLang;
+  document.title = s.pageTitle;
+
+  document.getElementById('lang-btn-pt').classList.toggle('active', LANG === 'pt');
+  document.getElementById('lang-btn-en').classList.toggle('active', LANG === 'en');
+
+  document.getElementById('t-badge').textContent = s.badge;
+  document.getElementById('t-title').innerHTML = s.title;
+  document.getElementById('t-subtitle').textContent = s.subtitle;
+  document.getElementById('t-rules-title').textContent = s.rulesTitle;
+  document.getElementById('t-rule1').innerHTML = s.rule1;
+  document.getElementById('t-rule2').innerHTML = s.rule2;
+  document.getElementById('t-rule3').textContent = s.rule3;
+  document.getElementById('t-btn-start').textContent = s.btnStart;
+  document.getElementById('t-back-1').textContent = s.backLink;
+  document.getElementById('t-back-2').textContent = s.backLink;
+  document.getElementById('t-pts-label').textContent = s.ptsLabel;
+  document.getElementById('t-fb-tap').textContent = s.fbTap;
+  document.getElementById('t-result-title').innerHTML = s.resultTitle;
+  document.getElementById('t-max-score').textContent = s.maxScore(ITEMS.length * 100);
+  document.getElementById('t-full-label').textContent = s.fullLabel;
+  document.getElementById('t-half-label').textContent = s.halfLabel;
+  document.getElementById('t-wrong-label').textContent = s.wrongLabel;
+  document.getElementById('t-btn-restart').textContent = s.btnRestart;
+}
+
+/* Renders the step-label + answer-row for whichever step is currently active,
+   in the current LANG. Used both on question load and on a language switch. */
+function renderStepUI(){
+  const s = STRINGS[LANG];
+  if (gameStep === 1){
+    document.getElementById('dot1').className='step-dot active';
+    document.getElementById('dot2').className='step-dot';
+    document.getElementById('step-label').innerHTML = s.step1Label;
+    document.getElementById('answer-row').innerHTML = `
+      <button class="btn-answer btn-green" onclick="answerStep1(true)"><span class="icon">✅</span><span>${s.yesLabel}</span></button>
+      <button class="btn-answer btn-red" onclick="answerStep1(false)"><span class="icon">❌</span><span>${s.noLabel}</span></button>`;
+  } else {
+    document.getElementById('dot1').className='step-dot done';
+    document.getElementById('dot2').className='step-dot active';
+    document.getElementById('step-label').innerHTML = s.step2Label;
+    document.getElementById('answer-row').innerHTML = `
+      <button class="btn-answer btn-blue" onclick="answerStep2(true)"><span class="icon">😊</span><span>${s.trueLabel}</span></button>
+      <button class="btn-answer btn-red" onclick="answerStep2(false)"><span class="icon">😢</span><span>${s.falseLabel}</span></button>`;
+  }
+}
 
 function startGame(){
   questions=shuffle(ITEMS);current=0;score=0;fullRight=0;halfRight=0;wrong=0;
@@ -166,46 +314,40 @@ function startGame(){
 function loadQ(){
   if(current>=questions.length){endGame();return}
   step1Correct=false;
-  document.getElementById('sentence-card').textContent=questions[current].text;
+  gameStep=1;
+  document.getElementById('sentence-card').textContent=questions[current].text[LANG];
   document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
   document.getElementById('live-score').textContent=score;
-  document.getElementById('dot1').className='step-dot active';
-  document.getElementById('dot2').className='step-dot';
-  document.getElementById('step-label').innerHTML='Passo 1: <strong>É uma proposição?</strong>';
-  document.getElementById('answer-row').innerHTML=`
-    <button class="btn-answer btn-green" onclick="answerStep1(true)"><span class="icon">✅</span><span>SIM</span></button>
-    <button class="btn-answer btn-red" onclick="answerStep1(false)"><span class="icon">❌</span><span>NÃO</span></button>`;
+  renderStepUI();
 }
 
 function answerStep1(userSays){
   const q=questions[current];
+  const s=STRINGS[LANG];
   step1Correct=(userSays===q.isProp);
   if(!step1Correct){
-    showFeedback('😢','Errado!','no',0,q.why);
+    showFeedback('😢',s.fbWrong,'no',0,q.why[LANG]);
     wrong++;return;
   }
   if(!q.isProp){
     // correct: not a proposition, no step 2
     score+=100;fullRight++;
-    showFeedback('😊','Correto! +100 pts','ok',100,q.why);return;
+    showFeedback('😊',s.fbCorrectSimple,'ok',100,q.why[LANG]);return;
   }
   // step 2
-  document.getElementById('dot1').className='step-dot done';
-  document.getElementById('dot2').className='step-dot active';
-  document.getElementById('step-label').innerHTML='Passo 2: <strong>Qual o valor-verdade?</strong>';
-  document.getElementById('answer-row').innerHTML=`
-    <button class="btn-answer btn-blue" onclick="answerStep2('V')"><span class="icon">😊</span><span>VERDADEIRA</span></button>
-    <button class="btn-answer btn-red" onclick="answerStep2('F')"><span class="icon">😢</span><span>FALSA</span></button>`;
+  gameStep=2;
+  renderStepUI();
 }
 
 function answerStep2(userVal){
   const q=questions[current];
-  if(userVal===q.value){
+  const s=STRINGS[LANG];
+  if(userVal===q.truthValue){
     score+=100;fullRight++;
-    showFeedback('🎉','Duplo acerto! +100 pts','ok',100,q.why);
+    showFeedback('🎉',s.fbDoubleCorrect,'ok',100,q.why[LANG]);
   } else {
     score+=50;halfRight++;
-    showFeedback('👍','Quase! É uma proposição, mas o valor está errado. +50 pts','partial',50,q.why);
+    showFeedback('👍',s.fbPartial,'partial',50,q.why[LANG]);
   }
 }
 
@@ -224,21 +366,25 @@ function nextQ(){
 }
 
 function endGame(){
+  const s=STRINGS[LANG];
   show('screen-result');
   document.getElementById('final-score').textContent=score;
   document.getElementById('r-full').textContent=fullRight;
   document.getElementById('r-half').textContent=halfRight;
   document.getElementById('r-wrong').textContent=wrong;
   const pct=score/(ITEMS.length*100);
-  let stars='⭐',msg='Continue praticando! Revise a Lição III. 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='Excelente triagem! O Senhor x te contratou! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você está dominando a triagem de Proposia! 😊'}
-  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Revise as lições I e II e tente novamente. 💪'}
+  let stars='⭐',msg=s.msgLow;
+  if(pct>=.9){stars='⭐⭐⭐';msg=s.msgGreat}
+  else if(pct>=.7){stars='⭐⭐';msg=s.msgGood}
+  else if(pct>=.5){stars='⭐½';msg=s.msgMid}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;
 }
 
 function restartGame(){startGame()}
+
+/* ── INICIALIZAÇÃO / INIT ────────────────────────── */
+applyChrome();
 </script>
 </body>
 </html>

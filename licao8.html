@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>No Mundo da Lógica — Lição VIII</title>
+  <title>No Mundo da Lógica / In the World of Logic — Lição VIII / Lesson VIII</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#2a1a0a,#4a2a0a,#3a1a1a);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
     .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
     .screen.active{display:flex}
+
+    /* LANGUAGE SWITCH */
+    .lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+    .lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+    .lang-btn.active{background:#ffcc88;color:#2a1a0a}
+
     .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,180,100,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#ffb464}
     .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
     .title span{color:#ffcc88}
@@ -76,43 +82,47 @@
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição VIII</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🤝</div>
-  <div class="title">A Promessa<br><span>de Pedro</span></div>
-  <p class="subtitle">A condicional (→) é como uma promessa: só é quebrada quando o primeiro combinado é cumprido mas o resultado não acontece!</p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li>Leia a condição <strong>p</strong> e o resultado <strong>q</strong></li>
-      <li>Veja o que realmente aconteceu</li>
-      <li>Decida: a promessa foi <strong>cumprida</strong> ou <strong>quebrada</strong>?</li>
-      <li>Quebrada só se p=V e q=F</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
+      <li id="t-rule4"></li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Iniciar ▶</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <div id="screen-game" class="screen">
   <div class="top-bar">
     <span class="counter" id="counter">1 / 10</span>
-    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> <span id="t-pts-label"></span></span>
   </div>
   <div class="timer-wrap"><div id="timer-bar"></div></div>
   <div class="scenario-card">
-    <div class="sc-title">🤝 A condicional diz:</div>
+    <div class="sc-title" id="t-sc-title"></div>
     <div class="sc-cond">
-      <div class="sc-cond-label">Se p, então q</div>
+      <div class="sc-cond-label" id="t-cond-label"></div>
       <div id="cond-text" style="font-size:.85rem;font-weight:600;color:#4a2a0a"></div>
     </div>
     <div class="sc-row">
       <div class="sc-prop">
-        <div class="sc-prop-label">p ocorreu?</div>
+        <div class="sc-prop-label" id="t-p-label"></div>
         <div id="p-text" style="font-size:.8rem"></div>
       </div>
       <div class="sc-status" id="p-status">?</div>
       <div class="sc-prop">
-        <div class="sc-prop-label">q ocorreu?</div>
+        <div class="sc-prop-label" id="t-q-label"></div>
         <div id="q-text" style="font-size:.8rem"></div>
       </div>
       <div class="sc-status" id="q-status">?</div>
@@ -121,10 +131,10 @@
   </div>
   <div class="answer-row">
     <button class="btn-answer btn-kept" onclick="answer(true)">
-      <span class="icon">✅</span><span>PROMESSA<br>CUMPRIDA</span>
+      <span class="icon">✅</span><span id="t-btn-kept"></span>
     </button>
     <button class="btn-answer btn-broken" onclick="answer(false)">
-      <span class="icon">💔</span><span>PROMESSA<br>QUEBRADA</span>
+      <span class="icon">💔</span><span id="t-btn-broken"></span>
     </button>
   </div>
 </div>
@@ -134,55 +144,189 @@
     <div class="fb-icon" id="fb-icon"></div>
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-rule"  id="fb-rule"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-tap-continue"></p>
   </div>
 </div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">Promessas<br><span>avaliadas!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div style="font-size:2.2rem" id="result-stars"></div>
   <div class="score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1000 pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="sum-grid">
-    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl">Acertos</div></div>
-    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros/Tempo</div></div>
+    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl" id="t-correct-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
+/* ── TEXTOS DA INTERFACE / UI STRINGS ─────────────── */
+const STRINGS = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição VIII",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição VIII",
+    title: 'A Promessa<br><span>de Pedro</span>',
+    subtitle: "A condicional (→) é como uma promessa: só é quebrada quando o primeiro combinado é cumprido mas o resultado não acontece!",
+    rulesTitle: "Como jogar",
+    rule1: 'Leia a condição <strong>p</strong> e o resultado <strong>q</strong>',
+    rule2: "Veja o que realmente aconteceu",
+    rule3: 'Decida: a promessa foi <strong>cumprida</strong> ou <strong>quebrada</strong>?',
+    rule4: "Quebrada só se p=V e q=F",
+    btnStart: "Iniciar ▶",
+    backLink: "← Todas as lições",
+    ptsLabel: "pts",
+    scTitle: "🤝 A condicional diz:",
+    condLabel: "Se p, então q",
+    pLabel: "p ocorreu?",
+    qLabel: "q ocorreu?",
+    btnKept: "PROMESSA<br>CUMPRIDA",
+    btnBroken: "PROMESSA<br>QUEBRADA",
+    tapContinue: "Toque para continuar",
+    correctPrefix: "Correto!",
+    timeUp: "Tempo esgotado!",
+    wrongTitle: "Errado!",
+    ruleBroken: "p=V e q=F → única combinação que QUEBRA a promessa (→ = F).",
+    ruleNeverBroken: "p=F → a condicional nunca é quebrada, independente de q (→ = V).",
+    ruleKept: "p=V e q=V → promessa cumprida na prática (→ = V).",
+    resultTitle: 'Promessas<br><span>avaliadas!</span>',
+    maxScore: n => `de ${n} pontos`,
+    correctLabel: "Acertos",
+    wrongLabel: "Erros/Tempo",
+    btnRestart: "Jogar novamente 🔄",
+    msgLow: "Continue praticando a condicional! 📖",
+    msgMid: "Bom esforço! Lembre: → só é F quando p=V e q=F. 💪",
+    msgGood: "Muito bom! Quase dominando a condicional! 😊",
+    msgGreat: "Especialista em promessas! Você domina a condicional! 🏆"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson VIII",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson VIII",
+    title: 'The Promise<br><span>of Peter</span>',
+    subtitle: "The conditional (→) is like a promise: it's only broken when the first part comes true but the result doesn't happen!",
+    rulesTitle: "How to play",
+    rule1: 'Read the condition <strong>p</strong> and the result <strong>q</strong>',
+    rule2: "See what actually happened",
+    rule3: 'Decide: was the promise <strong>kept</strong> or <strong>broken</strong>?',
+    rule4: "Broken only if p=T and q=F",
+    btnStart: "Start ▶",
+    backLink: "← All lessons",
+    ptsLabel: "pts",
+    scTitle: "🤝 The conditional says:",
+    condLabel: "If p, then q",
+    pLabel: "Did p happen?",
+    qLabel: "Did q happen?",
+    btnKept: "PROMISE<br>KEPT",
+    btnBroken: "PROMISE<br>BROKEN",
+    tapContinue: "Tap to continue",
+    correctPrefix: "Correct!",
+    timeUp: "Time's up!",
+    wrongTitle: "Wrong!",
+    ruleBroken: "p=T and q=F → the only combination that BREAKS the promise (→ = F).",
+    ruleNeverBroken: "p=F → the conditional is never broken, regardless of q (→ = T).",
+    ruleKept: "p=T and q=T → promise kept in practice (→ = T).",
+    resultTitle: 'Promises<br><span>evaluated!</span>',
+    maxScore: n => `out of ${n} points`,
+    correctLabel: "Correct",
+    wrongLabel: "Wrong/Timeout",
+    btnRestart: "Play again 🔄",
+    msgLow: "Keep practicing the conditional! 📖",
+    msgMid: "Good effort! Remember: → is only F when p=T and q=F. 💪",
+    msgGood: "Very good! Almost mastering the conditional! 😊",
+    msgGreat: "Promise expert! You've mastered the conditional! 🏆"
+  }
+};
+
 // cond: "Se [p], então [q]" | pV, qV | result=pV→qV = !(pV&&!qV)
 const QUESTIONS=[
-  {cond:"Se Deus é Santo, então Jesus ressuscitou.",p:"Deus é Santo.",pV:true,q:"Jesus ressuscitou.",qV:true},
-  {cond:"Se o triângulo tem 3 lados, então o sol é feito de gelo.",p:"O triângulo tem 3 lados.",pV:true,q:"O sol é feito de gelo.",qV:false},
-  {cond:"Se o pecado é bom, então Deus é o Criador.",p:"O pecado é bom.",pV:false,q:"Deus é o Criador.",qV:true},
-  {cond:"Se 2+2=5, então Judas foi fiel.",p:"2 + 2 = 5",pV:false,q:"Judas foi fiel.",qV:false},
-  {cond:"Se o fogo queima, então a neve é quente.",p:"O fogo queima.",pV:true,q:"A neve é quente.",qV:false},
-  {cond:"Se Deus é Fiel, então Deus é Justo.",p:"Deus é Fiel.",pV:true,q:"Deus é Justo.",qV:true},
-  {cond:"Se 14 é par, então 14 termina com 0.",p:"14 é par.",pV:true,q:"14 termina com 0.",qV:false},
-  {cond:"Se Jesus morreu na cruz, então o homem pode ser perdoado.",p:"Jesus morreu na cruz.",pV:true,q:"O homem pode ser perdoado.",qV:true},
-  {cond:"Se Noé construiu uma arca, então Moisés abriu o Mar Vermelho.",p:"Noé construiu uma arca.",pV:true,q:"Moisés abriu o Mar Vermelho.",qV:true},
-  {cond:"Se 5×3=20, então Jesus é o Filho de Deus.",p:"5 × 3 = 20",pV:false,q:"Jesus é o Filho de Deus.",qV:true},
+  {cond:{pt:"Se Deus é Santo, então Jesus ressuscitou.",en:"If God is Holy, then Jesus rose from the dead."},p:{pt:"Deus é Santo.",en:"God is Holy."},pV:true,q:{pt:"Jesus ressuscitou.",en:"Jesus rose from the dead."},qV:true},
+  {cond:{pt:"Se o triângulo tem 3 lados, então o sol é feito de gelo.",en:"If the triangle has 3 sides, then the sun is made of ice."},p:{pt:"O triângulo tem 3 lados.",en:"The triangle has 3 sides."},pV:true,q:{pt:"O sol é feito de gelo.",en:"The sun is made of ice."},qV:false},
+  {cond:{pt:"Se o pecado é bom, então Deus é o Criador.",en:"If sin is good, then God is the Creator."},p:{pt:"O pecado é bom.",en:"Sin is good."},pV:false,q:{pt:"Deus é o Criador.",en:"God is the Creator."},qV:true},
+  {cond:{pt:"Se 2+2=5, então Judas foi fiel.",en:"If 2+2=5, then Judas was faithful."},p:{pt:"2 + 2 = 5",en:"2 + 2 = 5"},pV:false,q:{pt:"Judas foi fiel.",en:"Judas was faithful."},qV:false},
+  {cond:{pt:"Se o fogo queima, então a neve é quente.",en:"If fire burns, then snow is hot."},p:{pt:"O fogo queima.",en:"Fire burns."},pV:true,q:{pt:"A neve é quente.",en:"Snow is hot."},qV:false},
+  {cond:{pt:"Se Deus é Fiel, então Deus é Justo.",en:"If God is Faithful, then God is Just."},p:{pt:"Deus é Fiel.",en:"God is Faithful."},pV:true,q:{pt:"Deus é Justo.",en:"God is Just."},qV:true},
+  {cond:{pt:"Se 14 é par, então 14 termina com 0.",en:"If 14 is even, then 14 ends in 0."},p:{pt:"14 é par.",en:"14 is even."},pV:true,q:{pt:"14 termina com 0.",en:"14 ends in 0."},qV:false},
+  {cond:{pt:"Se Jesus morreu na cruz, então o homem pode ser perdoado.",en:"If Jesus died on the cross, then man can be forgiven."},p:{pt:"Jesus morreu na cruz.",en:"Jesus died on the cross."},pV:true,q:{pt:"O homem pode ser perdoado.",en:"Man can be forgiven."},qV:true},
+  {cond:{pt:"Se Noé construiu uma arca, então Moisés abriu o Mar Vermelho.",en:"If Noah built an ark, then Moses parted the Red Sea."},p:{pt:"Noé construiu uma arca.",en:"Noah built an ark."},pV:true,q:{pt:"Moisés abriu o Mar Vermelho.",en:"Moses parted the Red Sea."},qV:true},
+  {cond:{pt:"Se 5×3=20, então Jesus é o Filho de Deus.",en:"If 5×3=20, then Jesus is the Son of God."},p:{pt:"5 × 3 = 20",en:"5 × 3 = 20"},pV:false,q:{pt:"Jesus é o Filho de Deus.",en:"Jesus is the Son of God."},qV:true},
 ];
 
 const TIME=10;
 let questions,current,score,correctCount,wrongCount,timer,qStart;
 
+let LANG='pt';
+try{
+  const saved=localStorage.getItem('nml_lang');
+  if(saved==='pt'||saved==='en')LANG=saved;
+}catch(e){/* localStorage indisponível / unavailable — mantém pt / keep default */}
+
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* ── IDIOMA / LANGUAGE ───────────────────────────── */
+function setLang(lang){
+  LANG=lang;
+  try{localStorage.setItem('nml_lang',lang)}catch(e){/* ignore */}
+  applyChrome();
+  // Se já houver uma questão carregada na tela de jogo, atualiza o texto dela também
+  // If a question is already loaded on the game screen, refresh its text too
+  if(typeof questions!=='undefined'&&questions&&questions[current]&&
+     document.getElementById('screen-game').classList.contains('active')){
+    const q=questions[current];
+    document.getElementById('cond-text').textContent=q.cond[LANG];
+    document.getElementById('p-text').textContent=q.p[LANG];
+    document.getElementById('q-text').textContent=q.q[LANG];
+  }
+}
+
+function applyChrome(){
+  const s=STRINGS[LANG];
+  document.documentElement.lang=s.htmlLang;
+  document.title=s.pageTitle;
+
+  document.getElementById('lang-btn-pt').classList.toggle('active',LANG==='pt');
+  document.getElementById('lang-btn-en').classList.toggle('active',LANG==='en');
+
+  document.getElementById('t-badge').textContent=s.badge;
+  document.getElementById('t-title').innerHTML=s.title;
+  document.getElementById('t-subtitle').textContent=s.subtitle;
+  document.getElementById('t-rules-title').textContent=s.rulesTitle;
+  document.getElementById('t-rule1').innerHTML=s.rule1;
+  document.getElementById('t-rule2').textContent=s.rule2;
+  document.getElementById('t-rule3').innerHTML=s.rule3;
+  document.getElementById('t-rule4').textContent=s.rule4;
+  document.getElementById('t-btn-start').textContent=s.btnStart;
+  document.getElementById('t-back-1').textContent=s.backLink;
+  document.getElementById('t-back-2').textContent=s.backLink;
+  document.getElementById('t-pts-label').textContent=s.ptsLabel;
+  document.getElementById('t-sc-title').textContent=s.scTitle;
+  document.getElementById('t-cond-label').textContent=s.condLabel;
+  document.getElementById('t-p-label').textContent=s.pLabel;
+  document.getElementById('t-q-label').textContent=s.qLabel;
+  document.getElementById('t-btn-kept').innerHTML=s.btnKept;
+  document.getElementById('t-btn-broken').innerHTML=s.btnBroken;
+  document.getElementById('t-tap-continue').textContent=s.tapContinue;
+  document.getElementById('t-result-title').innerHTML=s.resultTitle;
+  document.getElementById('t-max-score').textContent=s.maxScore(QUESTIONS.length*100);
+  document.getElementById('t-correct-label').textContent=s.correctLabel;
+  document.getElementById('t-wrong-label').textContent=s.wrongLabel;
+  document.getElementById('t-btn-restart').textContent=s.btnRestart;
+}
 
 function startGame(){questions=shuffle(QUESTIONS);current=0;score=0;correctCount=0;wrongCount=0;show('screen-game');loadQ()}
 
 function loadQ(){
   if(current>=questions.length){endGame();return}
   const q=questions[current];
-  document.getElementById('cond-text').textContent=q.cond;
-  document.getElementById('p-text').textContent=q.p;
-  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('cond-text').textContent=q.cond[LANG];
+  document.getElementById('p-text').textContent=q.p[LANG];
+  document.getElementById('q-text').textContent=q.q[LANG];
   const ps=document.getElementById('p-status');ps.textContent=q.pV?'✅':'❌';ps.className='sc-status '+(q.pV?'s-true':'s-false');
   const qs=document.getElementById('q-status');qs.textContent=q.qV?'✅':'❌';qs.className='sc-status '+(q.qV?'s-true':'s-false');
   document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
@@ -200,6 +344,7 @@ function loadQ(){
 function answer(userKept){
   clearInterval(timer);
   document.querySelector('.btn-kept').disabled=true;document.querySelector('.btn-broken').disabled=true;
+  const s=STRINGS[LANG];
   const q=questions[current];
   const result=!(q.pV&&!q.qV); // condicional
   const ok=(userKept===result);
@@ -208,11 +353,11 @@ function answer(userKept){
   if(ok){const e=(Date.now()-qStart)/1000;pts=Math.max(20,Math.round(100-e/TIME*80));score+=pts;correctCount++}
   else wrongCount++;
   let rule;
-  if(q.pV&&!q.qV)rule="p=V e q=F → única combinação que QUEBRA a promessa (→ = F).";
-  else if(!q.pV)rule="p=F → a condicional nunca é quebrada, independente de q (→ = V).";
-  else rule="p=V e q=V → promessa cumprida na prática (→ = V).";
+  if(q.pV&&!q.qV)rule=s.ruleBroken;
+  else if(!q.pV)rule=s.ruleNeverBroken;
+  else rule=s.ruleKept;
   document.getElementById('fb-icon').textContent=ok?'✅':timeout?'⏱️':'💔';
-  document.getElementById('fb-title').textContent=ok?'Correto! +'+pts+' pts':timeout?'Tempo esgotado!':'Errado!';
+  document.getElementById('fb-title').textContent=ok?s.correctPrefix+' +'+pts+' '+s.ptsLabel:timeout?s.timeUp:s.wrongTitle;
   document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
   document.getElementById('fb-rule').textContent=rule;
   document.getElementById('feedback').classList.add('show');
@@ -221,19 +366,23 @@ function answer(userKept){
 function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
+  const s=STRINGS[LANG];
   show('screen-result');
   document.getElementById('final-score').textContent=score;
   document.getElementById('r-correct').textContent=correctCount;
   document.getElementById('r-wrong').textContent=wrongCount;
   const pct=correctCount/QUESTIONS.length;
-  let stars='⭐',msg='Continue praticando a condicional! 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='Especialista em promessas! Você domina a condicional! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Quase dominando a condicional! 😊'}
-  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Lembre: → só é F quando p=V e q=F. 💪'}
+  let stars='⭐',msg=s.msgLow;
+  if(pct>=.9){stars='⭐⭐⭐';msg=s.msgGreat}
+  else if(pct>=.7){stars='⭐⭐';msg=s.msgGood}
+  else if(pct>=.5){stars='⭐½';msg=s.msgMid}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;
 }
 function restartGame(){startGame()}
+
+/* ── INICIALIZAÇÃO / INIT ────────────────────────── */
+applyChrome();
 </script>
 </body>
 </html>

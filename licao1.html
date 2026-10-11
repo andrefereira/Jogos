@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>No Mundo da Lógica — Lição I</title>
+  <title>No Mundo da Lógica / In the World of Logic — Lição I / Lesson I</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -20,6 +20,33 @@
 
     .screen { display: none; width: 100%; max-width: 480px; }
     .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+    /* ── LANGUAGE SWITCH ──────────────────────────── */
+    .lang-switch {
+      display: flex;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50px;
+      padding: 4px;
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 6px 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .lang-btn.active {
+      background: #ffd700;
+      color: #1a3a2a;
+    }
 
     /* ── START SCREEN ─────────────────────────────── */
     #screen-start {
@@ -346,34 +373,35 @@
 </head>
 <body>
 
-<!-- ══════════════════ TELA INICIAL ══════════════════ -->
+<!-- ══════════════════ TELA INICIAL / START SCREEN ══════════════════ -->
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição I</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div class="mascot">🌍</div>
-  <div class="title">Bem-vindo a<br><span>Proposia!</span></div>
-  <p class="subtitle">
-    Cada frase abaixo é uma proposição. Você sabe dizer se ela é
-    <strong>verdadeira</strong> ou <strong>falsa</strong>?
-  </p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li>Leia a proposição com atenção</li>
-      <li>Clique em 😊 se for <strong>verdadeira</strong></li>
-      <li>Clique em 😢 se for <strong>falsa</strong></li>
-      <li>Cada proposição tem <strong>10 segundos</strong></li>
-      <li>Resposta rápida = mais pontos!</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
+      <li id="t-rule4"></li>
+      <li id="t-rule5"></li>
     </ul>
   </div>
-  <button class="btn-start" onclick="startGame()">Entrar em Proposia ▶</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-start" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
-<!-- ══════════════════ TELA DO JOGO ═══════════════════ -->
+<!-- ══════════════════ TELA DO JOGO / GAME SCREEN ═══════════════════ -->
 <div id="screen-game" class="screen">
   <div class="top-bar">
     <span class="counter" id="counter">1 / 10</span>
-    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> <span id="t-pts-label"></span></span>
   </div>
 
   <div class="timer-wrap">
@@ -387,11 +415,11 @@
   <div class="answer-row">
     <button class="btn-answer" id="btn-true"  onclick="answer(true)">
       <span class="face">😊</span>
-      <span class="label">VERDADEIRA</span>
+      <span class="label" id="t-true-label"></span>
     </button>
     <button class="btn-answer" id="btn-false" onclick="answer(false)">
       <span class="face">😢</span>
-      <span class="label">FALSA</span>
+      <span class="label" id="t-false-label"></span>
     </button>
   </div>
 </div>
@@ -406,100 +434,208 @@
   </div>
 </div>
 
-<!-- ══════════════════ TELA DE RESULTADO ═════════════ -->
+<!-- ══════════════════ TELA DE RESULTADO / RESULT SCREEN ═════════════ -->
 <div id="screen-result" class="screen">
-  <div class="result-header">Jogo<br><span>concluído!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div class="result-stars" id="result-stars"></div>
   <div class="result-score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1000 pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="summary-grid">
     <div class="summary-item">
       <div class="val" id="res-correct">0</div>
-      <div class="lbl">Acertos</div>
+      <div class="lbl" id="t-correct-label"></div>
     </div>
     <div class="summary-item">
       <div class="val" id="res-wrong">0</div>
-      <div class="lbl">Erros / Tempo</div>
+      <div class="lbl" id="t-wrong-label"></div>
     </div>
     <div class="summary-item">
       <div class="val" id="res-best">—</div>
-      <div class="lbl">Melhor tempo</div>
+      <div class="lbl" id="t-best-label"></div>
     </div>
     <div class="summary-item">
       <div class="val" id="res-avg">—</div>
-      <div class="lbl">Tempo médio</div>
+      <div class="lbl" id="t-avg-label"></div>
     </div>
   </div>
-  <button class="btn-restart" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-restart" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
-  /* ── QUESTÕES ─────────────────────────────────────── */
+  /* ── TEXTOS DA INTERFACE / UI STRINGS ─────────────── */
+  const STRINGS = {
+    pt: {
+      pageTitle: "No Mundo da Lógica — Lição I",
+      htmlLang: "pt-BR",
+      badge: "No Mundo da Lógica · Lição I",
+      title: 'Bem-vindo a<br><span>Proposia!</span>',
+      subtitle: 'Cada frase abaixo é uma proposição. Você sabe dizer se ela é <strong>verdadeira</strong> ou <strong>falsa</strong>?',
+      rulesTitle: "Como jogar",
+      rule1: "Leia a proposição com atenção",
+      rule2: 'Clique em 😊 se for <strong>verdadeira</strong>',
+      rule3: 'Clique em 😢 se for <strong>falsa</strong>',
+      rule4: 'Cada proposição tem <strong>10 segundos</strong>',
+      rule5: "Resposta rápida = mais pontos!",
+      btnStart: "Entrar em Proposia ▶",
+      backLink: "← Todas as lições",
+      trueLabel: "VERDADEIRA",
+      falseLabel: "FALSA",
+      ptsLabel: "pts",
+      resultTitle: 'Jogo<br><span>concluído!</span>',
+      maxScore: n => `de ${n} pontos`,
+      correctLabel: "Acertos",
+      wrongLabel: "Erros / Tempo",
+      bestLabel: "Melhor tempo",
+      avgLabel: "Tempo médio",
+      btnRestart: "Jogar novamente 🔄",
+      timeUp: "Tempo esgotado!",
+      correctFeedback: "Correto!",
+      wrongFeedback: "Errado!",
+      ptsZero: "<strong>+0 pontos</strong>",
+      ptsEarned: (pts, s) => `+<strong>${pts} pontos</strong> (${s}s)`,
+      msgLow: "Continue estudando! Você consegue melhorar. 💪",
+      msgMid: "Bom esforço! Revise a Lição I e tente de novo. 📖",
+      msgGood: "Muito bom! Mais um pouco de treino e você chega lá. 😊",
+      msgGreat: "Incrível! Você é um verdadeiro cidadão de Proposia! 🏆"
+    },
+    en: {
+      pageTitle: "In the World of Logic — Lesson I",
+      htmlLang: "en",
+      badge: "In the World of Logic · Lesson I",
+      title: 'Welcome to<br><span>Propositia!</span>',
+      subtitle: "Each sentence below is a proposition. Can you tell whether it's <strong>true</strong> or <strong>false</strong>?",
+      rulesTitle: "How to play",
+      rule1: "Read the proposition carefully",
+      rule2: 'Click 😊 if it is <strong>true</strong>',
+      rule3: 'Click 😢 if it is <strong>false</strong>',
+      rule4: 'Each proposition gives you <strong>10 seconds</strong>',
+      rule5: "Faster answers = more points!",
+      btnStart: "Enter Propositia ▶",
+      backLink: "← All lessons",
+      trueLabel: "TRUE",
+      falseLabel: "FALSE",
+      ptsLabel: "pts",
+      resultTitle: 'Game<br><span>complete!</span>',
+      maxScore: n => `out of ${n} points`,
+      correctLabel: "Correct",
+      wrongLabel: "Wrong / Timeout",
+      bestLabel: "Best time",
+      avgLabel: "Average time",
+      btnRestart: "Play again 🔄",
+      timeUp: "Time's up!",
+      correctFeedback: "Correct!",
+      wrongFeedback: "Wrong!",
+      ptsZero: "<strong>+0 points</strong>",
+      ptsEarned: (pts, s) => `+<strong>${pts} points</strong> (${s}s)`,
+      msgLow: "Keep studying! You can do better. 💪",
+      msgMid: "Good effort! Review Lesson I and try again. 📖",
+      msgGood: "Very good! A bit more practice and you'll get there. 😊",
+      msgGreat: "Amazing! You're a true citizen of Propositia! 🏆"
+    }
+  };
+
+  /* ── QUESTÕES / QUESTIONS (bilíngue) ──────────────── */
   const QUESTIONS = [
     {
-      text: "Jesus Cristo é o Filho de Deus.",
+      text:    { pt: "Jesus Cristo é o Filho de Deus.", en: "Jesus Christ is the Son of God." },
       answer: true,
-      explanation: "Verdade central da fé cristã. João 3:16 confirma que Deus enviou Seu Filho unigênito ao mundo."
+      explanation: {
+        pt: "Verdade central da fé cristã. João 3:16 confirma que Deus enviou Seu Filho unigênito ao mundo.",
+        en: "A central truth of the Christian faith. John 3:16 confirms that God sent His one and only Son into the world."
+      }
     },
     {
-      text: "A soma dos ângulos internos de um triângulo é 90°.",
+      text:    { pt: "A soma dos ângulos internos de um triângulo é 90°.", en: "The sum of the interior angles of a triangle is 90°." },
       answer: false,
-      explanation: "A soma dos ângulos internos de qualquer triângulo é sempre 180°, não 90°."
+      explanation: {
+        pt: "A soma dos ângulos internos de qualquer triângulo é sempre 180°, não 90°.",
+        en: "The sum of the interior angles of any triangle is always 180°, not 90°."
+      }
     },
     {
-      text: "O valor de 2³ é igual a 8.",
+      text:    { pt: "O valor de 2³ é igual a 8.", en: "The value of 2³ is equal to 8." },
       answer: true,
-      explanation: "2³ = 2 × 2 × 2 = 8. Correto!"
+      explanation: {
+        pt: "2³ = 2 × 2 × 2 = 8. Correto!",
+        en: "2³ = 2 × 2 × 2 = 8. Correct!"
+      }
     },
     {
-      text: "A Bíblia Cristã é dividida em Antigo e Novo Testamento.",
+      text:    { pt: "A Bíblia Cristã é dividida em Antigo e Novo Testamento.", en: "The Christian Bible is divided into the Old and New Testaments." },
       answer: true,
-      explanation: "Sim! O Antigo Testamento tem 39 livros e o Novo Testamento tem 27 livros."
+      explanation: {
+        pt: "Sim! O Antigo Testamento tem 39 livros e o Novo Testamento tem 27 livros.",
+        en: "Yes! The Old Testament has 39 books and the New Testament has 27 books."
+      }
     },
     {
-      text: "5 × 3 − 10 = 0",
+      text:    { pt: "5 × 3 − 10 = 0", en: "5 × 3 − 10 = 0" },
       answer: false,
-      explanation: "5 × 3 = 15, e 15 − 10 = 5, não 0."
+      explanation: {
+        pt: "5 × 3 = 15, e 15 − 10 = 5, não 0.",
+        en: "5 × 3 = 15, and 15 − 10 = 5, not 0."
+      }
     },
     {
-      text: "A raiz quadrada de 144 é 12.",
+      text:    { pt: "A raiz quadrada de 144 é 12.", en: "The square root of 144 is 12." },
       answer: true,
-      explanation: "12 × 12 = 144. Correto!"
+      explanation: {
+        pt: "12 × 12 = 144. Correto!",
+        en: "12 × 12 = 144. Correct!"
+      }
     },
     {
-      text: "Jesus nasceu na cidade de Roma.",
+      text:    { pt: "Jesus nasceu na cidade de Roma.", en: "Jesus was born in the city of Rome." },
       answer: false,
-      explanation: "Jesus nasceu em Belém, conforme os Evangelhos de Mateus e Lucas."
+      explanation: {
+        pt: "Jesus nasceu em Belém, conforme os Evangelhos de Mateus e Lucas.",
+        en: "Jesus was born in Bethlehem, according to the Gospels of Matthew and Luke."
+      }
     },
     {
-      text: "Jesus Cristo ressuscitou.",
+      text:    { pt: "Jesus Cristo ressuscitou.", en: "Jesus Christ rose from the dead." },
       answer: true,
-      explanation: "A ressurreição de Cristo é o coração do Evangelho (1 Coríntios 15:3–4)."
+      explanation: {
+        pt: "A ressurreição de Cristo é o coração do Evangelho (1 Coríntios 15:3–4).",
+        en: "The resurrection of Christ is the heart of the Gospel (1 Corinthians 15:3–4)."
+      }
     },
     {
-      text: "O resultado de 15 × 3 é 45.",
+      text:    { pt: "O resultado de 15 × 3 é 45.", en: "The result of 15 × 3 is 45." },
       answer: true,
-      explanation: "15 × 3 = 45. Correto!"
+      explanation: {
+        pt: "15 × 3 = 45. Correto!",
+        en: "15 × 3 = 45. Correct!"
+      }
     },
     {
-      text: "O triângulo equilátero possui todos os lados com medidas diferentes.",
+      text:    { pt: "O triângulo equilátero possui todos os lados com medidas diferentes.", en: "An equilateral triangle has all sides of different lengths." },
       answer: false,
-      explanation: "No triângulo equilátero todos os três lados são iguais. Lados diferentes caracterizam o triângulo escaleno."
+      explanation: {
+        pt: "No triângulo equilátero todos os três lados são iguais. Lados diferentes caracterizam o triângulo escaleno.",
+        en: "In an equilateral triangle all three sides are equal. Different side lengths are what characterize a scalene triangle."
+      }
     }
   ];
 
-  /* ── ESTADO ──────────────────────────────────────── */
-  const TIME_PER_Q = 10;   // segundos por questão
-  const MAX_PTS    = 100;  // pontos máximos por questão
+  /* ── ESTADO / STATE ──────────────────────────────── */
+  const TIME_PER_Q = 10;   // segundos por questão / seconds per question
+  const MAX_PTS    = 100;  // pontos máximos por questão / max points per question
+
+  let LANG = 'pt';
+  try {
+    const saved = localStorage.getItem('nml_lang');
+    if (saved === 'pt' || saved === 'en') LANG = saved;
+  } catch (e) { /* localStorage indisponível / unavailable — mantém pt / keep default */ }
 
   let currentQ, score, timerInterval, qStart;
   let correctCount, wrongCount, times;
 
-  /* ── UTILITÁRIOS ─────────────────────────────────── */
+  /* ── UTILITÁRIOS / UTILITIES ─────────────────────── */
   function shuffle(arr) {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
@@ -514,7 +650,52 @@
     document.getElementById(id).classList.add('active');
   }
 
-  /* ── JOGO ────────────────────────────────────────── */
+  /* ── IDIOMA / LANGUAGE ───────────────────────────── */
+  function setLang(lang) {
+    LANG = lang;
+    try { localStorage.setItem('nml_lang', lang); } catch (e) { /* ignore */ }
+    applyLanguage();
+    // Se já houver uma questão carregada, atualiza o texto dela também
+    // If a question is already loaded, refresh its text too
+    if (typeof questions !== 'undefined' && questions && questions[currentQ] &&
+        document.getElementById('screen-game').classList.contains('active')) {
+      document.getElementById('question-text').textContent = questions[currentQ].text[LANG];
+    }
+  }
+
+  function applyLanguage() {
+    const s = STRINGS[LANG];
+    document.documentElement.lang = s.htmlLang;
+    document.title = s.pageTitle;
+
+    document.getElementById('lang-btn-pt').classList.toggle('active', LANG === 'pt');
+    document.getElementById('lang-btn-en').classList.toggle('active', LANG === 'en');
+
+    document.getElementById('t-badge').textContent = s.badge;
+    document.getElementById('t-title').innerHTML = s.title;
+    document.getElementById('t-subtitle').innerHTML = s.subtitle;
+    document.getElementById('t-rules-title').textContent = s.rulesTitle;
+    document.getElementById('t-rule1').textContent = s.rule1;
+    document.getElementById('t-rule2').innerHTML = s.rule2;
+    document.getElementById('t-rule3').innerHTML = s.rule3;
+    document.getElementById('t-rule4').innerHTML = s.rule4;
+    document.getElementById('t-rule5').textContent = s.rule5;
+    document.getElementById('t-btn-start').textContent = s.btnStart;
+    document.getElementById('t-back-1').textContent = s.backLink;
+    document.getElementById('t-back-2').textContent = s.backLink;
+    document.getElementById('t-pts-label').textContent = s.ptsLabel;
+    document.getElementById('t-true-label').textContent = s.trueLabel;
+    document.getElementById('t-false-label').textContent = s.falseLabel;
+    document.getElementById('t-result-title').innerHTML = s.resultTitle;
+    document.getElementById('t-max-score').textContent = s.maxScore(QUESTIONS.length * MAX_PTS);
+    document.getElementById('t-correct-label').textContent = s.correctLabel;
+    document.getElementById('t-wrong-label').textContent = s.wrongLabel;
+    document.getElementById('t-best-label').textContent = s.bestLabel;
+    document.getElementById('t-avg-label').textContent = s.avgLabel;
+    document.getElementById('t-btn-restart').textContent = s.btnRestart;
+  }
+
+  /* ── JOGO / GAME ─────────────────────────────────── */
   let questions;
 
   function startGame() {
@@ -532,7 +713,7 @@
     if (currentQ >= questions.length) { endGame(); return; }
 
     const q = questions[currentQ];
-    document.getElementById('question-text').textContent = q.text;
+    document.getElementById('question-text').textContent = q.text[LANG];
     document.getElementById('counter').textContent = `${currentQ + 1} / ${questions.length}`;
     document.getElementById('live-score').textContent = score;
 
@@ -584,10 +765,11 @@
       wrongCount++;
     }
 
-    showFeedback(correct, timeout, pts, q.explanation, elapsed);
+    showFeedback(correct, timeout, pts, q.explanation[LANG], elapsed);
   }
 
   function showFeedback(correct, timeout, pts, explanation, elapsed) {
+    const s       = STRINGS[LANG];
     const overlay = document.getElementById('feedback');
     const icon    = document.getElementById('fb-icon');
     const title   = document.getElementById('fb-title');
@@ -596,25 +778,25 @@
 
     if (timeout) {
       icon.textContent  = '⏱️';
-      title.textContent = 'Tempo esgotado!';
+      title.textContent = s.timeUp;
       title.className   = 'feedback-title wrong';
-      ptsEl.innerHTML   = '<strong>+0 pontos</strong>';
+      ptsEl.innerHTML   = s.ptsZero;
     } else if (correct) {
       icon.textContent  = '😊';
-      title.textContent = 'Correto!';
+      title.textContent = s.correctFeedback;
       title.className   = 'feedback-title correct';
-      ptsEl.innerHTML   = `+<strong>${pts} pontos</strong> (${elapsed.toFixed(1)}s)`;
+      ptsEl.innerHTML   = s.ptsEarned(pts, elapsed.toFixed(1));
     } else {
       icon.textContent  = '😢';
-      title.textContent = 'Errado!';
+      title.textContent = s.wrongFeedback;
       title.className   = 'feedback-title wrong';
-      ptsEl.innerHTML   = '<strong>+0 pontos</strong>';
+      ptsEl.innerHTML   = s.ptsZero;
     }
 
     expEl.textContent = explanation;
     overlay.classList.add('show');
 
-    // Auto-advance após 2s
+    // Auto-advance após 2s / Auto-advance after ~3.5s
     setTimeout(() => {
       overlay.classList.remove('show');
       currentQ++;
@@ -622,8 +804,9 @@
     }, 3500);
   }
 
-  /* ── FIM DE JOGO ─────────────────────────────────── */
+  /* ── FIM DE JOGO / END OF GAME ───────────────────── */
   function endGame() {
+    const s = STRINGS[LANG];
     showScreen('screen-result');
     document.getElementById('final-score').textContent = score;
     document.getElementById('res-correct').textContent = correctCount;
@@ -640,16 +823,16 @@
     // Stars
     const pct = score / (QUESTIONS.length * MAX_PTS);
     let stars = '⭐';
-    let msg   = 'Continue estudando! Você consegue melhorar. 💪';
+    let msg   = s.msgLow;
     if (pct >= 0.9) {
       stars = '⭐⭐⭐';
-      msg   = 'Incrível! Você é um verdadeiro cidadão de Proposia! 🏆';
+      msg   = s.msgGreat;
     } else if (pct >= 0.7) {
       stars = '⭐⭐';
-      msg   = 'Muito bom! Mais um pouco de treino e você chega lá. 😊';
+      msg   = s.msgGood;
     } else if (pct >= 0.5) {
       stars = '⭐½';
-      msg   = 'Bom esforço! Revise a Lição I e tente de novo. 📖';
+      msg   = s.msgMid;
     }
 
     document.getElementById('result-stars').textContent = stars;
@@ -657,6 +840,9 @@
   }
 
   function restartGame() { startGame(); }
+
+  /* ── INICIALIZAÇÃO / INIT ────────────────────────── */
+  applyLanguage();
 </script>
 </body>
 </html>

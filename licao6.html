@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>No Mundo da Lógica — Lição VI</title>
+  <title>No Mundo da Lógica / In the World of Logic — Lição VI / Lesson VI</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a2a1a,#0a3a1a,#1a4a2a);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff;overflow:hidden}
     .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
     .screen.active{display:flex}
+
+    /* LANGUAGE SWITCH */
+    .lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+    .lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+    .lang-btn.active{background:#7effd4;color:#0a2a1a}
+
     .badge{background:rgba(255,255,255,.12);border:1px solid rgba(100,255,150,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#7effd4}
     .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
     .title span{color:#7effd4}
@@ -51,28 +57,32 @@
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição VI</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🫧</div>
-  <div class="title">Bolhas do<br><span>General E</span></div>
-  <p class="subtitle">O General E (∧) só aprova quando AMBAS as proposições são verdadeiras! Estoure a bolha com a resposta certa antes que ela suba.</p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li>Duas proposições e seus valores são mostrados</li>
-      <li>Bolhas sobem com possíveis respostas para <strong>p ∧ q</strong></li>
-      <li>Toque na bolha com o valor correto</li>
-      <li>Bolha errada = 0 pontos. Mais rápido = mais pontos!</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
+      <li id="t-rule4"></li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Apresentar-se ao General E ▶</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <div id="screen-game" class="screen" style="gap:10px">
   <div class="hud">
-    <div><div class="hud-val" id="score-hud">0 pts</div><div class="hud-label">Pontos</div></div>
-    <div style="text-align:center"><div class="hud-val" id="q-hud">1/10</div><div class="hud-label">Questão</div></div>
-    <div style="text-align:right"><div class="hud-val" id="streak-hud">0🔥</div><div class="hud-label">Sequência</div></div>
+    <div><div class="hud-val" id="score-hud">0 pts</div><div class="hud-label" id="t-hud-pts"></div></div>
+    <div style="text-align:center"><div class="hud-val" id="q-hud">1/10</div><div class="hud-label" id="t-hud-question"></div></div>
+    <div style="text-align:right"><div class="hud-val" id="streak-hud">0🔥</div><div class="hud-label" id="t-hud-streak"></div></div>
   </div>
   <div class="prop-panel">
     <div class="prop-col">
@@ -85,43 +95,170 @@
       <div class="prop-col-text" id="q-text"></div>
     </div>
   </div>
-  <p class="instruction">Estoure a bolha com o valor de <strong>p ∧ q</strong> :</p>
+  <p class="instruction" id="t-instruction"></p>
   <div id="game-canvas-container">
     <canvas id="game-canvas" width="400" height="220"></canvas>
   </div>
 </div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">General E<br><span>satisfeito!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div style="font-size:2.2rem" id="result-stars"></div>
   <div class="score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1000+ pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="sum-grid">
-    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl">Acertos</div></div>
-    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros</div></div>
+    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl" id="t-correct-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
+/* ── TEXTOS DA INTERFACE / UI STRINGS ─────────────── */
+const STRINGS = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição VI",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição VI",
+    title: 'Bolhas do<br><span>General E</span>',
+    subtitle: 'O General E (∧) só aprova quando AMBAS as proposições são verdadeiras! Estoure a bolha com a resposta certa antes que ela suba.',
+    rulesTitle: "Como jogar",
+    rule1: "Duas proposições e seus valores são mostrados",
+    rule2: 'Bolhas sobem com possíveis respostas para <strong>p ∧ q</strong>',
+    rule3: "Toque na bolha com o valor correto",
+    rule4: "Bolha errada = 0 pontos. Mais rápido = mais pontos!",
+    btnStart: "Apresentar-se ao General E ▶",
+    backLink: "← Todas as lições",
+    hudPts: "Pontos",
+    hudQuestion: "Questão",
+    hudStreak: "Sequência",
+    instruction: 'Estoure a bolha com o valor de <strong>p ∧ q</strong> :',
+    ptsSuffix: " pts",
+    resultTitle: 'General E<br><span>satisfeito!</span>',
+    maxScore: n => `de ${n}+ pontos`,
+    correctLabel: "Acertos",
+    wrongLabel: "Erros",
+    btnRestart: "Jogar novamente 🔄",
+    trueLetter: "V",
+    falseLetter: "F",
+    msgLow: "Continue treinando a conjunção! 📖",
+    msgMid: "Bom esforço! Lembre: conjunção só é V se AMBAS as partes forem V. 💪",
+    msgGood: "Muito bom! Você domina a conjunção! 😊",
+    msgGreat: "O General E está muito orgulhoso de você! 🏆"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson VI",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson VI",
+    title: 'Bubbles of<br><span>General AND</span>',
+    subtitle: 'General AND (∧) only approves when BOTH propositions are true! Pop the bubble with the right answer before it rises.',
+    rulesTitle: "How to play",
+    rule1: "Two propositions and their values are shown",
+    rule2: 'Bubbles rise with possible answers for <strong>p ∧ q</strong>',
+    rule3: "Tap the bubble with the correct value",
+    rule4: "Wrong bubble = 0 points. Faster = more points!",
+    btnStart: "Report to General AND ▶",
+    backLink: "← All lessons",
+    hudPts: "Points",
+    hudQuestion: "Question",
+    hudStreak: "Streak",
+    instruction: 'Pop the bubble with the value of <strong>p ∧ q</strong>:',
+    ptsSuffix: " pts",
+    resultTitle: 'General AND<br><span>satisfied!</span>',
+    maxScore: n => `out of ${n}+ points`,
+    correctLabel: "Correct",
+    wrongLabel: "Wrong",
+    btnRestart: "Play again 🔄",
+    trueLetter: "T",
+    falseLetter: "F",
+    msgLow: "Keep practicing conjunction! 📖",
+    msgMid: "Good effort! Remember: conjunction is only T if BOTH parts are T. 💪",
+    msgGood: "Very good! You've mastered conjunction! 😊",
+    msgGreat: "General AND is very proud of you! 🏆"
+  }
+};
+
+/* ── QUESTÕES / QUESTIONS (bilíngue) ──────────────── */
 const QUESTIONS = [
-  {p:"Jesus ressuscitou.",pV:true, q:"Deus é Santo.",qV:true},
-  {p:"O triângulo tem 3 lados.",pV:true, q:"O sol é feito de gelo.",qV:false},
-  {p:"O pecado é bom.",pV:false, q:"Deus é o Criador.",qV:true},
-  {p:"2 + 2 = 5",pV:false, q:"Judas foi fiel.",qV:false},
-  {p:"Deus é Fiel.",pV:true, q:"Deus é Justo.",qV:true},
-  {p:"O fogo queima.",pV:true, q:"A neve é quente.",qV:false},
-  {p:"Davi foi rei de Israel.",pV:true, q:"Golias era um gigante.",qV:true},
-  {p:"O homem pecou.",pV:true, q:"Jesus é mentiroso.",qV:false},
-  {p:"Noé construiu uma arca.",pV:true, q:"Moisés era egípcio.",qV:false},
-  {p:"A Bíblia tem 66 livros.",pV:true, q:"O AT tem 39 livros.",qV:true},
+  {p:{pt:"Jesus ressuscitou.",en:"Jesus rose from the dead."},pV:true, q:{pt:"Deus é Santo.",en:"God is Holy."},qV:true},
+  {p:{pt:"O triângulo tem 3 lados.",en:"The triangle has 3 sides."},pV:true, q:{pt:"O sol é feito de gelo.",en:"The sun is made of ice."},qV:false},
+  {p:{pt:"O pecado é bom.",en:"Sin is good."},pV:false, q:{pt:"Deus é o Criador.",en:"God is the Creator."},qV:true},
+  {p:{pt:"2 + 2 = 5",en:"2 + 2 = 5"},pV:false, q:{pt:"Judas foi fiel.",en:"Judas was faithful."},qV:false},
+  {p:{pt:"Deus é Fiel.",en:"God is Faithful."},pV:true, q:{pt:"Deus é Justo.",en:"God is Just."},qV:true},
+  {p:{pt:"O fogo queima.",en:"Fire burns."},pV:true, q:{pt:"A neve é quente.",en:"Snow is hot."},qV:false},
+  {p:{pt:"Davi foi rei de Israel.",en:"David was king of Israel."},pV:true, q:{pt:"Golias era um gigante.",en:"Goliath was a giant."},qV:true},
+  {p:{pt:"O homem pecou.",en:"Man sinned."},pV:true, q:{pt:"Jesus é mentiroso.",en:"Jesus is a liar."},qV:false},
+  {p:{pt:"Noé construiu uma arca.",en:"Noah built an ark."},pV:true, q:{pt:"Moisés era egípcio.",en:"Moses was Egyptian."},qV:false},
+  {p:{pt:"A Bíblia tem 66 livros.",en:"The Bible has 66 books."},pV:true, q:{pt:"O AT tem 39 livros.",en:"The Old Testament has 39 books."},qV:true},
 ];
 
-// Canvas bubble game
+const POINTS_PER_Q = 100; // base máximo por questão / base max per question, used for the "max score" estimate
+
+/* ── IDIOMA / LANGUAGE ────────────────────────────── */
+let LANG = 'pt';
+try {
+  const saved = localStorage.getItem('nml_lang');
+  if (saved === 'pt' || saved === 'en') LANG = saved;
+} catch (e) { /* localStorage indisponível / unavailable — mantém pt / keep default */ }
+
+function setLang(lang) {
+  LANG = lang;
+  try { localStorage.setItem('nml_lang', lang); } catch (e) { /* ignore */ }
+  applyChrome();
+  // Se uma questão já estiver em andamento, atualiza seu texto também
+  // If a question is already in progress, refresh its text too
+  if (typeof questions !== 'undefined' && questions && questions[current] &&
+      document.getElementById('screen-game').classList.contains('active')) {
+    refreshQuestionText();
+  }
+}
+
+function applyChrome() {
+  const s = STRINGS[LANG];
+  document.documentElement.lang = s.htmlLang;
+  document.title = s.pageTitle;
+
+  document.getElementById('lang-btn-pt').classList.toggle('active', LANG === 'pt');
+  document.getElementById('lang-btn-en').classList.toggle('active', LANG === 'en');
+
+  document.getElementById('t-badge').textContent = s.badge;
+  document.getElementById('t-title').innerHTML = s.title;
+  document.getElementById('t-subtitle').innerHTML = s.subtitle;
+  document.getElementById('t-rules-title').textContent = s.rulesTitle;
+  document.getElementById('t-rule1').textContent = s.rule1;
+  document.getElementById('t-rule2').innerHTML = s.rule2;
+  document.getElementById('t-rule3').textContent = s.rule3;
+  document.getElementById('t-rule4').textContent = s.rule4;
+  document.getElementById('t-btn-start').textContent = s.btnStart;
+  document.getElementById('t-back-1').textContent = s.backLink;
+  document.getElementById('t-back-2').textContent = s.backLink;
+  document.getElementById('t-hud-pts').textContent = s.hudPts;
+  document.getElementById('t-hud-question').textContent = s.hudQuestion;
+  document.getElementById('t-hud-streak').textContent = s.hudStreak;
+  document.getElementById('t-instruction').innerHTML = s.instruction;
+  document.getElementById('t-result-title').innerHTML = s.resultTitle;
+  document.getElementById('t-max-score').textContent = s.maxScore(QUESTIONS.length * POINTS_PER_Q);
+  document.getElementById('t-correct-label').textContent = s.correctLabel;
+  document.getElementById('t-wrong-label').textContent = s.wrongLabel;
+  document.getElementById('t-btn-restart').textContent = s.btnRestart;
+
+  // HUD values that include translated suffixes/labels
+  document.getElementById('score-hud').textContent = score + s.ptsSuffix;
+  document.getElementById('streak-hud').textContent = streak + '🔥';
+}
+
+function refreshQuestionText() {
+  const s = STRINGS[LANG];
+  const q = questions[current];
+  document.getElementById('p-text').textContent = q.p[LANG]+' ('+(q.pV?s.trueLetter:s.falseLetter)+')';
+  document.getElementById('q-text').textContent = q.q[LANG]+' ('+(q.qV?s.trueLetter:s.falseLetter)+')';
+}
+
+/* Canvas bubble game */
 const canvas=document.getElementById('game-canvas');
 const ctx=canvas.getContext('2d');
 let bubbles=[],animId,qStart,gameActive=false;
@@ -135,32 +272,33 @@ function startGame(){questions=shuffle(QUESTIONS);current=0;score=0;streak=0;cor
 
 function loadQ(){
   if(current>=questions.length){endGame();return}
+  const s=STRINGS[LANG];
   const q=questions[current];
   const result=(q.pV&&q.qV);
-  document.getElementById('p-text').textContent=q.p+' ('+(q.pV?'V':'F')+')';
-  document.getElementById('q-text').textContent=q.q+' ('+(q.qV?'V':'F')+')';
-  document.getElementById('q-hud').textContent=`${current+1}/10`;
-  document.getElementById('score-hud').textContent=score+' pts';
+  refreshQuestionText();
+  document.getElementById('q-hud').textContent=`${current+1}/${questions.length}`;
+  document.getElementById('score-hud').textContent=score+s.ptsSuffix;
   document.getElementById('streak-hud').textContent=streak+'🔥';
   spawnBubbles(result);
   qStart=Date.now();
 }
 
-function spawnBubbles(correctIsV){
+function spawnBubbles(correctIsTrue){
   cancelAnimationFrame(animId);
   bubbles=[];
   const w=canvas.width,h=canvas.height;
   // Correct bubble
   const cx=100+Math.random()*(w-200);
-  bubbles.push({x:cx,y:h-30,vy:-0.6-Math.random()*0.4,r:42,label:correctIsV?'V':'F',correct:true,alpha:1,popped:false,color:correctIsV?'#00c87a':'#ff6b6b'});
+  bubbles.push({x:cx,y:h-30,vy:-0.6-Math.random()*0.4,r:42,isTrue:correctIsTrue,correct:true,alpha:1,popped:false,color:correctIsTrue?'#00c87a':'#ff6b6b'});
   // Wrong bubble
   const wx=100+Math.random()*(w-200);
-  bubbles.push({x:wx,y:h-80,vy:-0.5-Math.random()*0.3,r:38,label:correctIsV?'F':'V',correct:false,alpha:1,popped:false,color:correctIsV?'#ff6b6b':'#00c87a'});
+  bubbles.push({x:wx,y:h-80,vy:-0.5-Math.random()*0.3,r:38,isTrue:!correctIsTrue,correct:false,alpha:1,popped:false,color:correctIsTrue?'#ff6b6b':'#00c87a'});
   gameActive=true;
   animateBubbles();
 }
 
 function animateBubbles(){
+  const s=STRINGS[LANG];
   ctx.clearRect(0,0,canvas.width,canvas.height);
   let allGone=true;
   bubbles.forEach(b=>{
@@ -182,7 +320,7 @@ function animateBubbles(){
     ctx.fillStyle=grad;ctx.fill();
     ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=2;ctx.stroke();
     ctx.fillStyle='#fff';ctx.font=`bold ${b.r*.7}px Segoe UI`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(b.label,b.x,b.y);
+    ctx.fillText(b.isTrue?s.trueLetter:s.falseLetter,b.x,b.y);
     ctx.restore();
   });
   if(allGone&&gameActive){
@@ -218,32 +356,37 @@ canvas.addEventListener('pointerdown',e=>{
 });
 
 function handleResult(ok,elapsed){
+  const s=STRINGS[LANG];
   let pts=0;
   if(ok){
     pts=Math.max(30,Math.round(100-(elapsed/8)*70));
     streak++;pts+=streak>2?20:0;
     score+=pts;correctCount++;
   } else {streak=0;wrongCount++}
-  document.getElementById('score-hud').textContent=score+' pts';
+  document.getElementById('score-hud').textContent=score+s.ptsSuffix;
   document.getElementById('streak-hud').textContent=streak+'🔥';
   setTimeout(()=>{current++;loadQ()},ok?500:800);
 }
 
 function endGame(){
+  const s=STRINGS[LANG];
   cancelAnimationFrame(animId);
   show('screen-result');
   document.getElementById('final-score').textContent=score;
   document.getElementById('r-correct').textContent=correctCount;
   document.getElementById('r-wrong').textContent=wrongCount;
   const pct=correctCount/QUESTIONS.length;
-  let stars='⭐',msg='Continue treinando a conjunção! 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='O General E está muito orgulhoso de você! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você domina a conjunção! 😊'}
-  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Lembre: conjunção só é V se AMBAS as partes forem V. 💪'}
+  let stars='⭐',msg=s.msgLow;
+  if(pct>=.9){stars='⭐⭐⭐';msg=s.msgGreat}
+  else if(pct>=.7){stars='⭐⭐';msg=s.msgGood}
+  else if(pct>=.5){stars='⭐½';msg=s.msgMid}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;
 }
 function restartGame(){startGame()}
+
+/* ── INICIALIZAÇÃO / INIT ─────────────────────────── */
+applyChrome();
 </script>
 </body>
 </html>

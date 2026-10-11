@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>No Mundo da Lógica — Lição V</title>
+  <title>No Mundo da Lógica / In the World of Logic — Lição V / Lesson V</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#2a1a3a,#3a0d4f,#4a1a5c);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
     .screen{display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;gap:16px}
     .screen.active{display:flex}
+
+    /* LANGUAGE SWITCH */
+    .lang-switch{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:4px}
+    .lang-btn{border:none;background:transparent;color:rgba(255,255,255,.6);font-size:.78rem;font-weight:700;letter-spacing:.5px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:background .15s,color .15s}
+    .lang-btn.active{background:#e8aaff;color:#2a1a3a}
+
     .badge{background:rgba(255,255,255,.12);border:1px solid rgba(220,180,255,.4);border-radius:50px;padding:5px 16px;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:#ddb6ff}
     .title{font-size:1.9rem;font-weight:800;text-align:center;line-height:1.15}
     .title span{color:#e8aaff}
@@ -71,43 +77,47 @@
 <body>
 
 <div id="screen-start" class="screen active">
-  <div class="badge">No Mundo da Lógica · Lição V</div>
+  <div class="lang-switch">
+    <button class="lang-btn" id="lang-btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="badge" id="t-badge"></div>
   <div style="font-size:4.5rem;animation:float 3s ease-in-out infinite">🔗</div>
-  <div class="title">Caça ao<br><span>Conectivo</span></div>
-  <p class="subtitle">As proposições compostas chegaram a Proposia, mas seus conectivos estão escondidos! Identifique o símbolo correto.</p>
+  <div class="title" id="t-title"></div>
+  <p class="subtitle" id="t-subtitle"></p>
   <div class="rules-box">
-    <h3>Como jogar</h3>
+    <h3 id="t-rules-title"></h3>
     <ul>
-      <li>Leia a proposição composta</li>
-      <li>A palavra-chave está marcada em amarelo</li>
-      <li>Toque no símbolo correto dentre os cinco</li>
-      <li>Cada questão tem 8 segundos</li>
+      <li id="t-rule1"></li>
+      <li id="t-rule2"></li>
+      <li id="t-rule3"></li>
+      <li id="t-rule4"></li>
     </ul>
   </div>
-  <button class="btn-primary" onclick="startGame()">Iniciar Caça ▶</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-start" onclick="startGame()"></button>
+  <a href="index.html" id="t-back-1" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <div id="screen-game" class="screen">
   <div class="top-bar">
     <span class="counter" id="counter">1 / 10</span>
-    <span class="score-display">⭐ <span id="live-score">0</span> pts</span>
+    <span class="score-display">⭐ <span id="live-score">0</span> <span id="t-pts-label"></span></span>
   </div>
   <div class="timer-wrap"><div id="timer-bar"></div></div>
   <div class="prop-display">
     <div class="prop-text" id="prop-text"></div>
     <div class="slot-row">
-      <span class="slot-label">Conectivo:</span>
+      <span class="slot-label" id="t-slot-label"></span>
       <div class="slot-box" id="slot-box">?</div>
       <span id="conn-name" style="font-size:.8rem;color:#666"></span>
     </div>
   </div>
   <div class="symbols-grid" id="symbols-grid">
-    <button class="sym-btn" onclick="answer('∧','Conjunção')"><span>∧</span><span class="name">conjunção</span></button>
-    <button class="sym-btn" onclick="answer('∨','Disjunção')"><span>∨</span><span class="name">disjunção</span></button>
-    <button class="sym-btn" onclick="answer('→','Condicional')"><span>→</span><span class="name">condicional</span></button>
-    <button class="sym-btn" onclick="answer('↔','Bicondicional')"><span>↔</span><span class="name">bicondicional</span></button>
-    <button class="sym-btn" onclick="answer('¬','Negação')"><span>¬</span><span class="name">negação</span></button>
+    <button class="sym-btn" onclick="answer('∧')"><span>∧</span><span class="name" id="t-sym-and"></span></button>
+    <button class="sym-btn" onclick="answer('∨')"><span>∨</span><span class="name" id="t-sym-or"></span></button>
+    <button class="sym-btn" onclick="answer('→')"><span>→</span><span class="name" id="t-sym-if"></span></button>
+    <button class="sym-btn" onclick="answer('↔')"><span>↔</span><span class="name" id="t-sym-iff"></span></button>
+    <button class="sym-btn" onclick="answer('¬')"><span>¬</span><span class="name" id="t-sym-not"></span></button>
   </div>
 </div>
 
@@ -116,46 +126,278 @@
     <div class="fb-icon" id="fb-icon"></div>
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-info"  id="fb-info"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px">Toque para continuar</p>
+    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-tap-continue"></p>
   </div>
 </div>
 
 <div id="screen-result" class="screen">
-  <div class="result-header">Conectivos<br><span>revelados!</span></div>
+  <div class="result-header" id="t-result-title"></div>
   <div style="font-size:2.2rem" id="result-stars"></div>
   <div class="score-box">
     <div class="big-score" id="final-score">0</div>
-    <div class="max-score">de 1000 pontos</div>
+    <div class="max-score" id="t-max-score"></div>
   </div>
   <p class="result-msg" id="result-msg"></p>
   <div class="sum-grid">
-    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl">Acertos</div></div>
-    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl">Erros/Tempo</div></div>
+    <div class="sum-item"><div class="val" id="r-correct">0</div><div class="lbl" id="t-correct-label"></div></div>
+    <div class="sum-item"><div class="val" id="r-wrong">0</div><div class="lbl" id="t-wrong-label"></div></div>
   </div>
-  <button class="btn-primary" onclick="restartGame()">Jogar novamente 🔄</button>
-  <a href="index.html" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem">← Todas as lições</a>
+  <button class="btn-primary" id="t-btn-restart" onclick="restartGame()"></button>
+  <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
 <script>
+/* ── TEXTOS DA INTERFACE / UI STRINGS ─────────────── */
+const STRINGS = {
+  pt: {
+    pageTitle: "No Mundo da Lógica — Lição V",
+    htmlLang: "pt-BR",
+    badge: "No Mundo da Lógica · Lição V",
+    title: 'Caça ao<br><span>Conectivo</span>',
+    subtitle: 'As proposições compostas chegaram a Proposia, mas seus conectivos estão escondidos! Identifique o símbolo correto.',
+    rulesTitle: "Como jogar",
+    rule1: "Leia a proposição composta",
+    rule2: "A palavra-chave está marcada em amarelo",
+    rule3: "Toque no símbolo correto dentre os cinco",
+    rule4: "Cada questão tem 8 segundos",
+    btnStart: "Iniciar Caça ▶",
+    backLink: "← Todas as lições",
+    ptsLabel: "pts",
+    slotLabel: "Conectivo:",
+    symAnd: "conjunção",
+    symOr: "disjunção",
+    symIf: "condicional",
+    symIff: "bicondicional",
+    symNot: "negação",
+    connName: { '∧':'Conjunção', '∨':'Disjunção', '→':'Condicional', '↔':'Bicondicional', '¬':'Negação' },
+    tapContinue: "Toque para continuar",
+    resultTitle: 'Conectivos<br><span>revelados!</span>',
+    maxScore: n => `de ${n} pontos`,
+    correctLabel: "Acertos",
+    wrongLabel: "Erros/Tempo",
+    btnRestart: "Jogar novamente 🔄",
+    timeUp: "Tempo esgotado!",
+    correctFeedback: pts => `Correto! +${pts} pts`,
+    wrongFeedback: "Errado!",
+    msgLow: "Continue praticando os conectivos! 📖",
+    msgMid: "Bom esforço! Revise a tabela de conectivos da Lição V. 💪",
+    msgGood: "Muito bom! Você conhece bem os conectivos! 😊",
+    msgGreat: "Caçador de conectivos mestre! 🏆"
+  },
+  en: {
+    pageTitle: "In the World of Logic — Lesson V",
+    htmlLang: "en",
+    badge: "In the World of Logic · Lesson V",
+    title: 'Connective<br><span>Hunt</span>',
+    subtitle: 'Compound propositions have arrived in Propositia, but their connectives are hidden! Identify the correct symbol.',
+    rulesTitle: "How to play",
+    rule1: "Read the compound proposition",
+    rule2: "The key word is highlighted in yellow",
+    rule3: "Tap the correct symbol among the five",
+    rule4: "Each question has 8 seconds",
+    btnStart: "Start the Hunt ▶",
+    backLink: "← All lessons",
+    ptsLabel: "pts",
+    slotLabel: "Connective:",
+    symAnd: "conjunction",
+    symOr: "disjunction",
+    symIf: "conditional",
+    symIff: "biconditional",
+    symNot: "negation",
+    connName: { '∧':'Conjunction', '∨':'Disjunction', '→':'Conditional', '↔':'Biconditional', '¬':'Negation' },
+    tapContinue: "Tap to continue",
+    resultTitle: 'Connectives<br><span>revealed!</span>',
+    maxScore: n => `out of ${n} points`,
+    correctLabel: "Correct",
+    wrongLabel: "Wrong/Timeout",
+    btnRestart: "Play again 🔄",
+    timeUp: "Time's up!",
+    correctFeedback: pts => `Correct! +${pts} pts`,
+    wrongFeedback: "Wrong!",
+    msgLow: "Keep practicing the connectives! 📖",
+    msgMid: "Good effort! Review the connectives table from Lesson V. 💪",
+    msgGood: "Very good! You know the connectives well! 😊",
+    msgGreat: "Master connective hunter! 🏆"
+  }
+};
+
+/* ── QUESTÕES / QUESTIONS (bilíngue) ──────────────── */
 // text: HTML with <span class="highlight">keyword</span>
 const QUESTIONS = [
-  {text:'O céu proclama a glória de Deus <span class="highlight">e</span> o firmamento anuncia as obras de Suas mãos.',sym:'∧',name:'Conjunção',info:'A palavra "e" indica conjunção (∧). Ambas as partes precisam ser verdadeiras.'},
-  {text:'<span class="highlight">Se</span> o número é par, <span class="highlight">então</span> ele é divisível por dois.',sym:'→',name:'Condicional',info:'"Se... então..." é o conectivo condicional (→).'},
-  {text:'Iremos à igreja <span class="highlight">ou</span> ficaremos em casa estudando a Bíblia.',sym:'∨',name:'Disjunção',info:'A palavra "ou" indica disjunção (∨). Basta uma das partes ser verdadeira.'},
-  {text:'Um polígono é um triângulo <span class="highlight">se, e somente se,</span> possui três lados.',sym:'↔',name:'Bicondicional',info:'"Se e somente se" é a bicondicional (↔). As duas partes precisam ter o mesmo valor.'},
-  {text:'<span class="highlight">Não</span> é verdade que 2 + 2 = 5.',sym:'¬',name:'Negação',info:'"Não é verdade que..." indica negação (¬). Inverte o valor de verdade.'},
-  {text:'O Senhor é bom <span class="highlight">e</span> a Sua misericórdia dura para sempre.',sym:'∧',name:'Conjunção',info:'A palavra "e" indica conjunção (∧). Salmos 100:5!'},
-  {text:'<span class="highlight">Se</span> confessarmos os nossos pecados, <span class="highlight">então</span> Ele é fiel e justo para perdoar.',sym:'→',name:'Condicional',info:'"Se... então..." é o conectivo condicional (→). 1 João 1:9!'},
-  {text:'Você crê em Jesus <span class="highlight">ou</span> você está condenado.',sym:'∨',name:'Disjunção',info:'A palavra "ou" indica disjunção (∨).'},
-  {text:'5 × 4 = 20 <span class="highlight">se, e somente se,</span> 5 × 2 = 10.',sym:'↔',name:'Bicondicional',info:'"Se e somente se" é a bicondicional (↔). Ambas as partes são verdadeiras, então ↔ é V!'},
-  {text:'<span class="highlight">Se</span> somos filhos, <span class="highlight">então</span> somos também herdeiros.',sym:'→',name:'Condicional',info:'"Se... então..." é a condicional (→). Romanos 8:17!'},
+  {
+    text: {
+      pt: 'O céu proclama a glória de Deus <span class="highlight">e</span> o firmamento anuncia as obras de Suas mãos.',
+      en: 'The heavens declare the glory of God <span class="highlight">and</span> the sky above proclaims his handiwork.'
+    },
+    sym: '∧',
+    info: {
+      pt: 'A palavra "e" indica conjunção (∧). Ambas as partes precisam ser verdadeiras.',
+      en: 'The word "and" indicates conjunction (∧). Both parts need to be true.'
+    }
+  },
+  {
+    text: {
+      pt: '<span class="highlight">Se</span> o número é par, <span class="highlight">então</span> ele é divisível por dois.',
+      en: '<span class="highlight">If</span> the number is even, <span class="highlight">then</span> it is divisible by two.'
+    },
+    sym: '→',
+    info: {
+      pt: '"Se... então..." é o conectivo condicional (→).',
+      en: '"If... then..." is the conditional connective (→).'
+    }
+  },
+  {
+    text: {
+      pt: 'Iremos à igreja <span class="highlight">ou</span> ficaremos em casa estudando a Bíblia.',
+      en: 'We will go to church <span class="highlight">or</span> we will stay home studying the Bible.'
+    },
+    sym: '∨',
+    info: {
+      pt: 'A palavra "ou" indica disjunção (∨). Basta uma das partes ser verdadeira.',
+      en: 'The word "or" indicates disjunction (∨). It is enough for one of the parts to be true.'
+    }
+  },
+  {
+    text: {
+      pt: 'Um polígono é um triângulo <span class="highlight">se, e somente se,</span> possui três lados.',
+      en: 'A polygon is a triangle <span class="highlight">if, and only if,</span> it has three sides.'
+    },
+    sym: '↔',
+    info: {
+      pt: '"Se e somente se" é a bicondicional (↔). As duas partes precisam ter o mesmo valor.',
+      en: '"If and only if" is the biconditional (↔). Both parts need to have the same truth value.'
+    }
+  },
+  {
+    text: {
+      pt: '<span class="highlight">Não</span> é verdade que 2 + 2 = 5.',
+      en: '<span class="highlight">It is not</span> true that 2 + 2 = 5.'
+    },
+    sym: '¬',
+    info: {
+      pt: '"Não é verdade que..." indica negação (¬). Inverte o valor de verdade.',
+      en: '"It is not true that..." indicates negation (¬). It inverts the truth value.'
+    }
+  },
+  {
+    text: {
+      pt: 'O Senhor é bom <span class="highlight">e</span> a Sua misericórdia dura para sempre.',
+      en: 'The LORD is good, <span class="highlight">and</span> his steadfast love endures forever.'
+    },
+    sym: '∧',
+    info: {
+      pt: 'A palavra "e" indica conjunção (∧). Salmo 100:5!',
+      en: 'The word "and" indicates conjunction (∧). Psalm 100:5!'
+    }
+  },
+  {
+    text: {
+      pt: '<span class="highlight">Se</span> confessarmos os nossos pecados, <span class="highlight">então</span> Ele é fiel e justo para perdoar.',
+      en: '<span class="highlight">If</span> we confess our sins, <span class="highlight">then</span> he is faithful and just to forgive us.'
+    },
+    sym: '→',
+    info: {
+      pt: '"Se... então..." é o conectivo condicional (→). 1 João 1:9!',
+      en: '"If... then..." is the conditional connective (→). 1 John 1:9!'
+    }
+  },
+  {
+    text: {
+      pt: 'Você crê em Jesus <span class="highlight">ou</span> você está condenado.',
+      en: 'You believe in Jesus <span class="highlight">or</span> you are condemned.'
+    },
+    sym: '∨',
+    info: {
+      pt: 'A palavra "ou" indica disjunção (∨).',
+      en: 'The word "or" indicates disjunction (∨).'
+    }
+  },
+  {
+    text: {
+      pt: '5 × 4 = 20 <span class="highlight">se, e somente se,</span> 5 × 2 = 10.',
+      en: '5 × 4 = 20 <span class="highlight">if, and only if,</span> 5 × 2 = 10.'
+    },
+    sym: '↔',
+    info: {
+      pt: '"Se e somente se" é a bicondicional (↔). Ambas as partes são verdadeiras, então ↔ é V!',
+      en: '"If and only if" is the biconditional (↔). Both parts are true, so ↔ is T!'
+    }
+  },
+  {
+    text: {
+      pt: '<span class="highlight">Se</span> somos filhos, <span class="highlight">então</span> somos também herdeiros.',
+      en: '<span class="highlight">If</span> we are children, <span class="highlight">then</span> we are also heirs.'
+    },
+    sym: '→',
+    info: {
+      pt: '"Se... então..." é a condicional (→). Romanos 8:17!',
+      en: '"If... then..." is the conditional (→). Romans 8:17!'
+    }
+  },
 ];
 
 const TIME=8;
+const MAX_PTS=100;
 let questions,current,score,correctCount,wrongCount,timer;
+
+let LANG='pt';
+try{
+  const saved=localStorage.getItem('nml_lang');
+  if(saved==='pt'||saved==='en')LANG=saved;
+}catch(e){ /* localStorage indisponível / unavailable — mantém pt / keep default */ }
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* ── IDIOMA / LANGUAGE ───────────────────────────── */
+function setLang(lang){
+  LANG=lang;
+  try{localStorage.setItem('nml_lang',lang);}catch(e){ /* ignore */ }
+  applyChrome();
+  // Se já houver uma questão carregada, atualiza o texto dela também
+  // If a question is already loaded, refresh its text too
+  if(typeof questions!=='undefined'&&questions&&questions[current]&&
+     document.getElementById('screen-game').classList.contains('active')){
+    document.getElementById('prop-text').innerHTML=questions[current].text[LANG];
+    document.getElementById('conn-name').textContent=
+      document.getElementById('slot-box').classList.contains('filled')
+        ? STRINGS[LANG].connName[questions[current].sym] : '';
+  }
+}
+
+function applyChrome(){
+  const s=STRINGS[LANG];
+  document.documentElement.lang=s.htmlLang;
+  document.title=s.pageTitle;
+
+  document.getElementById('lang-btn-pt').classList.toggle('active',LANG==='pt');
+  document.getElementById('lang-btn-en').classList.toggle('active',LANG==='en');
+
+  document.getElementById('t-badge').textContent=s.badge;
+  document.getElementById('t-title').innerHTML=s.title;
+  document.getElementById('t-subtitle').textContent=s.subtitle;
+  document.getElementById('t-rules-title').textContent=s.rulesTitle;
+  document.getElementById('t-rule1').textContent=s.rule1;
+  document.getElementById('t-rule2').textContent=s.rule2;
+  document.getElementById('t-rule3').textContent=s.rule3;
+  document.getElementById('t-rule4').textContent=s.rule4;
+  document.getElementById('t-btn-start').textContent=s.btnStart;
+  document.getElementById('t-back-1').textContent=s.backLink;
+  document.getElementById('t-back-2').textContent=s.backLink;
+  document.getElementById('t-pts-label').textContent=s.ptsLabel;
+  document.getElementById('t-slot-label').textContent=s.slotLabel;
+  document.getElementById('t-sym-and').textContent=s.symAnd;
+  document.getElementById('t-sym-or').textContent=s.symOr;
+  document.getElementById('t-sym-if').textContent=s.symIf;
+  document.getElementById('t-sym-iff').textContent=s.symIff;
+  document.getElementById('t-sym-not').textContent=s.symNot;
+  document.getElementById('t-tap-continue').textContent=s.tapContinue;
+  document.getElementById('t-result-title').innerHTML=s.resultTitle;
+  document.getElementById('t-max-score').textContent=s.maxScore(QUESTIONS.length*MAX_PTS);
+  document.getElementById('t-correct-label').textContent=s.correctLabel;
+  document.getElementById('t-wrong-label').textContent=s.wrongLabel;
+  document.getElementById('t-btn-restart').textContent=s.btnRestart;
+}
 
 function startGame(){questions=shuffle(QUESTIONS);current=0;score=0;correctCount=0;wrongCount=0;show('screen-game');loadQ()}
 
@@ -163,7 +405,7 @@ let qStart;
 function loadQ(){
   if(current>=questions.length){endGame();return}
   const q=questions[current];
-  document.getElementById('prop-text').innerHTML=q.text;
+  document.getElementById('prop-text').innerHTML=q.text[LANG];
   document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
   document.getElementById('live-score').textContent=score;
   document.getElementById('slot-box').textContent='?';
@@ -179,11 +421,11 @@ function loadQ(){
     const pct=Math.max(0,1-e/TIME);
     bar.style.width=(pct*100)+'%';
     if(pct<.3)bar.classList.add('danger');
-    if(e>=TIME){clearInterval(timer);answer(null,null)}
+    if(e>=TIME){clearInterval(timer);answer(null)}
   },80);
 }
 
-function answer(sym,name){
+function answer(sym){
   clearInterval(timer);
   document.querySelectorAll('.sym-btn').forEach(b=>b.disabled=true);
   const q=questions[current];
@@ -194,19 +436,21 @@ function answer(sym,name){
   if(ok){pts=Math.max(20,Math.round(100-elapsed/TIME*80));score+=pts;correctCount++}
   else{wrongCount++}
   // Highlight button
-  document.querySelectorAll('.sym-btn').forEach(b=>{
-    if(b.textContent.trim().startsWith(q.sym))b.classList.add('correct');
-    else if(sym&&b.textContent.trim().startsWith(sym))b.classList.add('wrong');
+  const syms=['∧','∨','→','↔','¬'];
+  document.querySelectorAll('.sym-btn').forEach((b,i)=>{
+    if(syms[i]===q.sym)b.classList.add('correct');
+    else if(sym&&syms[i]===sym)b.classList.add('wrong');
   });
   // Fill slot
   const slot=document.getElementById('slot-box');
   slot.textContent=q.sym;slot.className='slot-box filled';
-  document.getElementById('conn-name').textContent=q.name;
+  document.getElementById('conn-name').textContent=STRINGS[LANG].connName[q.sym];
   setTimeout(()=>{
+    const s=STRINGS[LANG];
     document.getElementById('fb-icon').textContent=ok?'🔗✨':timeout?'⏱️':'❌';
-    document.getElementById('fb-title').textContent=ok?'Correto! +'+pts+' pts':timeout?'Tempo esgotado!':'Errado!';
+    document.getElementById('fb-title').textContent=ok?s.correctFeedback(pts):timeout?s.timeUp:s.wrongFeedback;
     document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
-    document.getElementById('fb-info').textContent=q.info;
+    document.getElementById('fb-info').textContent=q.info[LANG];
     document.getElementById('feedback').classList.add('show');
   },400);
 }
@@ -214,19 +458,23 @@ function answer(sym,name){
 function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
+  const s=STRINGS[LANG];
   show('screen-result');
   document.getElementById('final-score').textContent=score;
   document.getElementById('r-correct').textContent=correctCount;
   document.getElementById('r-wrong').textContent=wrongCount;
-  const pct=score/(QUESTIONS.length*100);
-  let stars='⭐',msg='Continue praticando os conectivos! 📖';
-  if(pct>=.9){stars='⭐⭐⭐';msg='Caçador de conectivos mestre! 🏆'}
-  else if(pct>=.7){stars='⭐⭐';msg='Muito bom! Você conhece bem os conectivos! 😊'}
-  else if(pct>=.5){stars='⭐½';msg='Bom esforço! Revise a tabela de conectivos da Lição V. 💪'}
+  const pct=score/(QUESTIONS.length*MAX_PTS);
+  let stars='⭐',msg=s.msgLow;
+  if(pct>=.9){stars='⭐⭐⭐';msg=s.msgGreat}
+  else if(pct>=.7){stars='⭐⭐';msg=s.msgGood}
+  else if(pct>=.5){stars='⭐½';msg=s.msgMid}
   document.getElementById('result-stars').textContent=stars;
   document.getElementById('result-msg').textContent=msg;
 }
 function restartGame(){startGame()}
+
+/* ── INICIALIZAÇÃO / INIT ────────────────────────── */
+applyChrome();
 </script>
 </body>
 </html>
