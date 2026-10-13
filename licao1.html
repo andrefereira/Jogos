@@ -293,6 +293,8 @@
       padding: 10px 12px;
     }
 
+    .feedback-tap { font-size: 0.95rem; font-weight: 600; color: #777; margin-top: 14px; }
+
     /* ── RESULT SCREEN ────────────────────────────── */
     #screen-result {
       text-align: center;
@@ -425,12 +427,13 @@
 </div>
 
 <!-- ══════════════════ FEEDBACK OVERLAY ═══════════════ -->
-<div id="feedback">
+<div id="feedback" onclick="nextQuestion()">
   <div class="feedback-card">
     <div class="feedback-icon" id="fb-icon"></div>
     <div class="feedback-title" id="fb-title"></div>
     <div class="feedback-pts"  id="fb-pts"></div>
     <div class="feedback-exp"  id="fb-exp"></div>
+    <p class="feedback-tap" id="t-tap-continue"></p>
   </div>
 </div>
 
@@ -478,7 +481,7 @@
       rule1: "Leia a proposição com atenção",
       rule2: 'Clique em 😊 se for <strong>verdadeira</strong>',
       rule3: 'Clique em 😢 se for <strong>falsa</strong>',
-      rule4: 'Cada proposição tem <strong>10 segundos</strong>',
+      rule4: 'Você tem <strong>tempo de sobra</strong> para ler e pensar em cada proposição',
       rule5: "Resposta rápida = mais pontos!",
       btnStart: "Entrar em Proposia ▶",
       backLink: "← Todas as lições",
@@ -492,6 +495,7 @@
       bestLabel: "Melhor tempo",
       avgLabel: "Tempo médio",
       btnRestart: "Jogar novamente 🔄",
+      tapContinue: "Toque para continuar",
       timeUp: "Tempo esgotado!",
       correctFeedback: "Correto!",
       wrongFeedback: "Errado!",
@@ -512,7 +516,7 @@
       rule1: "Read the proposition carefully",
       rule2: 'Click 😊 if it is <strong>true</strong>',
       rule3: 'Click 😢 if it is <strong>false</strong>',
-      rule4: 'Each proposition gives you <strong>10 seconds</strong>',
+      rule4: 'You have <strong>plenty of time</strong> to read and think about each proposition',
       rule5: "Faster answers = more points!",
       btnStart: "Enter Propositia ▶",
       backLink: "← All lessons",
@@ -526,6 +530,7 @@
       bestLabel: "Best time",
       avgLabel: "Average time",
       btnRestart: "Play again 🔄",
+      tapContinue: "Tap to continue",
       timeUp: "Time's up!",
       correctFeedback: "Correct!",
       wrongFeedback: "Wrong!",
@@ -623,8 +628,27 @@
   ];
 
   /* ── ESTADO / STATE ──────────────────────────────── */
-  const TIME_PER_Q = 10;   // segundos por questão / seconds per question
+  const TIME_BASE  = 10;   // segundos de reflexão por questão / thinking seconds per question
+  const TIME_MIN   = 15;   // tempo mínimo por questão / minimum time per question
   const MAX_PTS    = 100;  // pontos máximos por questão / max points per question
+  let   tLimit     = TIME_MIN;  // tempo da questão atual / current question's time limit
+  let   fbShownAt  = 0;
+
+/* ── TEMPO PARA RESPONDER / TIME TO ANSWER ───────────
+   Tempo da questão = tempo de reflexão (base) + leitura (≈ 0,8 s por palavra,
+   ritmo confortável para uma criança de 9 anos), nunca abaixo de um mínimo.
+   Question time = thinking time (base) + reading (≈ 0.8 s per word,
+   comfortable for a 9-year-old), never below a minimum. */
+function contarPalavras(...textos){ return textos.join(' ').replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length; }
+function tempoDaQuestao(palavras, base, minimo){ return Math.max(minimo, Math.round(base + 0.8 * palavras)); }
+
+/* O relógio fica parado enquanto a aba/tela estiver oculta.
+   The clock stays paused while the tab/screen is hidden. */
+let hiddenAt = null;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); }
+  else if (hiddenAt !== null) { qStart += Date.now() - hiddenAt; hiddenAt = null; }
+});
 
   let LANG = 'pt';
   try {
@@ -693,6 +717,7 @@
     document.getElementById('t-best-label').textContent = s.bestLabel;
     document.getElementById('t-avg-label').textContent = s.avgLabel;
     document.getElementById('t-btn-restart').textContent = s.btnRestart;
+    document.getElementById('t-tap-continue').textContent = s.tapContinue;
   }
 
   /* ── JOGO / GAME ─────────────────────────────────── */
@@ -714,6 +739,7 @@
 
     const q = questions[currentQ];
     document.getElementById('question-text').textContent = q.text[LANG];
+    tLimit = tempoDaQuestao(contarPalavras(q.text[LANG]), TIME_BASE, TIME_MIN);
     document.getElementById('counter').textContent = `${currentQ + 1} / ${questions.length}`;
     document.getElementById('live-score').textContent = score;
 
@@ -731,13 +757,14 @@
 
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
+      if (document.hidden) return;   // relógio parado / clock paused
       elapsed = (Date.now() - qStart) / 1000;
-      const pct = Math.max(0, 1 - elapsed / TIME_PER_Q);
+      const pct = Math.max(0, 1 - elapsed / tLimit);
       bar.style.width = (pct * 100) + '%';
       if (pct < 0.3) bar.classList.add('danger');
       else            bar.classList.remove('danger');
 
-      if (elapsed >= TIME_PER_Q) {
+      if (elapsed >= tLimit) {
         clearInterval(timerInterval);
         answer(null); // timeout
       }
@@ -747,7 +774,7 @@
   function answer(userAnswer) {
     clearInterval(timerInterval);
     const elapsed = (Date.now() - qStart) / 1000;
-    times.push(elapsed);
+    if (userAnswer !== null) times.push(elapsed);   // só respostas dadas / only answered questions
 
     document.getElementById('btn-true').disabled  = true;
     document.getElementById('btn-false').disabled = true;
@@ -758,7 +785,7 @@
 
     let pts = 0;
     if (correct) {
-      pts = Math.max(20, Math.round(MAX_PTS - (elapsed / TIME_PER_Q) * (MAX_PTS - 20)));
+      pts = Math.max(20, Math.round(MAX_PTS - (elapsed / tLimit) * (MAX_PTS - 20)));
       score += pts;
       correctCount++;
     } else {
@@ -796,12 +823,16 @@
     expEl.textContent = explanation;
     overlay.classList.add('show');
 
-    // Auto-advance após 2s / Auto-advance after ~3.5s
-    setTimeout(() => {
-      overlay.classList.remove('show');
-      currentQ++;
-      loadQuestion();
-    }, 3500);
+    // Sem avanço automático: a criança lê com calma e toca para continuar.
+    // No auto-advance: the child reads at their own pace, then taps to continue.
+    fbShownAt = Date.now();
+  }
+
+  function nextQuestion() {
+    if (Date.now() - fbShownAt < 1200) return;   // ignora toque duplo sem querer / ignore accidental double-tap
+    document.getElementById('feedback').classList.remove('show');
+    currentQ++;
+    loadQuestion();
   }
 
   /* ── FIM DE JOGO / END OF GAME ───────────────────── */
@@ -812,7 +843,7 @@
     document.getElementById('res-correct').textContent = correctCount;
     document.getElementById('res-wrong').textContent   = wrongCount;
 
-    const validTimes = times.filter(t => t < TIME_PER_Q);
+    const validTimes = times;
     if (validTimes.length) {
       const best = Math.min(...validTimes);
       const avg  = validTimes.reduce((a, b) => a + b, 0) / validTimes.length;

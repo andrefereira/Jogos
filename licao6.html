@@ -52,6 +52,17 @@
     .sum-item{background:rgba(255,255,255,.1);border-radius:14px;padding:14px}
     .sum-item .val{font-size:1.8rem;font-weight:800;color:#7effd4}
     .sum-item .lbl{font-size:.75rem;color:rgba(255,255,255,.6);margin-top:2px}
+
+    /* FEEDBACK DA RODADA / ROUND FEEDBACK */
+    #feedback{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;padding:20px}
+    #feedback.show{display:flex}
+    .fb-card{background:#fff;color:#0a2a1a;border-radius:22px;padding:26px 22px;text-align:center;max-width:320px;width:100%;animation:popIn .2s ease-out}
+    @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+    .fb-icon{font-size:3.5rem}
+    .fb-title{font-size:1.3rem;font-weight:800;margin:8px 0 4px}
+    .fb-title.ok{color:#00a862}.fb-title.no{color:#e0303a}
+    .fb-rule{font-size:.9rem;color:#444;background:#e8f8ee;border-radius:10px;padding:10px;margin-top:8px;line-height:1.5}
+    .fb-tap{font-size:.95rem;font-weight:600;color:#777;margin-top:14px}
   </style>
 </head>
 <body>
@@ -117,6 +128,15 @@
   <a href="index.html" id="t-back-2" style="display:block;margin-top:14px;text-align:center;color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem"></a>
 </div>
 
+<div id="feedback" onclick="nextQ()">
+  <div class="fb-card">
+    <div class="fb-icon" id="fb-icon"></div>
+    <div class="fb-title" id="fb-title"></div>
+    <div class="fb-rule" id="fb-rule"></div>
+    <p class="fb-tap" id="fb-tap"></p>
+  </div>
+</div>
+
 <script>
 /* ── TEXTOS DA INTERFACE / UI STRINGS ─────────────── */
 const STRINGS = {
@@ -130,7 +150,7 @@ const STRINGS = {
     rule1: "Duas proposições e seus valores são mostrados",
     rule2: 'Bolhas sobem com possíveis respostas para <strong>p ∧ q</strong>',
     rule3: "Toque na bolha com o valor correto",
-    rule4: "Bolha errada = 0 pontos. Mais rápido = mais pontos!",
+    rule4: "Bolha errada = 0 pontos. As bolhas sobem devagar: leia com calma. Mais rápido = mais pontos!",
     btnStart: "Apresentar-se ao General E ▶",
     backLink: "← Todas as lições",
     hudPts: "Pontos",
@@ -148,7 +168,13 @@ const STRINGS = {
     msgLow: "Continue treinando a conjunção! 📖",
     msgMid: "Bom esforço! Lembre: conjunção só é V se AMBAS as partes forem V. 💪",
     msgGood: "Muito bom! Você domina a conjunção! 😊",
-    msgGreat: "O General E está muito orgulhoso de você! 🏆"
+    msgGreat: "O General E está muito orgulhoso de você! 🏆",
+    fbCorrect: pts => `Isso mesmo! +${pts} pts`,
+    fbWrong: "Quase! Era a outra bolha.",
+    fbTimeout: "A bolha escapou!",
+    ruleTrue: "p ∧ q é V porque as DUAS proposições são V.",
+    ruleFalse: "p ∧ q é F porque pelo menos UMA proposição é F.",
+    tapContinue: "Toque para continuar"
   },
   en: {
     pageTitle: "In the World of Logic — Lesson VI",
@@ -160,7 +186,7 @@ const STRINGS = {
     rule1: "Two propositions and their values are shown",
     rule2: 'Bubbles rise with possible answers for <strong>p ∧ q</strong>',
     rule3: "Tap the bubble with the correct value",
-    rule4: "Wrong bubble = 0 points. Faster = more points!",
+    rule4: "Wrong bubble = 0 points. Bubbles rise slowly: read calmly. Faster = more points!",
     btnStart: "Report to General AND ▶",
     backLink: "← All lessons",
     hudPts: "Points",
@@ -178,7 +204,13 @@ const STRINGS = {
     msgLow: "Keep practicing conjunction! 📖",
     msgMid: "Good effort! Remember: conjunction is only T if BOTH parts are T. 💪",
     msgGood: "Very good! You've mastered conjunction! 😊",
-    msgGreat: "General AND is very proud of you! 🏆"
+    msgGreat: "General AND is very proud of you! 🏆",
+    fbCorrect: pts => `Correct! +${pts} pts`,
+    fbWrong: "Almost! It was the other bubble.",
+    fbTimeout: "The bubble got away!",
+    ruleTrue: "p ∧ q is T because BOTH propositions are T.",
+    ruleFalse: "p ∧ q is F because at least ONE proposition is F.",
+    tapContinue: "Tap to continue"
   }
 };
 
@@ -261,7 +293,21 @@ function refreshQuestionText() {
 /* Canvas bubble game */
 const canvas=document.getElementById('game-canvas');
 const ctx=canvas.getContext('2d');
-let bubbles=[],animId,qStart,gameActive=false;
+
+/* ── TEMPO PARA ESTOURAR A BOLHA / TIME TO POP THE BUBBLE ───────
+   Antes a bolha subia por QUADRO (e ainda acelerava): a rodada durava ~3 s num monitor de 60 Hz
+   e ~1,5 s num de 120 Hz. Agora a bolha sobe em velocidade CONSTANTE, medida em segundos reais,
+   então demora o mesmo tempo em qualquer celular ou monitor. Tempo da rodada = reflexão (base)
+   + leitura (≈ 0,8 s por palavra, ritmo de uma criança de 9 anos).
+   Before, the bubble rose PER FRAME (and accelerated): ~3 s per round on a 60 Hz screen and ~1.5 s
+   on 120 Hz. Now it rises at a CONSTANT speed in real seconds, so it takes the same time on any
+   device. Round time = thinking (base) + reading (≈ 0.8 s per word, a 9-year-old's pace). */
+const TIME_BASE=14;   // segundos de reflexão / thinking seconds
+const TIME_MIN=18;    // tempo mínimo da rodada / minimum round time
+function contarPalavras(...textos){ return textos.join(' ').replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length; }
+function tempoDaQuestao(palavras, base, minimo){ return Math.max(minimo, Math.round(base + 0.8 * palavras)); }
+
+let bubbles=[],animId=null,gameActive=false,lastTs=0,roundElapsed=0,roundTime=TIME_MIN,fbShownAt=0;
 let current=0,score=0,streak=0,correctCount=0,wrongCount=0;
 let questions;
 
@@ -279,36 +325,43 @@ function loadQ(){
   document.getElementById('q-hud').textContent=`${current+1}/${questions.length}`;
   document.getElementById('score-hud').textContent=score+s.ptsSuffix;
   document.getElementById('streak-hud').textContent=streak+'🔥';
+  roundTime=tempoDaQuestao(contarPalavras(q.p[LANG],q.q[LANG]),TIME_BASE,TIME_MIN);
   spawnBubbles(result);
-  qStart=Date.now();
 }
 
 function spawnBubbles(correctIsTrue){
   cancelAnimationFrame(animId);
   bubbles=[];
   const w=canvas.width,h=canvas.height;
-  // Correct bubble
-  const cx=100+Math.random()*(w-200);
-  bubbles.push({x:cx,y:h-30,vy:-0.6-Math.random()*0.4,r:42,isTrue:correctIsTrue,correct:true,alpha:1,popped:false,color:correctIsTrue?'#00c87a':'#ff6b6b'});
-  // Wrong bubble
-  const wx=100+Math.random()*(w-200);
-  bubbles.push({x:wx,y:h-80,vy:-0.5-Math.random()*0.3,r:38,isTrue:!correctIsTrue,correct:false,alpha:1,popped:false,color:correctIsTrue?'#ff6b6b':'#00c87a'});
-  gameActive=true;
-  animateBubbles();
+  // uma bolha em cada metade da tela, para nunca se sobreporem / one bubble per half of the screen, so they never overlap
+  const correctLeft=Math.random()<.5;
+  const xl=75+Math.random()*80, xr=w-75-Math.random()*80;
+  const exitY=-60, yC=h-30, yW=h-80;
+  const vC=(yC-exitY)/roundTime;                        // px/s: a bolha certa sai da tela exatamente em roundTime / the right bubble leaves the screen exactly at roundTime
+  const vW=(yW-exitY)/roundTime*(1+Math.random()*.2);   // a errada sai um pouco antes / the wrong one leaves slightly earlier
+  bubbles.push({x:correctLeft?xl:xr,y:yC,vy:vC,r:42,isTrue:correctIsTrue,correct:true,alpha:1,popped:false,color:correctIsTrue?'#00c87a':'#ff6b6b'});
+  bubbles.push({x:correctLeft?xr:xl,y:yW,vy:vW,r:38,isTrue:!correctIsTrue,correct:false,alpha:1,popped:false,color:correctIsTrue?'#ff6b6b':'#00c87a'});
+  roundElapsed=0; lastTs=0; gameActive=true;
+  animId=requestAnimationFrame(animateBubbles);
 }
 
-function animateBubbles(){
+function animateBubbles(ts){
   const s=STRINGS[LANG];
+  if(!lastTs) lastTs=ts;
+  // no máximo 50 ms por quadro: ao voltar de outra aba nada "pula" / max 50 ms per frame: nothing jumps after a tab switch
+  const dt=Math.min(.05,(ts-lastTs)/1000);
+  lastTs=ts;
+  if(gameActive) roundElapsed+=dt;
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  let allGone=true;
+  let animating=false;
   bubbles.forEach(b=>{
     if(b.popped){
-      b.r+=2;b.alpha=Math.max(0,b.alpha-0.08);
-    } else {
-      b.y+=b.vy;
-      b.vy-=0.008;
-      allGone=false;
+      b.r+=120*dt;b.alpha=Math.max(0,b.alpha-4.8*dt);
+      if(b.alpha>0) animating=true;
+    } else if(gameActive){
+      b.y-=b.vy*dt;
     }
+    if(b.alpha<=0) return;
     // Draw bubble
     ctx.save();
     ctx.globalAlpha=b.alpha;
@@ -321,15 +374,16 @@ function animateBubbles(){
     ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=2;ctx.stroke();
     ctx.fillStyle='#fff';ctx.font=`bold ${b.r*.7}px Segoe UI`;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(b.isTrue?s.trueLetter:s.falseLetter,b.x,b.y);
+    // fim da rodada: destaca a bolha certa com um anel dourado / round over: highlight the right bubble with a gold ring
+    if(!gameActive&&b.correct&&!b.popped&&b.y>-b.r){
+      ctx.globalAlpha=1;ctx.strokeStyle='#ffd700';ctx.lineWidth=5;
+      ctx.beginPath();ctx.arc(b.x,b.y,b.r+6,0,Math.PI*2);ctx.stroke();
+    }
     ctx.restore();
   });
-  if(allGone&&gameActive){
-    // timed out
-    gameActive=false;handleResult(false,0);return;
-  }
-  // check if bubbles escaped top
-  if(gameActive&&bubbles.every(b=>b.y<-60||b.popped)){gameActive=false;handleResult(false,0);return}
-  animId=requestAnimationFrame(animateBubbles);
+  // todas as bolhas saíram pelo topo = tempo esgotado / all bubbles left through the top = time is up
+  if(gameActive&&bubbles.every(b=>b.popped||b.y<-60)){gameActive=false;handleResult(false,true)}
+  if(gameActive||animating){animId=requestAnimationFrame(animateBubbles)}
 }
 
 // tap/click
@@ -351,21 +405,36 @@ canvas.addEventListener('pointerdown',e=>{
   if(hit){
     hit.popped=true;
     gameActive=false;
-    handleResult(hit.correct,(Date.now()-qStart)/1000);
+    handleResult(hit.correct,false);   // o laço de animação já está rodando e segue até o estouro acabar / the loop is already running and continues until the pop ends
   }
 });
 
-function handleResult(ok,elapsed){
+function handleResult(ok,timeout){
   const s=STRINGS[LANG];
+  const q=questions[current];
+  const result=(q.pV&&q.qV);
   let pts=0;
   if(ok){
-    pts=Math.max(30,Math.round(100-(elapsed/8)*70));
+    pts=Math.max(30,Math.round(100-(roundElapsed/roundTime)*70));
     streak++;pts+=streak>2?20:0;
     score+=pts;correctCount++;
   } else {streak=0;wrongCount++}
   document.getElementById('score-hud').textContent=score+s.ptsSuffix;
   document.getElementById('streak-hud').textContent=streak+'🔥';
-  setTimeout(()=>{current++;loadQ()},ok?500:800);
+  // mostra o resultado e espera a criança tocar para continuar / show the result and wait for the child to tap
+  document.getElementById('fb-icon').textContent=ok?'🫧✨':timeout?'⏱️':'🤔';
+  const t=document.getElementById('fb-title');
+  t.textContent=ok?s.fbCorrect(pts):timeout?s.fbTimeout:s.fbWrong;
+  t.className='fb-title '+(ok?'ok':'no');
+  document.getElementById('fb-rule').textContent=result?s.ruleTrue:s.ruleFalse;
+  document.getElementById('fb-tap').textContent=s.tapContinue;
+  setTimeout(()=>{document.getElementById('feedback').classList.add('show');fbShownAt=Date.now()},ok?350:700);
+}
+
+function nextQ(){
+  if(Date.now()-fbShownAt<1200)return;   // ignora toque duplo sem querer / ignore accidental double-tap
+  document.getElementById('feedback').classList.remove('show');
+  current++;loadQ();
 }
 
 function endGame(){

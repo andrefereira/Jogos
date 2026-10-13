@@ -71,7 +71,7 @@
     .sum-item .lbl{font-size:.75rem;color:rgba(255,255,255,.6);margin-top:2px}
 
     /* TOAST */
-    #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:.85rem;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+    #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:1rem;font-weight:600;text-align:center;width:max-content;max-width:90vw;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
     #toast.show{opacity:1}
   </style>
 </head>
@@ -384,7 +384,7 @@ function checkTableComplete(t){
   if(done>=total){
     score+=50; // bonus
     document.getElementById('live-score').textContent=score;
-    setTimeout(()=>{current++;loadTable()},800);
+    setTimeout(()=>{current++;loadTable()},1500);
   }
 }
 
@@ -415,7 +415,7 @@ function refreshGameLanguage(){
 let toastTimer;
 function showToast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1200);
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
 }
 
 function endGame(){

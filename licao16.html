@@ -92,7 +92,7 @@ td.fixed{background:rgba(0,0,0,.2);color:rgba(255,255,255,.75);font-weight:700;p
 .cell-btn.correct{background:rgba(0,200,120,.42)!important;color:#eafff6!important;cursor:default}
 .cell-btn.wrong{background:rgba(255,80,80,.4)!important;animation:shake .3s}
 .hint{font-size:.75rem;color:rgba(255,255,255,.45);text-align:center}
-#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:.85rem;font-weight:600;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:1rem;font-weight:600;text-align:center;width:max-content;max-width:90vw;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none}
 #toast.show{opacity:1}
 
 /* RESULT */
@@ -496,7 +496,7 @@ function renderTable(it,stage){
           if(state===v){
             b.classList.add('correct'); const p=cellWrongOnce[key]?5:10; score+=p; cellDone++;
             $('live-score').textContent=score; toast(UI[LANG].cellToast(p));
-            if(cellDone===cellTotal){ if(Object.keys(cellWrongOnce).length===0) right++; else wrong++; score+=50; $('live-score').textContent=score; toast(UI[LANG].tableCompleteToast); setTimeout(()=>{ if(it.exp){feedback(true,false,50,tr(it.exp),()=>{idx++;next()})} else {idx++;next()} },700) }
+            if(cellDone===cellTotal){ if(Object.keys(cellWrongOnce).length===0) right++; else wrong++; score+=50; $('live-score').textContent=score; toast(UI[LANG].tableCompleteToast); setTimeout(()=>{ if(it.exp){feedback(true,false,50,tr(it.exp),()=>{idx++;next()})} else {idx++;next()} },1500) }
           } else { if(!cellWrongOnce[key]){cellWrongOnce[key]=1} b.classList.add('wrong'); setTimeout(()=>b.classList.remove('wrong'),350) }
         };
         td.appendChild(b);
@@ -507,7 +507,7 @@ function renderTable(it,stage){
   });
   stage.appendChild(el('div','hint',UI[LANG].tableHint));
 }
-let toastT; function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1100)}
+let toastT; function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3000)}
 /* ---------- fim ---------- */
 function endGame(){
   const s = UI[LANG];

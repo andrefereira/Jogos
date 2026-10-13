@@ -148,7 +148,7 @@
     <div class="fb-icon" id="fb-icon"></div>
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-rule"  id="fb-rule"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-fb-continue"></p>
+    <p style="font-size:.95rem;font-weight:600;color:#777;margin-top:14px" id="t-fb-continue"></p>
   </div>
 </div>
 
@@ -181,7 +181,7 @@ const STRINGS = {
     rule1: 'Veja o estado de <strong>p</strong> e <strong>q</strong> na praia',
     rule2: 'Determine: <strong>p ∨ q</strong> é Verdadeiro ou Falso?',
     rule3: 'Falsa só se <strong>AMBAS</strong> estiverem tristes (F)',
-    rule4: "Cada questão vale até 100 pontos!",
+    rule4: "Cada questão vale até 100 pontos! Você tem tempo para ler e pensar.",
     btnStart: "Ir para a Praia ☀️",
     backLink: "← Todas as lições",
     ptsLabel: "pts",
@@ -215,7 +215,7 @@ const STRINGS = {
     rule1: 'Check the state of <strong>p</strong> and <strong>q</strong> on the beach',
     rule2: 'Determine: is <strong>p ∨ q</strong> True or False?',
     rule3: 'False only if <strong>BOTH</strong> are sad (F)',
-    rule4: "Each question is worth up to 100 points!",
+    rule4: "Each question is worth up to 100 points! You have time to read and think.",
     btnStart: "Go to the Beach ☀️",
     backLink: "← All lessons",
     ptsLabel: "pts",
@@ -254,8 +254,26 @@ const QUESTIONS=[
   {p:{pt:"O quadrado tem 5 lados.",en:"The square has 5 sides."},pV:false, q:{pt:"O triângulo tem 4 lados.",en:"The triangle has 4 sides."},qV:false},
 ];
 
-const TIME=8;
+const TIME_BASE=10;   // segundos de reflexão / thinking seconds
+const TIME_MIN=15;    // tempo mínimo por questão / minimum time per question
+let tLimit=TIME_MIN,fbShownAt=0;
 let questions,current,score,correctCount,wrongCount,timer,qStart;
+
+/* ── TEMPO PARA RESPONDER / TIME TO ANSWER ───────────
+   Tempo da questão = tempo de reflexão (base) + leitura (≈ 0,8 s por palavra,
+   ritmo confortável para uma criança de 9 anos), nunca abaixo de um mínimo.
+   Question time = thinking time (base) + reading (≈ 0.8 s per word,
+   comfortable for a 9-year-old), never below a minimum. */
+function contarPalavras(...textos){ return textos.join(' ').replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length; }
+function tempoDaQuestao(palavras, base, minimo){ return Math.max(minimo, Math.round(base + 0.8 * palavras)); }
+
+/* O relógio fica parado enquanto a aba/tela estiver oculta.
+   The clock stays paused while the tab/screen is hidden. */
+let hiddenAt = null;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); }
+  else if (hiddenAt !== null) { qStart += Date.now() - hiddenAt; hiddenAt = null; }
+});
 
 let LANG='pt';
 try{const saved=localStorage.getItem('nml_lang');if(saved==='pt'||saved==='en')LANG=saved;}catch(e){/* localStorage indisponível / unavailable */}
@@ -317,6 +335,7 @@ function loadQ(){
   if(current>=questions.length){endGame();return}
   const q=questions[current];
   const s=STRINGS[LANG];
+  tLimit=tempoDaQuestao(contarPalavras(q.p[LANG],q.q[LANG]),TIME_BASE,TIME_MIN);
   document.getElementById('text-p').textContent=q.p[LANG];
   document.getElementById('text-q').textContent=q.q[LANG];
   document.getElementById('face-p').textContent=q.pV?'😊':'😢';
@@ -331,10 +350,11 @@ function loadQ(){
   qStart=Date.now();
   clearInterval(timer);
   timer=setInterval(()=>{
-    const e=(Date.now()-qStart)/1000,pct=Math.max(0,1-e/TIME);
+    if(document.hidden)return;   // relógio parado / clock paused
+    const e=(Date.now()-qStart)/1000,pct=Math.max(0,1-e/tLimit);
     bar.style.width=(pct*100)+'%';
     if(pct<.3)bar.classList.add('danger');
-    if(e>=TIME){clearInterval(timer);answer(null)}
+    if(e>=tLimit){clearInterval(timer);answer(null)}
   },80);
 }
 
@@ -347,7 +367,7 @@ function answer(userV){
   const ok=(userV===result);
   const timeout=(userV===null);
   let pts=0;
-  if(ok){const e=(Date.now()-qStart)/1000;pts=Math.max(20,Math.round(100-e/TIME*80));score+=pts;correctCount++}
+  if(ok){const e=(Date.now()-qStart)/1000;pts=Math.max(20,Math.round(100-e/tLimit*80));score+=pts;correctCount++}
   else wrongCount++;
   let rule=result?s.ruleTrue:s.ruleFalse;
   document.getElementById('fb-icon').textContent=ok?'🏖️✨':timeout?'⏱️':'🌧️';
@@ -355,9 +375,11 @@ function answer(userV){
   document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
   document.getElementById('fb-rule').textContent=rule;
   document.getElementById('feedback').classList.add('show');
+  fbShownAt=Date.now();
 }
 
-function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
+function nextQ(){if(Date.now()-fbShownAt<1200)return;   // ignora toque duplo sem querer / ignore accidental double-tap
+  document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
   const s=STRINGS[LANG];

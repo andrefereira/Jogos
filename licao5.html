@@ -126,7 +126,7 @@
     <div class="fb-icon" id="fb-icon"></div>
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-info"  id="fb-info"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-tap-continue"></p>
+    <p style="font-size:.95rem;font-weight:600;color:#777;margin-top:14px" id="t-tap-continue"></p>
   </div>
 </div>
 
@@ -159,7 +159,7 @@ const STRINGS = {
     rule1: "Leia a proposição composta",
     rule2: "A palavra-chave está marcada em amarelo",
     rule3: "Toque no símbolo correto dentre os cinco",
-    rule4: "Cada questão tem 8 segundos",
+    rule4: "Você tem tempo de sobra para ler e pensar em cada questão",
     btnStart: "Iniciar Caça ▶",
     backLink: "← Todas as lições",
     ptsLabel: "pts",
@@ -194,7 +194,7 @@ const STRINGS = {
     rule1: "Read the compound proposition",
     rule2: "The key word is highlighted in yellow",
     rule3: "Tap the correct symbol among the five",
-    rule4: "Each question has 8 seconds",
+    rule4: "You have plenty of time to read and think about each question",
     btnStart: "Start the Hunt ▶",
     backLink: "← All lessons",
     ptsLabel: "pts",
@@ -286,7 +286,7 @@ const QUESTIONS = [
     },
     sym: '∧',
     info: {
-      pt: 'A palavra "e" indica conjunção (∧). Salmo 100:5!',
+      pt: 'A palavra "e" indica conjunção (∧). Salmos 100:5!',
       en: 'The word "and" indicates conjunction (∧). Psalm 100:5!'
     }
   },
@@ -336,9 +336,27 @@ const QUESTIONS = [
   },
 ];
 
-const TIME=8;
+const TIME_BASE=10;   // segundos de reflexão / thinking seconds
+const TIME_MIN=16;    // tempo mínimo por questão / minimum time per question
 const MAX_PTS=100;
+let tLimit=TIME_MIN,fbShownAt=0;
 let questions,current,score,correctCount,wrongCount,timer;
+
+/* ── TEMPO PARA RESPONDER / TIME TO ANSWER ───────────
+   Tempo da questão = tempo de reflexão (base) + leitura (≈ 0,8 s por palavra,
+   ritmo confortável para uma criança de 9 anos), nunca abaixo de um mínimo.
+   Question time = thinking time (base) + reading (≈ 0.8 s per word,
+   comfortable for a 9-year-old), never below a minimum. */
+function contarPalavras(...textos){ return textos.join(' ').replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length; }
+function tempoDaQuestao(palavras, base, minimo){ return Math.max(minimo, Math.round(base + 0.8 * palavras)); }
+
+/* O relógio fica parado enquanto a aba/tela estiver oculta.
+   The clock stays paused while the tab/screen is hidden. */
+let hiddenAt = null;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); }
+  else if (hiddenAt !== null) { qStart += Date.now() - hiddenAt; hiddenAt = null; }
+});
 
 let LANG='pt';
 try{
@@ -406,6 +424,7 @@ function loadQ(){
   if(current>=questions.length){endGame();return}
   const q=questions[current];
   document.getElementById('prop-text').innerHTML=q.text[LANG];
+  tLimit=tempoDaQuestao(contarPalavras(q.text[LANG]),TIME_BASE,TIME_MIN);
   document.getElementById('counter').textContent=`${current+1} / ${questions.length}`;
   document.getElementById('live-score').textContent=score;
   document.getElementById('slot-box').textContent='?';
@@ -417,11 +436,12 @@ function loadQ(){
   qStart=Date.now();
   clearInterval(timer);
   timer=setInterval(()=>{
+    if(document.hidden)return;   // relógio parado / clock paused
     const e=(Date.now()-qStart)/1000;
-    const pct=Math.max(0,1-e/TIME);
+    const pct=Math.max(0,1-e/tLimit);
     bar.style.width=(pct*100)+'%';
     if(pct<.3)bar.classList.add('danger');
-    if(e>=TIME){clearInterval(timer);answer(null)}
+    if(e>=tLimit){clearInterval(timer);answer(null)}
   },80);
 }
 
@@ -433,7 +453,7 @@ function answer(sym){
   const ok=(sym===q.sym);
   const timeout=(sym===null);
   let pts=0;
-  if(ok){pts=Math.max(20,Math.round(100-elapsed/TIME*80));score+=pts;correctCount++}
+  if(ok){pts=Math.max(20,Math.round(100-elapsed/tLimit*80));score+=pts;correctCount++}
   else{wrongCount++}
   // Highlight button
   const syms=['∧','∨','→','↔','¬'];
@@ -452,10 +472,12 @@ function answer(sym){
     document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
     document.getElementById('fb-info').textContent=q.info[LANG];
     document.getElementById('feedback').classList.add('show');
+    fbShownAt=Date.now();
   },400);
 }
 
-function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
+function nextQ(){if(Date.now()-fbShownAt<1200)return;   // ignora toque duplo sem querer / ignore accidental double-tap
+  document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
   const s=STRINGS[LANG];

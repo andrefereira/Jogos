@@ -144,7 +144,7 @@
     <div class="fb-icon" id="fb-icon"></div>
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-rule"  id="fb-rule"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-tap-continue"></p>
+    <p style="font-size:.95rem;font-weight:600;color:#777;margin-top:14px" id="t-tap-continue"></p>
   </div>
 </div>
 
@@ -177,7 +177,7 @@ const STRINGS = {
     rule1: 'Leia a condição <strong>p</strong> e o resultado <strong>q</strong>',
     rule2: "Veja o que realmente aconteceu",
     rule3: 'Decida: a promessa foi <strong>cumprida</strong> ou <strong>quebrada</strong>?',
-    rule4: "Quebrada só se p=V e q=F",
+    rule4: "Quebrada só se p=V e q=F. Leia com calma: há tempo de sobra!",
     btnStart: "Iniciar ▶",
     backLink: "← Todas as lições",
     ptsLabel: "pts",
@@ -214,7 +214,7 @@ const STRINGS = {
     rule1: 'Read the condition <strong>p</strong> and the result <strong>q</strong>',
     rule2: "See what actually happened",
     rule3: 'Decide: was the promise <strong>kept</strong> or <strong>broken</strong>?',
-    rule4: "Broken only if p=T and q=F",
+    rule4: "Broken only if p=T and q=F. Read calmly: there is plenty of time!",
     btnStart: "Start ▶",
     backLink: "← All lessons",
     ptsLabel: "pts",
@@ -257,8 +257,26 @@ const QUESTIONS=[
   {cond:{pt:"Se 5×3=20, então Jesus é o Filho de Deus.",en:"If 5×3=20, then Jesus is the Son of God."},p:{pt:"5 × 3 = 20",en:"5 × 3 = 20"},pV:false,q:{pt:"Jesus é o Filho de Deus.",en:"Jesus is the Son of God."},qV:true},
 ];
 
-const TIME=10;
+const TIME_BASE=11;   // segundos de reflexão / thinking seconds
+const TIME_MIN=16;    // tempo mínimo por questão / minimum time per question
+let tLimit=TIME_MIN,fbShownAt=0;
 let questions,current,score,correctCount,wrongCount,timer,qStart;
+
+/* ── TEMPO PARA RESPONDER / TIME TO ANSWER ───────────
+   Tempo da questão = tempo de reflexão (base) + leitura (≈ 0,8 s por palavra,
+   ritmo confortável para uma criança de 9 anos), nunca abaixo de um mínimo.
+   Question time = thinking time (base) + reading (≈ 0.8 s per word,
+   comfortable for a 9-year-old), never below a minimum. */
+function contarPalavras(...textos){ return textos.join(' ').replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length; }
+function tempoDaQuestao(palavras, base, minimo){ return Math.max(minimo, Math.round(base + 0.8 * palavras)); }
+
+/* O relógio fica parado enquanto a aba/tela estiver oculta.
+   The clock stays paused while the tab/screen is hidden. */
+let hiddenAt = null;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); }
+  else if (hiddenAt !== null) { qStart += Date.now() - hiddenAt; hiddenAt = null; }
+});
 
 let LANG='pt';
 try{
@@ -324,6 +342,7 @@ function startGame(){questions=shuffle(QUESTIONS);current=0;score=0;correctCount
 function loadQ(){
   if(current>=questions.length){endGame();return}
   const q=questions[current];
+  tLimit=tempoDaQuestao(contarPalavras(q.cond[LANG]),TIME_BASE,TIME_MIN);
   document.getElementById('cond-text').textContent=q.cond[LANG];
   document.getElementById('p-text').textContent=q.p[LANG];
   document.getElementById('q-text').textContent=q.q[LANG];
@@ -335,9 +354,10 @@ function loadQ(){
   const bar=document.getElementById('timer-bar');bar.style.width='100%';bar.classList.remove('danger');
   qStart=Date.now();clearInterval(timer);
   timer=setInterval(()=>{
-    const e=(Date.now()-qStart)/1000,pct=Math.max(0,1-e/TIME);
+    if(document.hidden)return;   // relógio parado / clock paused
+    const e=(Date.now()-qStart)/1000,pct=Math.max(0,1-e/tLimit);
     bar.style.width=(pct*100)+'%';if(pct<.3)bar.classList.add('danger');
-    if(e>=TIME){clearInterval(timer);answer(null)}
+    if(e>=tLimit){clearInterval(timer);answer(null)}
   },80);
 }
 
@@ -350,7 +370,7 @@ function answer(userKept){
   const ok=(userKept===result);
   const timeout=(userKept===null);
   let pts=0;
-  if(ok){const e=(Date.now()-qStart)/1000;pts=Math.max(20,Math.round(100-e/TIME*80));score+=pts;correctCount++}
+  if(ok){const e=(Date.now()-qStart)/1000;pts=Math.max(20,Math.round(100-e/tLimit*80));score+=pts;correctCount++}
   else wrongCount++;
   let rule;
   if(q.pV&&!q.qV)rule=s.ruleBroken;
@@ -361,9 +381,11 @@ function answer(userKept){
   document.getElementById('fb-title').className='fb-title '+(ok?'ok':'no');
   document.getElementById('fb-rule').textContent=rule;
   document.getElementById('feedback').classList.add('show');
+  fbShownAt=Date.now();
 }
 
-function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
+function nextQ(){if(Date.now()-fbShownAt<1200)return;   // ignora toque duplo sem querer / ignore accidental double-tap
+  document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
   const s=STRINGS[LANG];

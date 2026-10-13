@@ -126,7 +126,7 @@
       <circle id="timer-ring" cx="30" cy="30" r="26" fill="none" stroke="#ffd700" stroke-width="5"
         stroke-dasharray="163.4" stroke-dashoffset="0" stroke-linecap="round"/>
     </svg>
-    <div class="timer-text" id="timer-text">8s</div>
+    <div class="timer-text" id="timer-text">15s</div>
   </div>
 
   <!-- Active card + queue -->
@@ -151,7 +151,7 @@
     <div class="fb-title" id="fb-title"></div>
     <div class="fb-pts"  id="fb-pts"></div>
     <div class="fb-exp"  id="fb-exp"></div>
-    <p style="font-size:.75rem;color:#aaa;margin-top:12px" id="t-tap-continue"></p>
+    <p style="font-size:.95rem;font-weight:600;color:#777;margin-top:14px" id="t-tap-continue"></p>
   </div>
 </div>
 
@@ -182,7 +182,7 @@ const STRINGS = {
     title: 'Fila Urgente<br><span>do Senhor x</span>',
     subtitle: "O Governador de Proposia está esperando! Avalie as proposições compostas o mais rápido possível, sem montar a tabela!",
     rulesTitle: "Como jogar",
-    rule1: 'Cada proposição tem <strong>8 segundos</strong>',
+    rule1: 'Cada proposição tem <strong>15 segundos</strong>',
     rule2: "Toque 😊 se for Verdadeira, 😢 se for Falsa",
     rule3: "Sequência de acertos multiplica os pontos!",
     rule4: "Resista até o fim da fila!",
@@ -215,7 +215,7 @@ const STRINGS = {
     title: 'Urgent Line<br><span>of Mr. x</span>',
     subtitle: "The Governor of Propositia is waiting! Evaluate the compound propositions as fast as possible, without building the table!",
     rulesTitle: "How to play",
-    rule1: 'Each proposition gives you <strong>8 seconds</strong>',
+    rule1: 'Each proposition gives you <strong>15 seconds</strong>',
     rule2: "Tap 😊 if it's True, 😢 if it's False",
     rule3: "A streak of correct answers multiplies your points!",
     rule4: "Hold on until the end of the line!",
@@ -262,11 +262,20 @@ const QUEUE=[
   {values:{pt:"p=V, q=F, r=V, s=F",en:"p=T, q=F, r=T, s=F"},expr:"q → p",result:true,exp:{pt:"F → V = V. Antecedente é F → condicional V.",en:"F → T = T. Antecedent is F → conditional T."}},
 ];
 
-const TIME=8;
+const TIME=15;   // segundos por proposição (antes: 8) / seconds per proposition (was 8)
+let fbShownAt=0;
 const NUM_Q=10;
 const MAX_PTS_BASE=100;
 const CIRCUMFERENCE=163.4; // 2π×26
 let questions,current,score,streak,maxStreak,correctCount,wrongCount,timer,qStart;
+
+/* O relógio fica parado enquanto a aba/tela estiver oculta.
+   The clock stays paused while the tab/screen is hidden. */
+let hiddenAt = null;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); }
+  else if (hiddenAt !== null) { qStart += Date.now() - hiddenAt; hiddenAt = null; }
+});
 
 let LANG='pt';
 try{
@@ -355,6 +364,7 @@ function loadQ(){
   qStart=Date.now();
   clearInterval(timer);
   timer=setInterval(()=>{
+    if(document.hidden)return;   // relógio parado / clock paused
     const e=(Date.now()-qStart)/1000;
     const pct=Math.max(0,1-e/TIME);
     ring.style.strokeDashoffset=(CIRCUMFERENCE*(1-pct)).toFixed(1);
@@ -395,10 +405,12 @@ function answer(userV){
     document.getElementById('fb-pts').textContent=ok?s.ptsEarned(pts,streak):s.ptsZero;
     document.getElementById('fb-exp').textContent=q.exp[LANG];
     document.getElementById('feedback').classList.add('show');
+    fbShownAt=Date.now();
   },300);
 }
 
-function nextQ(){document.getElementById('feedback').classList.remove('show');current++;loadQ()}
+function nextQ(){if(Date.now()-fbShownAt<1200)return;   // ignora toque duplo sem querer / ignore accidental double-tap
+  document.getElementById('feedback').classList.remove('show');current++;loadQ()}
 
 function endGame(){
   const s=STRINGS[LANG];
