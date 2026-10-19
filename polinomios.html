@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+<title>Polinômios — Animações</title>
+<style>
+  :root{
+    --azul:#1f6feb;
+    --vermelho:#e63946;
+    --laranja:#f2994a;
+    --verde:#2a9d8f;
+    --roxo:#8e5bd9;
+    --cinza:#333333;
+    --fundo:#f7f9fc;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--fundo);
+    color:var(--cinza);
+    line-height:1.5;
+  }
+  header{
+    background:var(--azul);
+    color:white;
+    padding:20px 16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1{margin:0; font-size:1.5rem;}
+  header p{margin:6px 0 0; font-size:1.15rem; opacity:.95;}
+
+  nav{
+    display:flex;
+    gap:8px;
+    padding:12px 10px;
+    background:white;
+    position:sticky;
+    top:82px;
+    z-index:40;
+    border-bottom:2px solid #e4e9f2;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  nav a{
+    flex:0 0 auto;
+    text-decoration:none;
+    background:#e8f0ff;
+    color:var(--azul);
+    font-weight:bold;
+    padding:10px 14px;
+    border-radius:999px;
+    font-size:.95rem;
+    white-space:nowrap;
+  }
+
+  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+
+  section.concept{
+    background:white;
+    border-radius:20px;
+    padding:22px;
+    margin-bottom:30px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    scroll-margin-top:150px;
+  }
+  section.concept h2{
+    color:var(--azul);
+    font-size:1.5rem;
+    border-bottom:3px solid #e8f0ff;
+    padding-bottom:10px;
+    margin-top:0;
+    text-align:center;
+  }
+  h3.sub{
+    color:var(--laranja);
+    text-align:center;
+    font-size:1.3rem;
+    margin:26px 0 8px;
+  }
+  .caption{
+    font-size:1.3rem;
+    font-weight:600;
+    text-align:center;
+    background:#e8f0ff;
+    border-left:8px solid var(--azul);
+    border-radius:10px;
+    padding:16px;
+    margin:16px 0;
+    min-height:1.4em;
+  }
+  .btnrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    justify-content:center;
+    margin:16px 0;
+  }
+  button{
+    font-family:inherit;
+    font-size:1.1rem;
+    font-weight:bold;
+    border:none;
+    border-radius:14px;
+    padding:15px 20px;
+    min-height:58px;
+    min-width:100px;
+    cursor:pointer;
+    color:white;
+    background:var(--azul);
+    transition:transform .1s ease;
+  }
+  button:active{transform:scale(0.95);}
+  button.laranja{background:var(--laranja);}
+  button.verde{background:var(--verde);}
+  button.roxo{background:var(--roxo);}
+  button.secundario{background:#dfe6f5; color:var(--azul);}
+  button.grande{font-size:1.8rem; min-width:90px; min-height:72px; padding:12px 24px;}
+
+  .libras-note{
+    font-size:1.05rem;
+    color:#555;
+    background:#fff7e6;
+    border:2px dashed var(--laranja);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-top:16px;
+  }
+  .libras-note b{color:var(--laranja);}
+
+  .feedback{
+    font-size:1.25rem;
+    font-weight:bold;
+    text-align:center;
+    padding:14px;
+    border-radius:12px;
+    margin:14px 0;
+    min-height:1.4em;
+  }
+  .feedback.ok{background:#e6f7f1; color:var(--verde);}
+  .feedback.nao{background:#fff2e8; color:var(--laranja);}
+
+  /* ---------- as peças do polinômio ---------- */
+  .peca{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:52px;
+    min-width:44px;
+    padding:0 10px;
+    border-radius:12px;
+    font-size:clamp(1.3rem, 6vw, 1.8rem);
+    font-weight:800;
+    color:white;
+    transition:all .25s ease;
+    user-select:none;
+  }
+  .peca.coef{background:var(--azul);}
+  .peca.var{background:var(--roxo);}
+  .peca.solo{background:var(--verde);}
+  .peca.exp{
+    background:var(--laranja);
+    height:30px; min-width:28px; padding:0 6px;
+    font-size:clamp(.95rem, 4vw, 1.2rem);
+    border-radius:9px;
+  }
+  .peca.exp.fantasma{
+    background:transparent;
+    border:2px dashed var(--laranja);
+    color:var(--laranja);
+  }
+  .peca.neutro{background:#dfe6f5; color:var(--azul);}
+  .peca.sinal{background:transparent; color:#9aa8c7; min-width:24px; padding:0;}
+  .peca.dim{opacity:.2;}
+  .peca.lit{transform:scale(1.12); box-shadow:0 6px 14px rgba(0,0,0,.2);}
+  .peca.ouro{box-shadow:0 0 0 5px #ffd700; transform:scale(1.18);}
+  button.peca{
+    height:52px; min-height:52px; min-width:44px; padding:0 10px;
+    font-size:clamp(1.3rem, 6vw, 1.8rem);
+    border-radius:12px;
+  }
+  button.peca.exp{height:34px; min-height:34px; min-width:34px; padding:0 6px; font-size:clamp(1rem,4.2vw,1.25rem); border-radius:9px;}
+
+  .poli{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:flex-start;
+    gap:12px 6px;
+    margin:16px 0;
+  }
+  .unidade{display:flex; flex-direction:column; align-items:center;}
+  .linha{display:flex; align-items:flex-start; gap:6px;}
+  .termo{display:flex; align-items:flex-start; gap:3px; padding:6px; border-radius:14px;}
+  .termo.vagao{
+    border:3px solid #c9d6f5;
+    background:#f3f7ff;
+    animation:chega .5s both;
+  }
+  @keyframes chega{from{opacity:0; transform:translateX(-30px);} to{opacity:1; transform:none;}}
+  .loco{font-size:2.3rem; line-height:52px;}
+  .rotulo-termo{font-size:.9rem; font-weight:700; color:#666; margin-top:4px;}
+  .termo.tc0{background:#dbe8ff;} .termo.tc1{background:#ffe9d2;}
+  .termo.tc2{background:#dcf5ee;} .termo.tc3{background:#efe3ff;}
+
+  .rotulo{margin:10px 0 0; text-align:center; font-weight:700; color:#666;}
+  .fila{display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:10px 0;}
+  button.vagao-btn{
+    background:#f3f7ff; color:var(--cinza);
+    border:3px solid #c9d6f5; border-radius:16px;
+    padding:8px; min-height:0; min-width:0;
+  }
+  .trem{min-height:76px; border-top:4px dashed #c9d6f5; padding-top:10px;}
+
+  .conta-topo{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;}
+  .conta-topo .poli{margin:6px 0;}
+  .rotulo-p{font-size:1.5rem; font-weight:800;}
+  .xvale{text-align:center; font-size:1.35rem; margin:6px 0;}
+  .linhas-conta{text-align:center; margin:8px 0;}
+  .lc{font-size:1.5rem; font-weight:700; margin:6px 0;}
+  .lc.forte{color:var(--verde); font-size:1.9rem;}
+
+  .dots{display:flex; gap:8px; justify-content:center; margin:12px 0; flex-wrap:wrap;}
+  .dot{width:16px; height:16px; border-radius:50%; background:#dfe6f5;}
+  .dot.certo{background:var(--verde);}
+
+  @media (prefers-reduced-motion: reduce){
+    .termo.vagao{animation:none;}
+    .peca{transition:none;}
+  }
+
+  .hidden{display:none !important;}
+
+  footer{
+    text-align:center;
+    font-size:.9rem;
+    color:#888;
+    padding:30px 16px 60px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Polinômios</h1>
+  <p>🤟 Vamos conhecer o trem de peças!</p>
+</header>
+
+<nav>
+  <a href="#c1">① Polinômio</a>
+  <a href="#c2">② Termos</a>
+  <a href="#c3">③ Coeficiente</a>
+  <a href="#c4">④ Expoente</a>
+  <a href="#c5">⑤ Grau</a>
+  <a href="#c6">⑥ Valor numérico</a>
+  <a href="#c7">⑦ Arrumar</a>
+  <a href="#c8">⑧ Desafio</a>
+</nav>
+
+<main>
+
+  <!-- ================= 1: O QUE É ================= -->
+  <section class="concept" id="c1">
+    <h2>① O que é um polinômio?</h2>
+    <p class="caption">Um POLINÔMIO é um trem de peças. 🚂<br>Cada peça é um vagão.<br>Os vagões se juntam com o sinal +.</p>
+    <div id="trem1"></div>
+    <div class="btnrow">
+      <button onclick="montarTrem1()">🚂 Montar o trem</button>
+      <button class="laranja" onclick="outroTrem1()">🔄 Outro trem</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz1"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras no canto da tela, depois toque na frase acima.</p>
+  </section>
+
+  <!-- ================= 2: TERMOS ================= -->
+  <section class="concept" id="c2">
+    <h2>② Os termos</h2>
+    <p class="caption" id="cap2"></p>
+    <div id="poli2"></div>
+    <div class="btnrow">
+      <button onclick="montar2(true)">👀 Mostrar os termos</button>
+      <button class="secundario" onclick="montar2(false)">🔁 De novo</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz2"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 3: COEFICIENTE ================= -->
+  <section class="concept" id="c3">
+    <h2>③ Coeficiente e número sozinho</h2>
+    <p class="caption" id="cap3"></p>
+    <div id="poli3"></div>
+    <div class="btnrow">
+      <button onclick="destacar3(['coef'],'O COEFICIENTE é o número colado no x.<br>Aqui são o 3 e o 2.')">🔵 Coeficiente</button>
+      <button class="verde" onclick="destacar3(['solo'],'O número sozinho se chama TERMO INDEPENDENTE.<br>Aqui é o 5.')">🟢 Número sozinho</button>
+      <button class="secundario" onclick="tudo3()">Mostrar tudo</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz3"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 4: EXPOENTE ================= -->
+  <section class="concept" id="c4">
+    <h2>④ O expoente</h2>
+    <p class="caption" id="cap4"></p>
+    <div id="poli4"></div>
+    <div class="btnrow">
+      <button class="laranja" onclick="montar4('exp')">🟠 Mostrar os expoentes</button>
+      <button class="roxo" onclick="montar4('segredo')">🤫 Ver o segredo</button>
+      <button class="secundario" onclick="montar4('normal')">🔁 De novo</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz4"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 5: GRAU ================= -->
+  <section class="concept" id="c5">
+    <h2>⑤ O grau</h2>
+    <p class="caption" id="cap5"></p>
+    <div id="poli5"></div>
+    <div class="btnrow">
+      <button class="laranja" onclick="passo5(1)">1️⃣ Ver os expoentes</button>
+      <button class="verde" onclick="passo5(2)">2️⃣ Qual é o maior?</button>
+      <button class="secundario" onclick="outro5()">🔄 Outro exemplo</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz5"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 6: VALOR NUMÉRICO ================= -->
+  <section class="concept" id="c6">
+    <h2>⑥ O valor numérico</h2>
+    <p class="caption" id="cap6"></p>
+    <div id="conta6"></div>
+    <div class="btnrow">
+      <button onclick="passo6(1)">1️⃣ Trocar o x</button>
+      <button class="laranja" onclick="passo6(2)">2️⃣ Fazer as contas</button>
+      <button class="verde" onclick="passo6(3)">3️⃣ Resultado</button>
+      <button class="secundario" onclick="outro6()">🔄 Outro exemplo</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz6"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 7: ARRUMAR ================= -->
+  <section class="concept" id="c7">
+    <h2>⑦ Arrumando o trem</h2>
+    <p class="caption">Para arrumar o trem, o vagão com o MAIOR expoente vai na frente. 🚂<br>O número sozinho vai por último.<br>Exemplo: 3x² + 2x + 5</p>
+    <div id="quiz7"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 8: DESAFIO ================= -->
+  <section class="concept" id="c8">
+    <h2>⑧ Desafio final</h2>
+    <p class="caption">Agora vamos lembrar de tudo o que você aprendeu! 🌟</p>
+    <div id="quiz8"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+</main>
+
+<footer>
+  Material de apoio — Matemática, 3ª série do Ensino Médio.<br>
+  Página pronta para ser hospedada e acessada por QR Code.
+</footer>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const T = (c, e) => ({c, e});          // um termo: c = coeficiente, e = expoente
+
+  function embaralhar(v){
+    const a = v.slice();
+    for(let i=a.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  /* ---------- desenhar polinômios com peças coloridas ---------- */
+  function elPeca(tag, cls, txt, role){
+    const e = document.createElement(tag);
+    e.className = 'peca ' + cls;
+    e.textContent = txt;
+    if(role) e.dataset.role = role;
+    return e;
+  }
+
+  // o = {neutro, tocavel, vagao, fantasma}
+  function termoEl(t, o){
+    o = o || {};
+    const w = document.createElement('span');
+    w.className = 'termo' + (o.vagao ? ' vagao' : '');
+    function mk(cls, txt, role){
+      const e = elPeca(o.tocavel ? 'button' : 'span', cls + (o.neutro ? ' neutro' : ''), txt, role);
+      if(o.tocavel) e.type = 'button';
+      return e;
+    }
+    if(t.e === 0){
+      w.appendChild(mk('solo', t.c, 'solo'));
+    } else {
+      if(t.c !== 1) w.appendChild(mk('coef', t.c, 'coef'));
+      w.appendChild(mk('var', 'x', 'var'));
+      if(t.e >= 2) w.appendChild(mk('exp', t.e, 'exp'));
+      else if(o.fantasma){
+        const g = elPeca('span', 'exp fantasma', '1', null);
+        w.appendChild(g);
+      }
+    }
+    return w;
+  }
+
+  function poliEl(termos, o){
+    o = o || {};
+    const box = document.createElement('div');
+    box.className = 'poli';
+    if(o.loco){
+      const l = document.createElement('span');
+      l.className = 'loco'; l.textContent = '🚂';
+      box.appendChild(l);
+    }
+    termos.forEach((t, k) => {
+      const u = document.createElement('span'); u.className = 'unidade';
+      const linha = document.createElement('span'); linha.className = 'linha';
+      if(k > 0) linha.appendChild(elPeca('span', 'sinal', '+'));
+      linha.appendChild(termoEl(t, o));
+      u.appendChild(linha);
+      box.appendChild(u);
+    });
+    return box;
+  }
+
+  /* ---------- ① O que é um polinômio ---------- */
+  const trens1 = [
+    [T(3,2), T(2,1), T(5,0)],
+    [T(2,1), T(1,0)],
+    [T(1,3), T(4,1), T(6,0)],
+    [T(5,2), T(7,0)]
+  ];
+  let k1 = 0;
+  function montarTrem1(){
+    const box = $('trem1');
+    box.innerHTML = '';
+    const p = poliEl(trens1[k1], {loco:true, vagao:true});
+    p.querySelectorAll('.termo').forEach((t, i) => { t.style.animationDelay = (i*0.45) + 's'; });
+    box.appendChild(p);
+  }
+  function outroTrem1(){ k1 = (k1+1) % trens1.length; montarTrem1(); }
+  montarTrem1();
+
+  /* ---------- ② Os termos ---------- */
+  const P2 = [T(3,2), T(2,1), T(5,0)];
+  function montar2(mostrar){
+    const box = $('poli2');
+    box.innerHTML = '';
+    const p = poliEl(P2, {});
+    box.appendChild(p);
+    if(mostrar){
+      p.querySelectorAll('.unidade').forEach((u, i) => {
+        u.querySelector('.termo').classList.add('tc' + (i % 4));
+        const r = document.createElement('span');
+        r.className = 'rotulo-termo';
+        r.textContent = (i+1) + 'º termo';
+        u.appendChild(r);
+      });
+    }
+    $('cap2').innerHTML = mostrar
+      ? 'Cada vagão é um TERMO.<br>Este polinômio tem 3 termos.'
+      : 'Cada vagão do trem é um TERMO.<br>Toque no botão para ver os termos.';
+  }
+  montar2(false);
+
+  /* ---------- ③ Coeficiente e número sozinho ---------- */
+  const P3 = [T(3,2), T(2,1), T(5,0)];
+  function montar3(){
+    $('poli3').innerHTML = '';
+    $('poli3').appendChild(poliEl(P3, {}));
+  }
+  function destacar3(papeis, txt){
+    $('poli3').querySelectorAll('.peca').forEach(p => {
+      const on = papeis.includes(p.dataset.role);
+      p.classList.toggle('dim', !on);
+      p.classList.toggle('lit', on);
+    });
+    $('cap3').innerHTML = txt;
+  }
+  function tudo3(){
+    $('poli3').querySelectorAll('.peca').forEach(p => p.classList.remove('dim', 'lit'));
+    $('cap3').innerHTML = 'Os números azuis são os COEFICIENTES.<br>O número verde é o NÚMERO SOZINHO.';
+  }
+  montar3();
+  $('cap3').innerHTML = 'Toque nos botões, um de cada vez.';
+
+  /* ---------- ④ O expoente ---------- */
+  const P4 = [T(4,3), T(5,2), T(2,1), T(1,0)];
+  function montar4(modo){
+    const box = $('poli4');
+    box.innerHTML = '';
+    const p = poliEl(P4, {fantasma: modo === 'segredo'});
+    box.appendChild(p);
+    if(modo !== 'normal'){
+      p.querySelectorAll('.peca').forEach(e => {
+        const on = e.dataset.role === 'exp' || e.classList.contains('fantasma');
+        e.classList.toggle('dim', !on);
+        e.classList.toggle('lit', on);
+      });
+    }
+    $('cap4').innerHTML =
+      modo === 'exp'    ? 'O EXPOENTE é o numerinho pequeno em cima do x.<br>Aqui são o 3 e o 2.' :
+      modo === 'segredo'? '🤫 Segredo: quando o x não tem numerinho, o expoente é 1.<br>O 1 fica escondido!' :
+                          'Toque nos botões, um de cada vez.';
+  }
+  montar4('normal');
+
+  /* ---------- ⑤ O grau ---------- */
+  const ex5 = [
+    [T(3,2), T(2,1), T(5,0)],
+    [T(1,3), T(4,1), T(6,0)],
+    [T(2,1), T(7,0)],
+    [T(5,4), T(3,0)]
+  ];
+  let k5 = 0, m5 = 0;
+  function montar5(){
+    const box = $('poli5');
+    box.innerHTML = '';
+    const t = ex5[k5];
+    const p = poliEl(t, {fantasma: m5 >= 1});
+    box.appendChild(p);
+    const exps = t.filter(x => x.e >= 1).map(x => x.e);
+    const max = Math.max(...exps);
+    const pecasExp = Array.from(p.querySelectorAll('.peca.exp'));
+    if(m5 >= 1){
+      p.querySelectorAll('.peca').forEach(e => {
+        const on = e.classList.contains('exp');
+        e.classList.toggle('dim', !on);
+        e.classList.toggle('lit', on && m5 === 1);
+      });
+    }
+    if(m5 >= 2){
+      pecasExp.forEach(e => {
+        const maior = Number(e.textContent) === max;
+        e.classList.toggle('dim', !maior);
+        e.classList.toggle('lit', false);
+        e.classList.toggle('ouro', maior);
+      });
+    }
+    $('cap5').innerHTML =
+      m5 === 0 ? 'O GRAU é o MAIOR expoente do polinômio.<br>Toque nos botões, um de cada vez.' :
+      m5 === 1 ? 'Estes são os expoentes: ' + exps.join(', ') + '.' :
+                 'O maior expoente é ' + max + '.<br>Então o GRAU é ' + max + '!';
+  }
+  function passo5(n){ m5 = n; montar5(); }
+  function outro5(){ k5 = (k5+1) % ex5.length; m5 = 0; montar5(); }
+  montar5();
+
+  /* ---------- ⑥ O valor numérico ---------- */
+  const pre6 = [
+    {t:[T(2,1), T(1,0)], x:3, l:['2 × 3 + 1', '6 + 1', '7']},
+    {t:[T(1,2), T(1,0)], x:2, l:['2² + 1', '4 + 1', '5']},
+    {t:[T(3,1), T(2,0)], x:2, l:['3 × 2 + 2', '6 + 2', '8']}
+  ];
+  let k6 = 0, m6 = 0;
+  function linhaEl(txt, forte){
+    const d = document.createElement('div');
+    d.className = 'lc' + (forte ? ' forte' : '');
+    d.textContent = txt;
+    return d;
+  }
+  function topoConta(termos, x){
+    const frag = document.createDocumentFragment();
+    const topo = document.createElement('div'); topo.className = 'conta-topo';
+    const lab = document.createElement('span'); lab.className = 'rotulo-p'; lab.textContent = 'P(x) =';
+    topo.appendChild(lab); topo.appendChild(poliEl(termos, {}));
+    frag.appendChild(topo);
+    const xv = document.createElement('p'); xv.className = 'xvale';
+    xv.innerHTML = 'Quando <b>x = ' + x + '</b>';
+    frag.appendChild(xv);
+    return frag;
+  }
+  function montar6(){
+    const d = pre6[k6];
+    const box = $('conta6');
+    box.innerHTML = '';
+    box.appendChild(topoConta(d.t, d.x));
+    const lin = document.createElement('div'); lin.className = 'linhas-conta';
+    if(m6 >= 1) lin.appendChild(linhaEl('Trocamos o x por ' + d.x + ':  ' + d.l[0]));
+    if(m6 >= 2) lin.appendChild(linhaEl('= ' + d.l[1]));
+    if(m6 >= 3) lin.appendChild(linhaEl('= ' + d.l[2], true));
+    box.appendChild(lin);
+    $('cap6').innerHTML =
+      m6 === 0 ? 'VALOR NUMÉRICO: trocamos o x por um número e fazemos a conta.<br>Toque nos botões, um de cada vez.' :
+      m6 === 1 ? 'Passo 1: trocamos o x pelo número ' + d.x + '.' :
+      m6 === 2 ? 'Passo 2: fazemos as contas, uma de cada vez.' :
+                 'Pronto! O valor numérico é ' + d.l[2] + '. 🎉';
+  }
+  function passo6(n){ m6 = n; montar6(); }
+  function outro6(){ k6 = (k6+1) % pre6.length; m6 = 0; montar6(); }
+  montar6();
+
+  /* ================= motor dos jogos (usado em ①, ②, ③, ④, ⑤, ⑥, ⑦, ⑧) =================
+     tipos: 'opcoes' (escolher), 'toque' (tocar numa peça), 'ordem' (arrumar vagões), 'passos' (valor numérico) */
+  const QUIZZES = {};
+  const DICAS = {
+    coef: {solo:'Esse é o número sozinho. Procure o número colado no x.',
+           var:'Esse é o x. Procure o número colado nele.',
+           exp:'Esse é o expoente, o numerinho de cima. Procure o número grande colado no x.'},
+    solo: {coef:'Esse número está colado no x. Procure o número sozinho.',
+           var:'Esse é o x. Procure o número sozinho.',
+           exp:'Esse é o numerinho de cima. Procure o número sozinho.'},
+    exp:  {coef:'Esse é o coeficiente. O expoente é o numerinho pequeno lá em cima.',
+           var:'Esse é o x. Procure o numerinho pequeno em cima dele.',
+           solo:'Esse é o número sozinho. Procure o numerinho pequeno em cima do x.'}
+  };
+
+  function criarQuiz(raizId, itens, msgFim){
+    const raiz = $(raizId);
+    raiz.innerHTML =
+      '<div class="dots"></div>' +
+      '<p class="feedback nao pedido"></p>' +
+      '<div class="quiz-area"></div>' +
+      '<div class="btnrow opcoes hidden"></div>' +
+      '<p class="feedback fb hidden"></p>' +
+      '<div class="btnrow"><button type="button" class="laranja prox hidden"></button>' +
+      '<button type="button" class="secundario rein hidden">🔁 Jogar de novo</button></div>';
+    const q = s => raiz.querySelector(s);
+    const el = {dots:q('.dots'), pedido:q('.pedido'), area:q('.quiz-area'), op:q('.opcoes'),
+                fb:q('.fb'), prox:q('.prox'), rein:q('.rein')};
+    let i = 0, trav = false, passo = 0, rest = [], cons = [];
+    const feitos = [];
+
+    function desenharDots(){
+      el.dots.innerHTML = '';
+      itens.forEach((_, k) => {
+        const d = document.createElement('div');
+        d.className = 'dot' + (feitos[k] ? ' certo' : '');
+        el.dots.appendChild(d);
+      });
+    }
+    function msg(txt, tipo){ el.fb.textContent = txt; el.fb.className = 'feedback fb ' + tipo; }
+    function limparFb(){ el.fb.className = 'feedback fb hidden'; }
+
+    function opcoesBtns(lista, certa, aoAcertar, dica){
+      el.op.innerHTML = '';
+      embaralhar(lista).forEach(v => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'grande secundario'; b.textContent = v;
+        b.onclick = () => {
+          if(trav) return;
+          if(String(v) === String(certa)) aoAcertar();
+          else msg('😊 Quase! ' + dica, 'nao');
+        };
+        el.op.appendChild(b);
+      });
+      el.op.classList.remove('hidden');
+    }
+
+    function concluir(txt){
+      trav = true; feitos[i] = true; desenharDots();
+      msg('🎉 ' + txt, 'ok');
+      el.op.classList.add('hidden');
+      el.prox.textContent = (i === itens.length-1) ? 'Ver resultado 🏁' : 'Próxima ▶';
+      el.prox.classList.remove('hidden');
+    }
+
+    function mostrar(){
+      const it = itens[i];
+      trav = false; passo = 0;
+      limparFb();
+      el.prox.classList.add('hidden'); el.rein.classList.add('hidden');
+      el.pedido.classList.remove('hidden'); el.area.classList.remove('hidden');
+      el.pedido.className = 'feedback nao pedido';
+      el.area.innerHTML = ''; el.op.innerHTML = ''; el.op.classList.add('hidden');
+      desenharDots();
+      if(it.tipo === 'opcoes'){
+        el.pedido.textContent = it.texto;
+        if(it.termos) el.area.appendChild(poliEl(it.termos, {neutro:true}));
+        opcoesBtns(it.opcoes, it.certa, () => concluir(it.ok), it.dica);
+      } else if(it.tipo === 'toque'){
+        el.pedido.textContent = it.texto;
+        const p = poliEl(it.termos, {neutro:true, tocavel:true});
+        el.area.appendChild(p);
+        p.querySelectorAll('button.peca').forEach(b => { b.onclick = () => tocar(b.dataset.role, p); });
+      } else if(it.tipo === 'ordem'){
+        montarOrdem(it);
+      } else if(it.tipo === 'passos'){
+        montarPassos(it);
+      }
+    }
+
+    function tocar(papel, poli){
+      if(trav) return;
+      const it = itens[i];
+      if(papel === it.pedir){
+        poli.querySelectorAll('.peca.neutro').forEach(p => p.classList.remove('neutro'));
+        poli.querySelectorAll('button').forEach(b => { b.disabled = true; });
+        concluir(it.ok);
+      } else {
+        msg('😊 ' + ((DICAS[it.pedir] && DICAS[it.pedir][papel]) || 'Tente de novo!'), 'nao');
+      }
+    }
+
+    function montarOrdem(it){
+      el.pedido.textContent = it.texto;
+      rest = embaralhar(it.termos.map((t, k) => ({t, k})));
+      cons = [];
+      el.area.innerHTML =
+        '<p class="rotulo">Vagões soltos:</p><div class="fila"></div>' +
+        '<p class="rotulo">Seu trem:</p><div class="poli trem"><span class="loco">🚂</span></div>';
+      desenharFila();
+    }
+    function desenharFila(){
+      const fila = el.area.querySelector('.fila');
+      fila.innerHTML = '';
+      rest.forEach(r => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'vagao-btn';
+        b.appendChild(termoEl(r.t, {neutro:true}));
+        b.onclick = () => escolherVagao(r);
+        fila.appendChild(b);
+      });
+    }
+    function escolherVagao(r){
+      if(trav) return;
+      const maxE = Math.max(...rest.map(x => x.t.e));
+      if(r.t.e === maxE){
+        const trem = el.area.querySelector('.trem');
+        if(cons.length > 0) trem.appendChild(elPeca('span', 'sinal', '+'));
+        trem.appendChild(termoEl(r.t, {vagao:true}));
+        cons.push(r);
+        rest = rest.filter(x => x !== r);
+        limparFb();
+        if(rest.length === 0){
+          el.area.querySelector('.fila').innerHTML = '';
+          concluir(itens[i].ok);
+        } else desenharFila();
+      } else {
+        msg('😊 Quase! Procure o vagão com o MAIOR expoente que sobrou. O número sozinho vai por último.', 'nao');
+      }
+    }
+
+    function linhaConta(txt, forte){ return linhaEl(txt, forte); }
+    function montarPassos(it){
+      el.area.appendChild(topoConta(it.termos, it.x));
+      const lin = document.createElement('div'); lin.className = 'linhas-conta';
+      lin.appendChild(linhaConta('Trocamos o x por ' + it.x + ':  ' + it.linhas[0]));
+      el.area.appendChild(lin);
+      pedirPasso(it);
+    }
+    function pedirPasso(it){
+      const p = it.passos[passo];
+      el.pedido.textContent = p.texto;
+      const n = p.certa;
+      const d = (n - 1 >= 0) ? [n-1, n+1] : [n+1, n+2];
+      opcoesBtns([n, ...d], n, () => {
+        const lin = el.area.querySelector('.linhas-conta');
+        passo++;
+        lin.appendChild(linhaConta('= ' + it.linhas[passo], passo === it.passos.length));
+        if(passo < it.passos.length){ msg('🎉 Isso mesmo!', 'ok'); pedirPasso(it); }
+        else { el.pedido.textContent = 'Você fez a conta!'; concluir(it.final); }
+      }, 'Faça a conta devagar. Pode contar nos dedos!');
+    }
+
+    el.prox.onclick = () => {
+      i++;
+      if(i >= itens.length) fim(); else mostrar();
+    };
+    function fim(){
+      el.pedido.classList.add('hidden'); el.area.classList.add('hidden');
+      el.op.classList.add('hidden'); el.prox.classList.add('hidden');
+      msg('🎉 ' + msgFim, 'ok');
+      el.rein.classList.remove('hidden');
+    }
+    el.rein.onclick = () => { i = 0; feitos.length = 0; mostrar(); };
+
+    QUIZZES[raizId] = {itens};
+    mostrar();
+  }
+
+  /* ---------- fábricas de perguntas ---------- */
+  const Qtermos = (termos, certa, opcoes) => ({
+    tipo:'opcoes', texto:'Quantos TERMOS tem este polinômio?', termos,
+    opcoes:opcoes.map(String), certa:String(certa),
+    ok:'Isso mesmo! São ' + certa + (certa === 1 ? ' termo.' : ' termos.'),
+    dica:'Conte os vagões do trem. Cada vagão é um termo.'
+  });
+  const Qgrau = (termos, certa, opcoes) => ({
+    tipo:'opcoes', texto:'Qual é o GRAU deste polinômio?', termos,
+    opcoes:opcoes.map(String), certa:String(certa),
+    ok:'Isso mesmo! O maior expoente é ' + certa + '. O grau é ' + certa + '.',
+    dica:'Olhe os numerinhos pequenos (expoentes). O maior deles é o grau. Sem numerinho, vale 1.'
+  });
+  const Qtoque = (termos, pedir) => ({
+    tipo:'toque', termos, pedir,
+    texto:{coef:'Toque num COEFICIENTE (número colado no x)!',
+           solo:'Toque no NÚMERO SOZINHO!',
+           exp:'Toque num EXPOENTE (o numerinho de cima)!'}[pedir],
+    ok:{coef:'Isso mesmo! Esse é um COEFICIENTE, o número colado no x.',
+        solo:'Isso mesmo! Esse é o NÚMERO SOZINHO (termo independente).',
+        exp:'Isso mesmo! Esse é um EXPOENTE, o numerinho de cima.'}[pedir]
+  });
+  const Qexp = (c, e, opcoes, dica) => ({
+    tipo:'opcoes', texto:'Qual é o EXPOENTE do x?', termos:[T(c, e)],
+    opcoes:opcoes.map(String), certa:String(e),
+    ok:'Isso mesmo! O expoente é ' + e + '.',
+    dica:dica || 'O expoente é o numerinho pequeno em cima do x.'
+  });
+  const Qordem = termos => ({
+    tipo:'ordem', termos,
+    texto:'Arrume o trem: o MAIOR expoente na frente. O número sozinho vai por último. Toque um vagão de cada vez!',
+    ok:'Pronto! O trem está em ordem.'
+  });
+  const Qpassos = (termos, x, linhas, passos, final) => ({tipo:'passos', termos, x, linhas, passos, final});
+  const Qachar = (opcoes, certa) => ({
+    tipo:'opcoes', texto:'Qual destes é um POLINÔMIO?', opcoes, certa,
+    ok:'Isso mesmo! ' + certa + ' é um trem de peças: um polinômio.',
+    dica:'Polinômio é um trem de peças com x e números, juntas com o sinal +.'
+  });
+
+  /* ---------- as perguntas de cada seção ---------- */
+  criarQuiz('quiz1', [
+    Qachar(['🏠', '3x + 2', '🐱'], '3x + 2'),
+    Qachar(['🌳', '5x² + 1', '🍎'], '5x² + 1'),
+    Qachar(['x² + 4x + 7', '🐶', '☀️'], 'x² + 4x + 7')
+  ], 'Você achou os polinômios!');
+
+  criarQuiz('quiz2', [
+    Qtermos([T(2,1), T(5,0)], 2, [1,2,3]),
+    Qtermos([T(4,2), T(3,1), T(1,0)], 3, [2,3,4]),
+    Qtermos([T(1,3), T(5,2), T(2,1), T(7,0)], 4, [3,4,5]),
+    Qtermos([T(6,1)], 1, [1,2,3]),
+    Qtermos([T(5,2), T(3,0)], 2, [1,2,3])
+  ], 'Você sabe contar os termos!');
+
+  criarQuiz('quiz3', [
+    Qtoque([T(4,2), T(3,1), T(6,0)], 'coef'),
+    Qtoque([T(4,2), T(3,1), T(6,0)], 'solo'),
+    Qtoque([T(5,1), T(2,0)], 'coef'),
+    Qtoque([T(7,3), T(2,2), T(9,0)], 'solo'),
+    Qtoque([T(2,3), T(6,1), T(4,0)], 'coef'),
+    Qtoque([T(3,2), T(8,0)], 'solo')
+  ], 'Você achou todos os coeficientes e números sozinhos!');
+
+  criarQuiz('quiz4', [
+    Qtoque([T(3,2), T(5,1), T(4,0)], 'exp'),
+    Qtoque([T(2,3), T(4,2), T(1,0)], 'exp'),
+    Qtoque([T(5,4), T(3,1), T(2,0)], 'exp'),
+    Qexp(5, 3, [3,5,1]),
+    Qexp(4, 2, [4,2,1]),
+    Qexp(6, 1, [6,1,0], 'Segredo: quando o x não tem numerinho, o expoente é 1.')
+  ], 'Você achou todos os expoentes!');
+
+  criarQuiz('quiz5', [
+    Qgrau([T(3,2), T(2,1), T(5,0)], 2, [1,2,5]),
+    Qgrau([T(1,3), T(4,0)], 3, [3,4,1]),
+    Qgrau([T(2,1), T(7,0)], 1, [1,2,7]),
+    Qgrau([T(4,0), T(3,1), T(1,2)], 2, [1,2,4]),
+    Qgrau([T(5,4), T(3,2), T(1,0)], 4, [4,2,5])
+  ], 'Você descobriu todos os graus!');
+
+  criarQuiz('quiz6', [
+    Qpassos([T(1,1), T(2,0)], 3, ['3 + 2', '5'],
+      [{texto:'Quanto é 3 + 2?', certa:5}], 'O valor numérico é 5.'),
+    Qpassos([T(2,1), T(1,0)], 3, ['2 × 3 + 1', '6 + 1', '7'],
+      [{texto:'Primeiro: quanto é 2 × 3?', certa:6}, {texto:'Agora: quanto é 6 + 1?', certa:7}], 'O valor numérico é 7.'),
+    Qpassos([T(3,1)], 4, ['3 × 4', '12'],
+      [{texto:'Quanto é 3 × 4?', certa:12}], 'O valor numérico é 12.'),
+    Qpassos([T(1,1), T(5,0)], 0, ['0 + 5', '5'],
+      [{texto:'Quanto é 0 + 5?', certa:5}], 'O valor numérico é 5. Quando x é zero, sobra o número sozinho!'),
+    Qpassos([T(1,2), T(1,0)], 2, ['2² + 1', '4 + 1', '5'],
+      [{texto:'Primeiro: 2² é 2 × 2. Quanto é?', certa:4}, {texto:'Agora: quanto é 4 + 1?', certa:5}], 'O valor numérico é 5.'),
+    Qpassos([T(2,1), T(3,0)], 2, ['2 × 2 + 3', '4 + 3', '7'],
+      [{texto:'Primeiro: quanto é 2 × 2?', certa:4}, {texto:'Agora: quanto é 4 + 3?', certa:7}], 'O valor numérico é 7.')
+  ], 'Você calculou todos os valores numéricos!');
+
+  criarQuiz('quiz7', [
+    Qordem([T(3,2), T(2,1), T(5,0)]),
+    Qordem([T(4,3), T(2,1), T(6,0)]),
+    Qordem([T(5,3), T(3,2), T(2,1), T(1,0)])
+  ], 'Você arrumou todos os trens!');
+
+  const PA = [T(4,2), T(3,1), T(6,0)], PB = [T(5,3), T(2,1), T(7,0)], PC = [T(3,4), T(2,2), T(8,0)];
+  criarQuiz('quiz8', [
+    Qtermos(PA, 3, [2,3,4]),
+    Qgrau(PA, 2, [1,2,6]),
+    Qtoque(PA, 'solo'),
+    Qgrau(PB, 3, [1,3,5]),
+    Qtoque(PB, 'coef'),
+    Qtermos(PC, 3, [2,3,4]),
+    Qgrau(PC, 4, [2,4,8]),
+    Qtoque(PC, 'exp'),
+    Qpassos([T(2,1), T(3,0)], 5, ['2 × 5 + 3', '10 + 3', '13'],
+      [{texto:'Primeiro: quanto é 2 × 5?', certa:10}, {texto:'Agora: quanto é 10 + 3?', certa:13}], 'O valor numérico é 13.'),
+    Qordem([T(4,3), T(5,1), T(2,0)])
+  ], 'Você terminou tudo! Parabéns, campeão dos polinômios! 🏆');
+</script>
+
+<!-- ============ VLIBRAS (tradutor de Libras oficial do Governo Federal) ============ -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+</body>
+</html>
