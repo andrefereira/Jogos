@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+<title>Valor numérico e raiz — Animações</title>
+<style>
+  :root{
+    --azul:#1f6feb;
+    --vermelho:#e63946;
+    --laranja:#f2994a;
+    --verde:#2a9d8f;
+    --roxo:#8e5bd9;
+    --cinza:#333333;
+    --fundo:#f7f9fc;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--fundo);
+    color:var(--cinza);
+    line-height:1.5;
+  }
+  header{
+    background:var(--azul);
+    color:white;
+    padding:20px 16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1{margin:0; font-size:1.4rem;}
+  header p{margin:6px 0 0; font-size:1.1rem; opacity:.95;}
+
+  nav{
+    display:flex;
+    gap:8px;
+    padding:12px 10px;
+    background:white;
+    position:sticky;
+    top:82px;
+    z-index:40;
+    border-bottom:2px solid #e4e9f2;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  nav a{
+    flex:0 0 auto;
+    text-decoration:none;
+    background:#e8f0ff;
+    color:var(--azul);
+    font-weight:bold;
+    padding:10px 14px;
+    border-radius:999px;
+    font-size:.95rem;
+    white-space:nowrap;
+  }
+
+  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+
+  section.concept{
+    background:white;
+    border-radius:20px;
+    padding:22px;
+    margin-bottom:30px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    scroll-margin-top:150px;
+  }
+  section.concept h2{
+    color:var(--azul);
+    font-size:1.5rem;
+    border-bottom:3px solid #e8f0ff;
+    padding-bottom:10px;
+    margin-top:0;
+    text-align:center;
+  }
+  h3.sub{
+    color:var(--laranja);
+    text-align:center;
+    font-size:1.3rem;
+    margin:26px 0 8px;
+  }
+  .caption{
+    font-size:1.3rem;
+    font-weight:600;
+    text-align:center;
+    background:#e8f0ff;
+    border-left:8px solid var(--azul);
+    border-radius:10px;
+    padding:16px;
+    margin:16px 0;
+    min-height:1.4em;
+  }
+  .btnrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    justify-content:center;
+    margin:16px 0;
+  }
+  button{
+    font-family:inherit;
+    font-size:1.1rem;
+    font-weight:bold;
+    border:none;
+    border-radius:14px;
+    padding:15px 20px;
+    min-height:58px;
+    min-width:100px;
+    cursor:pointer;
+    color:white;
+    background:var(--azul);
+    transition:transform .1s ease;
+  }
+  button:active{transform:scale(0.95);}
+  button.laranja{background:var(--laranja);}
+  button.verde{background:var(--verde);}
+  button.roxo{background:var(--roxo);}
+  button.secundario{background:#dfe6f5; color:var(--azul);}
+  button.grande{font-size:1.8rem; min-width:90px; min-height:72px; padding:12px 24px;}
+  button.pequeno{font-size:1.2rem; min-width:84px; min-height:52px; padding:10px 14px;}
+
+  .libras-note{
+    font-size:1.05rem;
+    color:#555;
+    background:#fff7e6;
+    border:2px dashed var(--laranja);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-top:16px;
+  }
+  .libras-note b{color:var(--laranja);}
+
+  .feedback{
+    font-size:1.25rem;
+    font-weight:bold;
+    text-align:center;
+    padding:14px;
+    border-radius:12px;
+    margin:14px 0;
+    min-height:1.4em;
+  }
+  .feedback.ok{background:#e6f7f1; color:var(--verde);}
+  .feedback.nao{background:#fff2e8; color:var(--laranja);}
+
+  /* ---------- as peças do polinômio ---------- */
+  .peca{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:52px;
+    min-width:44px;
+    padding:0 10px;
+    border-radius:12px;
+    font-size:clamp(1.3rem, 6vw, 1.8rem);
+    font-weight:800;
+    color:white;
+    transition:all .25s ease;
+    user-select:none;
+  }
+  .peca.coef{background:var(--azul);}
+  .peca.var{background:var(--roxo);}
+  .peca.solo{background:var(--verde);}
+  .peca.exp{
+    background:var(--laranja);
+    height:30px; min-width:28px; padding:0 6px;
+    font-size:clamp(.95rem, 4vw, 1.2rem);
+    border-radius:9px;
+  }
+  .peca.sinal{background:transparent; color:#9aa8c7; min-width:24px; padding:0;}
+  .peca.sinal.menos{color:var(--vermelho); font-size:clamp(1.6rem,7vw,2.2rem);}
+
+  .poli{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:flex-start;
+    gap:12px 6px;
+    margin:14px 0;
+  }
+  .unidade{display:flex; flex-direction:column; align-items:center;}
+  .linha{display:flex; align-items:flex-start; gap:6px;}
+  .termo{display:flex; align-items:flex-start; gap:3px; padding:6px; border-radius:14px;}
+
+  .conta-topo{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;}
+  .conta-topo .poli{margin:6px 0;}
+  .rotulo-p{font-size:1.5rem; font-weight:800;}
+  .xvale{text-align:center; font-size:1.35rem; margin:6px 0;}
+  .linhas-conta{text-align:center; margin:8px 0;}
+  .lc{font-size:1.5rem; font-weight:700; margin:6px 0;}
+  .lc.forte{color:var(--verde); font-size:1.9rem;}
+
+  .dots{display:flex; gap:8px; justify-content:center; margin:12px 0; flex-wrap:wrap;}
+  .dot{width:16px; height:16px; border-radius:50%; background:#dfe6f5;}
+  .dot.certo{background:var(--verde);}
+
+  /* ---------- a caixa mágica ---------- */
+  .maquina{display:flex; flex-direction:column; align-items:center; gap:4px; margin:12px 0;}
+  .bola{
+    border-radius:50%; width:96px; height:96px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-weight:800; font-size:1.6rem; color:#fff; line-height:1.1;
+  }
+  .bola small{font-size:.85rem; font-weight:700; opacity:.9;}
+  .bola.entrada{background:var(--azul);}
+  .bola.saida{background:var(--verde);}
+  .seta{font-size:2rem; line-height:1;}
+  .caixa{
+    border:4px solid var(--laranja); border-radius:20px; padding:8px 14px;
+    background:#fff7e6; text-align:center; max-width:100%;
+  }
+  .linhaM{font-size:1.5rem; font-weight:700; margin:8px 0 0; text-align:center;}
+  .xs{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:12px 0;}
+
+  /* ---------- tabelinha ---------- */
+  .tabela{display:flex; flex-direction:column; gap:10px; max-width:420px; margin:12px auto;}
+  .linha-tab{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    background:#f3f7ff; color:var(--cinza);
+    border:3px solid #c9d6f5; border-radius:14px;
+    padding:10px 16px; font-size:1.3rem; font-weight:700;
+  }
+  button.linha-tab{min-height:56px; width:100%; font-family:inherit; cursor:pointer;}
+  .linha-tab .tx{color:var(--azul);}
+  .linha-tab.ouro{background:#fff3b0; border-color:#ffc400;}
+  .linha-tab.ouro .tv{color:#b45f00;}
+  .animar{animation:chega .4s both;}
+  @keyframes chega{from{opacity:0; transform:translateY(-12px);} to{opacity:1; transform:none;}}
+  .resultado-teste{
+    text-align:center; font-size:1.4rem; font-weight:800; padding:14px; border-radius:14px;
+    background:#f3f7ff; margin:8px 0; min-height:3.2em;
+  }
+  .resultado-teste.raiz{background:#fff3b0; color:#b45f00;}
+
+  @media (prefers-reduced-motion: reduce){
+    .animar{animation:none;}
+    .peca{transition:none;}
+  }
+
+  .hidden{display:none !important;}
+
+  footer{
+    text-align:center;
+    font-size:.9rem;
+    color:#888;
+    padding:30px 16px 60px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Valor numérico e raiz</h1>
+  <p>🤟 Vamos achar o número que dá zero!</p>
+</header>
+
+<nav>
+  <a href="#c1">① Caixa mágica</a>
+  <a href="#c2">② Valor numérico</a>
+  <a href="#c3">③ Tabelinha</a>
+  <a href="#c4">④ A raiz</a>
+  <a href="#c5">⑤ Achar a raiz</a>
+  <a href="#c6">⑥ Desafio</a>
+</nav>
+
+<main>
+
+  <!-- ================= 1: CAIXA MÁGICA ================= -->
+  <section class="concept" id="c1">
+    <h2>① A caixa mágica</h2>
+    <p class="caption" id="cap1"></p>
+    <div id="maquina1" class="maquina"></div>
+    <p class="rotulo-p" style="text-align:center;font-size:1.1rem;margin:4px 0">Escolha o número que entra:</p>
+    <div class="xs">
+      <button class="pequeno" onclick="xMaq(0)">x = 0</button>
+      <button class="pequeno" onclick="xMaq(1)">x = 1</button>
+      <button class="pequeno" onclick="xMaq(2)">x = 2</button>
+      <button class="pequeno" onclick="xMaq(3)">x = 3</button>
+      <button class="pequeno" onclick="xMaq(4)">x = 4</button>
+      <button class="pequeno" onclick="xMaq(5)">x = 5</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz1"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras no canto da tela, depois toque na frase acima.</p>
+  </section>
+
+  <!-- ================= 2: VALOR NUMÉRICO ================= -->
+  <section class="concept" id="c2">
+    <h2>② O valor numérico</h2>
+    <p class="caption" id="cap2"></p>
+    <div id="conta2"></div>
+    <div class="btnrow">
+      <button onclick="passo2(1)">1️⃣ Trocar o x</button>
+      <button class="laranja" onclick="passo2(2)">2️⃣ Fazer as contas</button>
+      <button class="verde" onclick="passo2(3)">3️⃣ Resultado</button>
+      <button class="secundario" onclick="outro2()">🔄 Outro exemplo</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz2"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 3: TABELINHA ================= -->
+  <section class="concept" id="c3">
+    <h2>③ A tabelinha do zero</h2>
+    <p class="caption" id="cap3"></p>
+    <div id="topo3"></div>
+    <div id="tab3" class="tabela"></div>
+    <div class="btnrow">
+      <button onclick="proximo3()">➕ Testar o próximo x</button>
+      <button class="secundario" onclick="reiniciar3()">🔁 De novo</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz3"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 4: A RAIZ ================= -->
+  <section class="concept" id="c4">
+    <h2>④ A raiz</h2>
+    <p class="caption" id="cap4"></p>
+    <div id="topo4"></div>
+    <div id="xs4" class="xs"></div>
+    <div id="res4" class="resultado-teste">Toque num número para testar.</div>
+    <div class="btnrow">
+      <button class="laranja" onclick="outro4()">🔄 Outro polinômio</button>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz4"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 5: ACHAR A RAIZ ================= -->
+  <section class="concept" id="c5">
+    <h2>⑤ Achando a raiz</h2>
+    <p class="caption">Para achar a raiz, teste os números no lugar do x. 🔍<br>A raiz é o número que dá ZERO.</p>
+    <div id="quiz5"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+  <!-- ================= 6: DESAFIO ================= -->
+  <section class="concept" id="c6">
+    <h2>⑥ Desafio final</h2>
+    <p class="caption">Agora vamos lembrar de tudo! 🌟<br>Valor numérico e raiz.</p>
+    <div id="quiz6"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase acima.</p>
+  </section>
+
+</main>
+
+<footer>
+  Material de apoio — Matemática, 3ª série do Ensino Médio.<br>
+  Página pronta para ser hospedada e acessada por QR Code.
+</footer>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const T = (c, e) => ({c, e});                       // um termo: c = coeficiente (pode ser negativo), e = expoente
+  const fmt = n => n < 0 ? '−' + Math.abs(n) : String(n);
+  const avalia = (termos, x) => termos.reduce((s, t) => s + t.c * Math.pow(x, t.e), 0);
+
+  function embaralhar(v){
+    const a = v.slice();
+    for(let i=a.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  /* ---------- desenhar polinômios com peças coloridas ---------- */
+  function elPeca(tag, cls, txt, role){
+    const e = document.createElement(tag);
+    e.className = 'peca ' + cls;
+    e.textContent = txt;
+    if(role) e.dataset.role = role;
+    return e;
+  }
+
+  function termoEl(t){
+    const w = document.createElement('span');
+    w.className = 'termo';
+    const c = Math.abs(t.c);
+    if(t.e === 0){
+      w.appendChild(elPeca('span', 'solo', c, 'solo'));
+    } else {
+      if(c !== 1) w.appendChild(elPeca('span', 'coef', c, 'coef'));
+      w.appendChild(elPeca('span', 'var', 'x', 'var'));
+      if(t.e >= 2) w.appendChild(elPeca('span', 'exp', t.e, 'exp'));
+    }
+    return w;
+  }
+
+  function poliEl(termos){
+    const box = document.createElement('div');
+    box.className = 'poli';
+    termos.forEach((t, k) => {
+      const neg = t.c < 0;
+      const u = document.createElement('span'); u.className = 'unidade';
+      const linha = document.createElement('span'); linha.className = 'linha';
+      if(k > 0) linha.appendChild(elPeca('span', 'sinal' + (neg ? ' menos' : ''), neg ? '−' : '+'));
+      else if(neg) linha.appendChild(elPeca('span', 'sinal menos', '−'));
+      linha.appendChild(termoEl(t));
+      u.appendChild(linha);
+      box.appendChild(u);
+    });
+    return box;
+  }
+
+  function linhaEl(txt, forte){
+    const d = document.createElement('div');
+    d.className = 'lc' + (forte ? ' forte' : '');
+    d.textContent = txt;
+    return d;
+  }
+  function topoConta(termos, x){
+    const frag = document.createDocumentFragment();
+    const topo = document.createElement('div'); topo.className = 'conta-topo';
+    const lab = document.createElement('span'); lab.className = 'rotulo-p'; lab.textContent = 'P(x) =';
+    topo.appendChild(lab); topo.appendChild(poliEl(termos));
+    frag.appendChild(topo);
+    if(x !== undefined){
+      const xv = document.createElement('p'); xv.className = 'xvale';
+      xv.innerHTML = 'Quando <b>x = ' + x + '</b>';
+      frag.appendChild(xv);
+    }
+    return frag;
+  }
+
+  /* ---------- ① A caixa mágica ---------- */
+  const poliM = [T(2,1), T(1,0)];
+  let xM = null;
+  function montarMaquina(){
+    const box = $('maquina1');
+    box.innerHTML = '';
+    const x = xM === null ? 3 : xM;
+    const v = avalia(poliM, x);
+    const entra = document.createElement('div'); entra.className = 'bola entrada';
+    entra.innerHTML = '<small>entra</small>x = ' + x;
+    const caixa = document.createElement('div'); caixa.className = 'caixa';
+    caixa.appendChild(topoConta(poliM));
+    const sai = document.createElement('div'); sai.className = 'bola saida';
+    sai.innerHTML = '<small>sai</small>' + v;
+    const s1 = document.createElement('div'); s1.className = 'seta'; s1.textContent = '⬇️';
+    const s2 = document.createElement('div'); s2.className = 'seta'; s2.textContent = '⬇️';
+    box.append(entra, s1, caixa, s2, sai);
+    const l = document.createElement('p'); l.className = 'linhaM';
+    l.textContent = '2 × ' + x + ' + 1 = ' + v;
+    box.appendChild(l);
+    $('cap1').innerHTML = xM === null
+      ? 'Esta é a CAIXA MÁGICA do polinômio. 📦<br>Entra um número no lugar do x.<br>Sai o VALOR NUMÉRICO.'
+      : 'Entrou x = ' + x + '. Saiu ' + v + '.<br>Escrevemos P(' + x + ') = ' + v + '.<br>Lemos: "P de ' + x + '".';
+  }
+  function xMaq(n){ xM = n; montarMaquina(); }
+  montarMaquina();
+
+  /* ---------- ② O valor numérico ---------- */
+  const pre2 = [
+    {t:[T(1,2), T(2,1)], x:2, l:['2² + 2 × 2', '4 + 4', '8']},
+    {t:[T(3,1), T(-2,0)], x:4, l:['3 × 4 − 2', '12 − 2', '10']},
+    {t:[T(1,1), T(-2,0)], x:5, l:['5 − 2', '3']}
+  ];
+  let k2 = 0, m2 = 0;
+  function montar2(){
+    const d = pre2[k2];
+    const box = $('conta2');
+    box.innerHTML = '';
+    box.appendChild(topoConta(d.t, d.x));
+    const lin = document.createElement('div'); lin.className = 'linhas-conta';
+    const n = d.l.length;
+    if(m2 >= 1) lin.appendChild(linhaEl('Trocamos o x por ' + d.x + ':  ' + d.l[0]));
+    if(m2 >= 2) for(let i=1; i<n-1; i++) lin.appendChild(linhaEl('= ' + d.l[i]));
+    if(m2 >= 3) lin.appendChild(linhaEl('= ' + d.l[n-1], true));
+    box.appendChild(lin);
+    $('cap2').innerHTML =
+      m2 === 0 ? 'VALOR NUMÉRICO: trocamos o x por um número e fazemos a conta.<br>Agora alguns vagões têm o sinal − (menos).' :
+      m2 === 1 ? 'Passo 1: trocamos o x pelo número ' + d.x + '.' :
+      m2 === 2 ? 'Passo 2: fazemos as contas, uma de cada vez.' :
+                 'Pronto! P(' + d.x + ') = ' + d.l[n-1] + '. 🎉';
+  }
+  function passo2(n){ m2 = n; montar2(); }
+  function outro2(){ k2 = (k2+1) % pre2.length; m2 = 0; montar2(); }
+  montar2();
+
+  /* ---------- ③ A tabelinha do zero ---------- */
+  const poliT = [T(1,1), T(-3,0)];
+  const xsT = [1, 2, 3, 4, 5];
+  let rT = 0;
+  function montar3(){
+    $('topo3').innerHTML = '';
+    $('topo3').appendChild(topoConta(poliT));
+    const box = $('tab3');
+    box.innerHTML = '';
+    let ultimo = null;
+    for(let i=0; i<rT; i++){
+      const x = xsT[i], v = avalia(poliT, x);
+      const d = document.createElement('div');
+      d.className = 'linha-tab' + (v === 0 ? ' ouro' : '') + (i === rT-1 ? ' animar' : '');
+      d.innerHTML = '<span class="tx">x = ' + x + '</span><span class="tv">' + x + ' − 3 = ' + fmt(v) + '</span>';
+      box.appendChild(d);
+      ultimo = {x, v};
+    }
+    $('cap3').innerHTML =
+      !ultimo ? 'Vamos testar vários números no lugar do x.<br>Toque em "Testar o próximo x".' :
+      ultimo.v === 0 ? 'Deu ZERO! 🎉<br>O zero não tem sinal de mais nem de menos.' :
+      ultimo.v < 0 ? 'Deu ' + fmt(ultimo.v) + '. Tem sinal de menos.<br>Ainda não é zero.' :
+                     'Deu ' + ultimo.v + '. Passou do zero.';
+  }
+  function proximo3(){ if(rT < xsT.length) rT++; montar3(); }
+  function reiniciar3(){ rT = 0; montar3(); }
+  montar3();
+
+  /* ---------- ④ A raiz ---------- */
+  const ex4 = [
+    {t:[T(1,1), T(-3,0)], linha: x => x + ' − 3'},
+    {t:[T(2,1), T(-6,0)], linha: x => '2 × ' + x + ' − 6'},
+    {t:[T(1,2), T(-4,0)], linha: x => x + '² − 4'}
+  ];
+  let k4 = 0;
+  function montar4(){
+    const d = ex4[k4];
+    $('topo4').innerHTML = '';
+    $('topo4').appendChild(topoConta(d.t));
+    const xs = $('xs4'); xs.innerHTML = '';
+    [1,2,3,4].forEach(x => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'pequeno secundario'; b.textContent = 'x = ' + x;
+      b.onclick = () => testar4(x);
+      xs.appendChild(b);
+    });
+    const r = $('res4'); r.className = 'resultado-teste'; r.textContent = 'Toque num número para testar.';
+    $('cap4').innerHTML = 'A RAIZ do polinômio é o número que, no lugar do x, faz o resultado ser ZERO. 🌱<br>Teste os números!';
+  }
+  function testar4(x){
+    const d = ex4[k4], v = avalia(d.t, x), r = $('res4');
+    const conta = d.linha(x) + ' = ' + fmt(v);
+    if(v === 0){
+      r.className = 'resultado-teste raiz';
+      r.innerHTML = conta + '<br>P(' + x + ') = 0<br>🎉 O ' + x + ' é a RAIZ!';
+    } else {
+      r.className = 'resultado-teste';
+      r.innerHTML = conta + '<br>Não deu zero.<br>O ' + x + ' não é raiz.';
+    }
+  }
+  function outro4(){ k4 = (k4+1) % ex4.length; montar4(); }
+  montar4();
+
+  /* ================= motor dos jogos =================
+     tipos: 'opcoes' (escolher), 'passos' (conta em etapas, com pergunta SIM/NÃO opcional), 'tabela' (tocar no zero) */
+  const QUIZZES = {};
+
+  function criarQuiz(raizId, itens, msgFim){
+    const raiz = $(raizId);
+    raiz.innerHTML =
+      '<div class="dots"></div>' +
+      '<p class="feedback nao pedido"></p>' +
+      '<div class="quiz-area"></div>' +
+      '<div class="btnrow opcoes hidden"></div>' +
+      '<p class="feedback fb hidden"></p>' +
+      '<div class="btnrow"><button type="button" class="laranja prox hidden"></button>' +
+      '<button type="button" class="secundario rein hidden">🔁 Jogar de novo</button></div>';
+    const q = s => raiz.querySelector(s);
+    const el = {dots:q('.dots'), pedido:q('.pedido'), area:q('.quiz-area'), op:q('.opcoes'),
+                fb:q('.fb'), prox:q('.prox'), rein:q('.rein')};
+    let i = 0, trav = false, passo = 0;
+    const feitos = [];
+
+    function desenharDots(){
+      el.dots.innerHTML = '';
+      itens.forEach((_, k) => {
+        const d = document.createElement('div');
+        d.className = 'dot' + (feitos[k] ? ' certo' : '');
+        el.dots.appendChild(d);
+      });
+    }
+    function msg(txt, tipo){ el.fb.textContent = txt; el.fb.className = 'feedback fb ' + tipo; }
+    function limparFb(){ el.fb.className = 'feedback fb hidden'; }
+
+    function opcoesBtns(lista, certa, aoAcertar, dica, fixa){
+      el.op.innerHTML = '';
+      (fixa ? lista : embaralhar(lista)).forEach(v => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'grande secundario'; b.textContent = v;
+        b.onclick = () => {
+          if(trav) return;
+          if(String(v) === String(certa)) aoAcertar();
+          else msg('😊 Quase! ' + dica, 'nao');
+        };
+        el.op.appendChild(b);
+      });
+      el.op.classList.remove('hidden');
+    }
+
+    function concluir(txt){
+      trav = true; feitos[i] = true; desenharDots();
+      msg('🎉 ' + txt, 'ok');
+      el.op.classList.add('hidden');
+      el.prox.textContent = (i === itens.length-1) ? 'Ver resultado 🏁' : 'Próxima ▶';
+      el.prox.classList.remove('hidden');
+    }
+
+    function mostrar(){
+      const it = itens[i];
+      trav = false; passo = 0;
+      limparFb();
+      el.prox.classList.add('hidden'); el.rein.classList.add('hidden');
+      el.pedido.classList.remove('hidden'); el.area.classList.remove('hidden');
+      el.pedido.className = 'feedback nao pedido';
+      el.area.innerHTML = ''; el.op.innerHTML = ''; el.op.classList.add('hidden');
+      desenharDots();
+      if(it.tipo === 'opcoes'){
+        el.pedido.textContent = it.texto;
+        if(it.termos) el.area.appendChild(topoConta(it.termos));
+        opcoesBtns(it.opcoes, it.certa, () => concluir(it.ok), it.dica);
+      } else if(it.tipo === 'passos'){
+        montarPassos(it);
+      } else if(it.tipo === 'tabela'){
+        montarTabela(it);
+      }
+    }
+
+    /* conta em etapas */
+    function montarPassos(it){
+      el.area.appendChild(topoConta(it.termos, it.x));
+      const lin = document.createElement('div'); lin.className = 'linhas-conta';
+      lin.appendChild(linhaEl('Trocamos o x por ' + it.x + ':  ' + it.linhas[0]));
+      el.area.appendChild(lin);
+      pedirPasso(it);
+    }
+    function pedirPasso(it){
+      if(passo >= it.passos.length){            // pergunta final SIM/NÃO (é raiz?)
+        el.pedido.textContent = it.sn.texto;
+        opcoesBtns(['SIM', 'NÃO'], it.sn.certa, () => concluir(it.sn.ok), it.sn.dica, true);
+        return;
+      }
+      const p = it.passos[passo];
+      el.pedido.textContent = p.texto;
+      const n = p.certa;
+      const d = (n - 1 >= 0) ? [n-1, n+1] : [n+1, n+2];
+      opcoesBtns([n, ...d], n, () => {
+        const lin = el.area.querySelector('.linhas-conta');
+        passo++;
+        lin.appendChild(linhaEl('= ' + it.linhas[passo], passo === it.passos.length));
+        if(passo < it.passos.length){ msg('🎉 Isso mesmo!', 'ok'); pedirPasso(it); }
+        else if(it.sn){ msg('🎉 Isso mesmo! O resultado é ' + n + '.', 'ok'); pedirPasso(it); }
+        else { el.pedido.textContent = 'Você fez a conta!'; concluir(it.final); }
+      }, 'Faça a conta devagar. Pode contar nos dedos!');
+    }
+
+    /* tabelinha: tocar na linha em que o resultado é zero */
+    function montarTabela(it){
+      el.pedido.textContent = it.texto;
+      el.area.appendChild(topoConta(it.termos));
+      const tab = document.createElement('div'); tab.className = 'tabela';
+      it.linhas.forEach(l => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'linha-tab';
+        b.innerHTML = '<span class="tx">x = ' + l.x + '</span><span class="tv">P(' + l.x + ') = ' + fmt(l.v) + '</span>';
+        b.onclick = () => {
+          if(trav) return;
+          if(l.v === 0){
+            b.classList.add('ouro');
+            tab.querySelectorAll('button').forEach(x => { x.disabled = true; });
+            concluir('Isso mesmo! P(' + l.x + ') = 0. O ' + l.x + ' é a RAIZ.');
+          } else if(l.v < 0){
+            msg('😊 Quase! Esse resultado tem sinal de menos (−). Procure o ZERO.', 'nao');
+          } else {
+            msg('😊 Quase! Esse resultado é maior que zero. Procure o ZERO.', 'nao');
+          }
+        };
+        tab.appendChild(b);
+      });
+      el.area.appendChild(tab);
+    }
+
+    el.prox.onclick = () => {
+      i++;
+      if(i >= itens.length) fim(); else mostrar();
+    };
+    function fim(){
+      el.pedido.classList.add('hidden'); el.area.classList.add('hidden');
+      el.op.classList.add('hidden'); el.prox.classList.add('hidden');
+      msg('🎉 ' + msgFim, 'ok');
+      el.rein.classList.remove('hidden');
+    }
+    el.rein.onclick = () => { i = 0; feitos.length = 0; mostrar(); };
+
+    QUIZZES[raizId] = {itens};
+    mostrar();
+  }
+
+  /* ---------- fábricas de perguntas ---------- */
+  const Qpassos = (termos, x, linhas, passos, final) => ({tipo:'passos', termos, x, linhas, passos, final});
+  const Qraiz = (termos, x, linhas, passos) => {
+    const v = avalia(termos, x);
+    return {
+      tipo:'passos', termos, x, linhas, passos,
+      sn:{
+        texto:'O ' + x + ' é RAIZ do polinômio?',
+        certa: v === 0 ? 'SIM' : 'NÃO',
+        ok: v === 0 ? 'Isso mesmo! Deu zero, então o ' + x + ' é RAIZ.'
+                    : 'Isso mesmo! Deu ' + v + ', não deu zero. O ' + x + ' NÃO é raiz.',
+        dica:'Raiz é quando o resultado é ZERO. Olhe o resultado da conta.'
+      }
+    };
+  };
+  const Qtabela = (termos, xs) => ({
+    tipo:'tabela', termos, texto:'Toque na linha em que o resultado é ZERO!',
+    linhas: xs.map(x => ({x, v: avalia(termos, x)}))
+  });
+  const Qachar = (termos, raiz, opcoes, conta) => ({
+    tipo:'opcoes', texto:'Qual é a RAIZ deste polinômio?', termos,
+    opcoes:opcoes.map(String), certa:String(raiz),
+    ok:'Isso mesmo! ' + conta + '. A raiz é ' + raiz + '.',
+    dica:'Teste cada número no lugar do x. A raiz é o que dá ZERO.'
+  });
+
+  /* ---------- as perguntas de cada seção ---------- */
+  criarQuiz('quiz1', [
+    Qpassos([T(1,1), T(4,0)], 2, ['2 + 4', '6'],
+      [{texto:'Quanto é 2 + 4?', certa:6}], 'P(2) = 6. Sai 6 da caixa!'),
+    Qpassos([T(2,1)], 3, ['2 × 3', '6'],
+      [{texto:'Quanto é 2 × 3?', certa:6}], 'P(3) = 6. Sai 6 da caixa!'),
+    Qpassos([T(2,1), T(1,0)], 4, ['2 × 4 + 1', '8 + 1', '9'],
+      [{texto:'Primeiro: quanto é 2 × 4?', certa:8}, {texto:'Agora: quanto é 8 + 1?', certa:9}], 'P(4) = 9. Sai 9 da caixa!'),
+    Qpassos([T(1,1), T(3,0)], 0, ['0 + 3', '3'],
+      [{texto:'Quanto é 0 + 3?', certa:3}], 'P(0) = 3. Quando x é zero, sobra o número sozinho!')
+  ], 'Você usou a caixa mágica!');
+
+  criarQuiz('quiz2', [
+    Qpassos([T(1,2), T(2,1)], 2, ['2² + 2 × 2', '4 + 2 × 2', '4 + 4', '8'],
+      [{texto:'Primeiro: 2² é 2 × 2. Quanto é?', certa:4}, {texto:'Agora: quanto é 2 × 2?', certa:4}, {texto:'Por fim: quanto é 4 + 4?', certa:8}], 'P(2) = 8.'),
+    Qpassos([T(1,2), T(1,1), T(1,0)], 2, ['2² + 2 + 1', '4 + 2 + 1', '6 + 1', '7'],
+      [{texto:'Primeiro: 2² é 2 × 2. Quanto é?', certa:4}, {texto:'Agora: quanto é 4 + 2?', certa:6}, {texto:'Por fim: quanto é 6 + 1?', certa:7}], 'P(2) = 7.'),
+    Qpassos([T(3,1), T(2,0)], 4, ['3 × 4 + 2', '12 + 2', '14'],
+      [{texto:'Primeiro: quanto é 3 × 4?', certa:12}, {texto:'Agora: quanto é 12 + 2?', certa:14}], 'P(4) = 14.'),
+    Qpassos([T(1,1), T(-2,0)], 5, ['5 − 2', '3'],
+      [{texto:'Quanto é 5 − 2?', certa:3}], 'P(5) = 3.'),
+    Qpassos([T(2,1), T(-1,0)], 3, ['2 × 3 − 1', '6 − 1', '5'],
+      [{texto:'Primeiro: quanto é 2 × 3?', certa:6}, {texto:'Agora: quanto é 6 − 1?', certa:5}], 'P(3) = 5.'),
+    Qpassos([T(1,2), T(3,0)], 3, ['3² + 3', '9 + 3', '12'],
+      [{texto:'Primeiro: 3² é 3 × 3. Quanto é?', certa:9}, {texto:'Agora: quanto é 9 + 3?', certa:12}], 'P(3) = 12.')
+  ], 'Você calculou todos os valores numéricos!');
+
+  criarQuiz('quiz3', [
+    Qtabela([T(1,1), T(-3,0)], [1, 2, 3, 4]),
+    Qtabela([T(2,1), T(-4,0)], [1, 2, 3, 4]),
+    Qtabela([T(1,2), T(-4,0)], [0, 1, 2, 3]),
+    Qtabela([T(3,1), T(-6,0)], [2, 3, 4, 5]),
+    Qtabela([T(1,1), T(-5,0)], [4, 5, 6, 7])
+  ], 'Você achou todos os zeros!');
+
+  criarQuiz('quiz4', [
+    Qraiz([T(1,1), T(-4,0)], 4, ['4 − 4', '0'], [{texto:'Quanto é 4 − 4?', certa:0}]),
+    Qraiz([T(1,1), T(-4,0)], 6, ['6 − 4', '2'], [{texto:'Quanto é 6 − 4?', certa:2}]),
+    Qraiz([T(2,1), T(-6,0)], 3, ['2 × 3 − 6', '6 − 6', '0'],
+      [{texto:'Primeiro: quanto é 2 × 3?', certa:6}, {texto:'Agora: quanto é 6 − 6?', certa:0}]),
+    Qraiz([T(1,2), T(-9,0)], 4, ['4² − 9', '16 − 9', '7'],
+      [{texto:'Primeiro: 4² é 4 × 4. Quanto é?', certa:16}, {texto:'Agora: quanto é 16 − 9?', certa:7}]),
+    Qraiz([T(1,2), T(-9,0)], 3, ['3² − 9', '9 − 9', '0'],
+      [{texto:'Primeiro: 3² é 3 × 3. Quanto é?', certa:9}, {texto:'Agora: quanto é 9 − 9?', certa:0}]),
+    Qraiz([T(3,1), T(-6,0)], 3, ['3 × 3 − 6', '9 − 6', '3'],
+      [{texto:'Primeiro: quanto é 3 × 3?', certa:9}, {texto:'Agora: quanto é 9 − 6?', certa:3}])
+  ], 'Você sabe reconhecer uma raiz!');
+
+  criarQuiz('quiz5', [
+    Qachar([T(1,1), T(-5,0)], 5, [4,5,6], '5 − 5 = 0'),
+    Qachar([T(1,1), T(-2,0)], 2, [2,3,4], '2 − 2 = 0'),
+    Qachar([T(2,1), T(-8,0)], 4, [3,4,5], '2 × 4 − 8 = 0'),
+    Qachar([T(3,1), T(-6,0)], 2, [1,2,3], '3 × 2 − 6 = 0'),
+    Qachar([T(1,2), T(-4,0)], 2, [2,3,4], '2² − 4 = 0'),
+    Qachar([T(1,2), T(-1,0)], 1, [1,2,3], '1² − 1 = 0')
+  ], 'Você achou todas as raízes!');
+
+  criarQuiz('quiz6', [
+    Qpassos([T(2,1), T(3,0)], 5, ['2 × 5 + 3', '10 + 3', '13'],
+      [{texto:'Primeiro: quanto é 2 × 5?', certa:10}, {texto:'Agora: quanto é 10 + 3?', certa:13}], 'P(5) = 13.'),
+    Qpassos([T(1,2), T(1,0)], 4, ['4² + 1', '16 + 1', '17'],
+      [{texto:'Primeiro: 4² é 4 × 4. Quanto é?', certa:16}, {texto:'Agora: quanto é 16 + 1?', certa:17}], 'P(4) = 17.'),
+    Qraiz([T(1,1), T(-7,0)], 7, ['7 − 7', '0'], [{texto:'Quanto é 7 − 7?', certa:0}]),
+    Qraiz([T(2,1), T(-4,0)], 3, ['2 × 3 − 4', '6 − 4', '2'],
+      [{texto:'Primeiro: quanto é 2 × 3?', certa:6}, {texto:'Agora: quanto é 6 − 4?', certa:2}]),
+    Qachar([T(1,1), T(-6,0)], 6, [5,6,7], '6 − 6 = 0'),
+    Qachar([T(2,1), T(-10,0)], 5, [4,5,6], '2 × 5 − 10 = 0'),
+    Qtabela([T(1,1), T(-2,0)], [0, 1, 2, 3]),
+    {tipo:'opcoes', texto:'A RAIZ é o x que faz o resultado ser…', opcoes:['ZERO', 'UM', 'DEZ'], certa:'ZERO',
+     ok:'Isso mesmo! Raiz é o número que dá ZERO.', dica:'A raiz é o número que dá zero.'}
+  ], 'Você terminou tudo! Parabéns, campeão das raízes! 🏆');
+</script>
+
+<!-- ============ VLIBRAS (tradutor de Libras oficial do Governo Federal) ============ -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+</body>
+</html>
