@@ -222,7 +222,9 @@
   .rotulo-p{font-size:1.5rem; font-weight:800;}
   .xvale{text-align:center; font-size:1.35rem; margin:6px 0;}
   .linhas-conta{text-align:center; margin:8px 0;}
-  .lc{font-size:1.5rem; font-weight:700; margin:6px 0;}
+  .lc{font-size:clamp(1.25rem, 5.6vw, 1.5rem); font-weight:700; margin:6px 0; white-space:nowrap;}
+  .lc mark{background:#ffe08a; color:inherit; border-radius:8px; padding:0 6px;}
+  .lc-cap{font-size:1.05rem; font-weight:700; color:#666; margin:10px 0 2px;}
   .lc.forte{color:var(--verde); font-size:1.9rem;}
 
   .dots{display:flex; gap:8px; justify-content:center; margin:12px 0; flex-wrap:wrap;}
@@ -576,6 +578,13 @@
     const d = document.createElement('div');
     d.className = 'lc' + (forte ? ' forte' : '');
     d.textContent = txt;
+    d.dataset.txt = txt;
+    return d;
+  }
+  function legendaEl(txt){
+    const d = document.createElement('div');
+    d.className = 'lc-cap';
+    d.textContent = txt;
     return d;
   }
   function topoConta(termos, x){
@@ -595,7 +604,7 @@
     box.innerHTML = '';
     box.appendChild(topoConta(d.t, d.x));
     const lin = document.createElement('div'); lin.className = 'linhas-conta';
-    if(m6 >= 1) lin.appendChild(linhaEl('Trocamos o x por ' + d.x + ':  ' + d.l[0]));
+    if(m6 >= 1){ lin.appendChild(legendaEl('Trocamos o x por ' + d.x + ':')); lin.appendChild(linhaEl(d.l[0])); }
     if(m6 >= 2) lin.appendChild(linhaEl('= ' + d.l[1]));
     if(m6 >= 3) lin.appendChild(linhaEl('= ' + d.l[2], true));
     box.appendChild(lin);
@@ -751,16 +760,29 @@
     }
 
     function linhaConta(txt, forte){ return linhaEl(txt, forte); }
+    /* marca, na última linha da conta, só a parte que a pergunta está pedindo (ex.: só o "2 × 4") */
+    function destacarParte(texto){
+      const linhas = el.area.querySelectorAll('.linhas-conta .lc');
+      linhas.forEach(l => { l.textContent = l.dataset.txt; });
+      const ult = linhas[linhas.length - 1];
+      let m = texto.match(/quanto é ([^?]+)\?/i), dest = m ? m[1].trim() : null;
+      if(!dest){ m = texto.match(/^(?:Primeiro: )?(\d+²) é/); dest = m ? m[1] : null; }
+      if(ult && dest && ult.dataset.txt.indexOf(dest) >= 0){
+        ult.innerHTML = ult.dataset.txt.replace(dest, '<mark>' + dest + '</mark>');
+      }
+    }
     function montarPassos(it){
       el.area.appendChild(topoConta(it.termos, it.x));
       const lin = document.createElement('div'); lin.className = 'linhas-conta';
-      lin.appendChild(linhaConta('Trocamos o x por ' + it.x + ':  ' + it.linhas[0]));
+      lin.appendChild(legendaEl('Trocamos o x por ' + it.x + ':'));
+      lin.appendChild(linhaConta(it.linhas[0]));
       el.area.appendChild(lin);
       pedirPasso(it);
     }
     function pedirPasso(it){
       const p = it.passos[passo];
       el.pedido.textContent = p.texto;
+      destacarParte(p.texto);
       const n = p.certa;
       const d = (n - 1 >= 0) ? [n-1, n+1] : [n+1, n+2];
       opcoesBtns([n, ...d], n, () => {
@@ -768,7 +790,7 @@
         passo++;
         lin.appendChild(linhaConta('= ' + it.linhas[passo], passo === it.passos.length));
         if(passo < it.passos.length){ msg('🎉 Isso mesmo!', 'ok'); pedirPasso(it); }
-        else { el.pedido.textContent = 'Você fez a conta!'; concluir(it.final); }
+        else { destacarParte(''); el.pedido.textContent = 'Você fez a conta!'; concluir(it.final); }
       }, 'Faça a conta devagar. Pode contar nos dedos!');
     }
 
