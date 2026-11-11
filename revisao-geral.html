@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+<title>Revisão geral — Animações</title>
+<style>
+  :root{
+    --azul:#1f6feb;
+    --vermelho:#e63946;
+    --laranja:#f2994a;
+    --verde:#2a9d8f;
+    --roxo:#8e5bd9;
+    --cinza:#333333;
+    --fundo:#f7f9fc;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:'Segoe UI', Arial, sans-serif; background:var(--fundo); color:var(--cinza); line-height:1.5;}
+  header{background:var(--azul); color:white; padding:20px 16px; text-align:center; position:sticky; top:0; z-index:50; box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  header h1{margin:0; font-size:1.4rem;}
+  header p{margin:6px 0 0; font-size:1.05rem; opacity:.95;}
+  nav{display:flex; gap:8px; padding:12px 10px; background:white; position:sticky; top:82px; z-index:40; border-bottom:2px solid #e4e9f2; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  nav a{flex:0 0 auto; text-decoration:none; background:#e8f0ff; color:var(--azul); font-weight:bold; padding:10px 14px; border-radius:999px; font-size:.95rem; white-space:nowrap;}
+  main{max-width:760px; margin:0 auto; padding:20px 16px 60px;}
+  section.concept{background:white; border-radius:20px; padding:22px; margin-bottom:30px; box-shadow:0 2px 10px rgba(0,0,0,.06); scroll-margin-top:150px;}
+  section.concept h2{color:var(--azul); font-size:1.5rem; border-bottom:3px solid #e8f0ff; padding-bottom:10px; margin-top:0; text-align:center;}
+  h3.sub{color:var(--laranja); text-align:center; font-size:1.3rem; margin:26px 0 8px;}
+
+  .lembra{background:#fff8e1; border:3px solid #ffd966; border-radius:16px; padding:14px 16px; margin:14px 0;}
+  .lembra h4{margin:0 0 8px; text-align:center; font-size:1.2rem; color:#b07d00;}
+  .lembra p{margin:8px 0; font-size:1.2rem; font-weight:600; text-align:center;}
+  .legenda{list-style:none; padding:0; margin:10px auto; max-width:420px;}
+  .legenda li{display:flex; align-items:center; gap:12px; font-size:1.15rem; font-weight:600; margin:8px 0;}
+  .selo{flex:0 0 auto; width:34px; height:34px; border-radius:50%; background:var(--laranja); color:white; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:1.2rem;}
+  .tres{display:flex; flex-wrap:wrap; gap:10px; justify-content:center;}
+  .tres figure{margin:0; text-align:center; flex:1 1 150px; max-width:200px;}
+  .tres figcaption{font-weight:800; color:var(--azul); font-size:1.1rem;}
+
+  .svgwrap{background:#fbfcfe; border-radius:16px; padding:10px; display:flex; justify-content:center; margin:10px 0;}
+  .svgwrap svg{width:100%; max-width:340px; height:auto; display:block;}
+
+  .caption{font-size:1.3rem; font-weight:600; text-align:center; background:#e8f0ff; border-left:8px solid var(--azul); border-radius:10px; padding:16px; margin:16px 0; min-height:1.4em;}
+  .btnrow{display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:16px 0;}
+  button{font-family:inherit; font-size:1.1rem; font-weight:bold; border:none; border-radius:14px; padding:15px 20px; min-height:58px; min-width:100px; cursor:pointer; color:white; background:var(--azul); transition:transform .1s ease;}
+  button:active{transform:scale(0.95);}
+  button.laranja{background:var(--laranja);}
+  button.secundario{background:#dfe6f5; color:var(--azul);}
+  button.grande{font-size:1.7rem; min-width:90px; min-height:72px; padding:12px 22px;}
+  button.grande.longa{font-size:1.25rem;}
+
+  .libras-note{font-size:1.05rem; color:#555; background:#fff7e6; border:2px dashed var(--laranja); border-radius:12px; padding:14px 16px; margin-top:16px;}
+  .libras-note b{color:var(--laranja);}
+  .feedback{font-size:1.25rem; font-weight:bold; text-align:center; padding:14px; border-radius:12px; margin:14px 0; min-height:1.4em;}
+  .feedback.ok{background:#e6f7f1; color:var(--verde);}
+  .feedback.nao{background:#fff2e8; color:var(--laranja);}
+
+  /* ---------- peças coloridas ---------- */
+  .pa{color:var(--azul);} .pv{color:var(--roxo);} .pe{color:var(--laranja);} .ps{color:var(--verde);} .pn{color:var(--vermelho);}
+  .poli-cor{font-size:clamp(1.6rem, 7vw, 2.2rem); font-weight:800; text-align:center; margin:10px 0; line-height:1.4;}
+  .poli-cor sup{font-size:.6em;}
+  .expr{font-size:clamp(1.3rem, 5.8vw, 1.8rem); font-weight:800; text-align:center; margin:10px 0; line-height:1.5;}
+  .frac{display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; margin:0 4px; line-height:1.15;}
+  .frac .n{border-bottom:3px solid var(--cinza); padding:0 4px 2px;}
+  .frac .d{padding:2px 4px 0;}
+  .receita{max-width:460px; margin:10px auto; padding:0; list-style:none;}
+  .receita li{background:#f3f7ff; border-radius:12px; padding:10px 14px; margin:8px 0; font-size:1.15rem; font-weight:600;}
+  .receita b{color:var(--azul);}
+
+  .dots{display:flex; gap:6px; justify-content:center; margin:12px 0; flex-wrap:wrap;}
+  .dot{width:14px; height:14px; border-radius:50%; background:#dfe6f5;}
+  .dot.certo{background:var(--verde);}
+  .hidden{display:none !important;}
+  footer{text-align:center; font-size:.9rem; color:#888; padding:30px 16px 60px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Revisão geral</h1>
+  <p>🤟 Cônicas, números complexos e polinômios</p>
+</header>
+
+<nav>
+  <a href="#c1">① As formas</a>
+  <a href="#c2">② Elipse</a>
+  <a href="#c3">③ Equação</a>
+  <a href="#c4">④ Hipérbole</a>
+  <a href="#c5">⑤ Parábola</a>
+  <a href="#c6">⑥ Complexos</a>
+  <a href="#c7">⑦ Polinômio</a>
+  <a href="#c8">⑧ Raiz</a>
+  <a href="#c9">⑨ Contas</a>
+  <a href="#c10">⑩ Desafio</a>
+</nav>
+
+<main>
+
+  <!-- ================= 1 ================= -->
+  <section class="concept" id="c1">
+    <h2>① As três formas</h2>
+    <div class="lembra">
+      <h4>🧠 Lembra?</h4>
+      <div class="tres" id="tres"></div>
+      <p>A <b>hipérbole</b> tem DUAS partes.</p>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz1"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+  <!-- ================= 2 ================= -->
+  <section class="concept" id="c2">
+    <h2>② A elipse</h2>
+    <div class="lembra">
+      <h4>🧠 Lembra?</h4>
+      <div class="svgwrap" id="fig-rec-el"></div>
+      <ul class="legenda">
+        <li><span class="selo">A</span> FOCO: pontinho mágico, DENTRO da elipse</li>
+        <li><span class="selo">B</span> VÉRTICE: a pontinha da elipse</li>
+        <li><span class="selo">C</span> CENTRO: bem no meio</li>
+      </ul>
+      <p>Barbante: a soma das duas partes é sempre IGUAL.</p>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz2"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+  <!-- ================= 3 ================= -->
+  <section class="concept" id="c3">
+    <h2>③ A equação da elipse</h2>
+    <div class="lembra">
+      <h4>🧠 Lembra?</h4>
+      <div class="expr" id="eq-rec"></div>
+      <ul class="receita">
+        <li>O número <b>MAIOR</b> fica embaixo do <b>y</b>? A elipse fica <b>EM PÉ</b>. 🧍</li>
+        <li>O número <b>MAIOR</b> fica embaixo do <b>x</b>? A elipse fica <b>DEITADA</b>. 🛌</li>
+        <li>Para achar o <b>CENTRO</b>: o sinal <b>TROCA</b>.<br>(x − 3) → 3 &nbsp;&nbsp; (y + 2) → −2</li>
+      </ul>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz3"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+  <!-- ================= 4 ================= -->
+  <section class="concept" id="c4">
+    <h2>④ A hipérbole</h2>
+    <div class="lembra">
+      <h4>🧠 Lembra?</h4>
+      <div class="svgwrap" id="fig-rec-hi"></div>
+      <ul class="legenda">
+        <li><span class="selo">A</span> VÉRTICE: a pontinha de cada parte</li>
+        <li><span class="selo">B</span> FOCO: um pouco mais para fora</li>
+        <li><span class="selo">C</span> CENTRO: bem no meio</li>
+      </ul>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz4"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+  <!-- ================= 5 ================= -->
+  <section class="concept" id="c5">
+    <h2>⑤ A parábola</h2>
+    <div class="lembra">
+      <h4>🧠 Lembra?</h4>
+      <div class="svgwrap" id="fig-rec-pa"></div>
+      <ul class="legenda">
+        <li><span class="selo">A</span> FOCO: pontinho mágico dentro do sorriso</li>
+        <li><span class="selo">B</span> VÉRTICE: a pontinha do sorriso</li>
+        <li><span class="selo">C</span> DIRETRIZ: a linha reta, por fora</li>
+      </ul>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz5"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+  <!-- ================= 6 ================= -->
+  <section class="concept" id="c6">
+    <h2>⑥ Números complexos</h2>
+    <div class="lembra">
+      <h4>🧠 Lembra?</h4>
+      <div class="poli-cor"><span class="pa">3</span> + <span class="pe">2</span><span class="pv">i</span></div>
+      <ul class="receita">
+        <li><span class="pa">3</span> é a parte <b>REAL</b> (azul)</li>
+        <li><span class="pe">2</span> é a parte <b>IMAGINÁRIA</b> (laranja)</li>
+        <li><span class="pv">i</span> é a letra especial. <b>i × i = −1</b></li>
+        <li>Para somar: junte <span class="pa">azul</span> com azul e <span class="pe">laranja</span> com laranja.</li>
+      </ul>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz6"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+  <!-- ================= 7 ================= -->
+  <section class="concept" id="c7">
+    <h2>⑦ O polinômio</h2>
+    <div class="lembra">
+      <h4>🧠 Lembra?</h4>
+      <div class="poli-cor"><span class="pa">3</span><span class="pv">x</span><sup class="pe">2</sup> + <span class="pa">2</span><span class="pv">x</span> + <span class="ps">1</span></div>
+      <ul class="receita">
+        <li><span class="pa">Azul</span>: o COEFICIENTE (o número que gruda no x)</li>
+        <li><span class="ps">Verde</span>: o número SOZINHO</li>
+        <li><span class="pe">Laranja</span>: o EXPOENTE (o número pequeno)</li>
+        <li>O <b>GRAU</b> é o MAIOR expoente. Aqui o grau é <span class="pe">2</span>.</li>
+      </ul>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz7"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+  <!-- ================= 8 ================= -->
+  <section class="concept" id="c8">
+    <h2>⑧ Valor numérico e raiz</h2>
+    <div class="lembra">
+      <h4>🧠 Lembra?</h4>
+      <div class="expr">P(x) = x + 4</div>
+      <ul class="receita">
+        <li>Troque o <b>x</b> por um número: x = 2 → 2 + 4 = <b>6</b>. Esse é o <b>VALOR NUMÉRICO</b>.</li>
+        <li>Se o resultado for <b>ZERO</b>, o número é a <b>RAIZ</b>.</li>
+        <li>Em x − 3, a raiz é 3, porque 3 − 3 = 0.</li>
+      </ul>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz8"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+  <!-- ================= 9 ================= -->
+  <section class="concept" id="c9">
+    <h2>⑨ As quatro contas</h2>
+    <div class="lembra">
+      <h4>🧠 Lembra?</h4>
+      <ul class="receita">
+        <li><b>SOMAR</b>: junte os vagões GÊMEOS.<br>3x + 4x = 7x</li>
+        <li><b>SUBTRAIR</b>: tire os vagões GÊMEOS.<br>7x − 3x = 4x</li>
+        <li><b>MULTIPLICAR</b>: o número de fora multiplica CADA vagão.<br>2 × (x + 3) = 2x + 6</li>
+        <li><b>A JANELA</b>: multiplica tudo e junta os gêmeos no fim.<br>(x + 1)(x + 2) = x² + 3x + 2</li>
+        <li><b>DIVIDIR</b>: é o contrário de multiplicar.<br>(6x + 4) ÷ 2 = 3x + 2</li>
+        <li><b>A CHAVE</b>: divide passo a passo. No fim sobra ZERO.</li>
+      </ul>
+    </div>
+    <h3 class="sub">🎯 Agora você!</h3>
+    <div id="quiz9"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+  <!-- ================= 10 ================= -->
+  <section class="concept" id="c10">
+    <h2>⑩ Desafio final</h2>
+    <p class="caption">Um pouquinho de tudo! Você consegue! 💪</p>
+    <div id="quiz10"></div>
+    <p class="libras-note"><b>Como assistir em Libras:</b> toque no ícone azul de Libras e depois na frase que quer ver.</p>
+  </section>
+
+</main>
+
+<footer>
+  Material de apoio — Matemática, 3ª série do Ensino Médio.<br>
+  Página pronta para ser hospedada e acessada por QR Code.
+</footer>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const FIG = {"sh-elipse": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 280.0,120.0 L 279.8,116.2 L 279.3,112.5 L 278.5,108.7 L 277.4,105.0 L 275.9,101.4 L 274.1,97.8 L 272.0,94.2 L 269.6,90.7 L 266.9,87.3 L 263.9,84.0 L 260.6,80.8 L 257.1,77.7 L 253.3,74.7 L 249.2,71.8 L 244.9,69.1 L 240.3,66.5 L 235.5,64.0 L 230.5,61.8 L 225.4,59.6 L 220.0,57.6 L 214.5,55.8 L 208.8,54.2 L 203.0,52.8 L 197.1,51.5 L 191.1,50.5 L 184.9,49.6 L 178.8,48.9 L 172.5,48.4 L 166.3,48.1 L 160.0,48.0 L 153.7,48.1 L 147.5,48.4 L 141.2,48.9 L 135.1,49.6 L 128.9,50.5 L 122.9,51.5 L 117.0,52.8 L 111.2,54.2 L 105.5,55.8 L 100.0,57.6 L 94.6,59.6 L 89.5,61.8 L 84.5,64.0 L 79.7,66.5 L 75.1,69.1 L 70.8,71.8 L 66.7,74.7 L 62.9,77.7 L 59.4,80.8 L 56.1,84.0 L 53.1,87.3 L 50.4,90.7 L 48.0,94.2 L 45.9,97.8 L 44.1,101.4 L 42.6,105.0 L 41.5,108.7 L 40.7,112.5 L 40.2,116.2 L 40.0,120.0 L 40.2,123.8 L 40.7,127.5 L 41.5,131.3 L 42.6,135.0 L 44.1,138.6 L 45.9,142.2 L 48.0,145.8 L 50.4,149.3 L 53.1,152.7 L 56.1,156.0 L 59.4,159.2 L 62.9,162.3 L 66.7,165.3 L 70.8,168.2 L 75.1,170.9 L 79.7,173.5 L 84.5,176.0 L 89.5,178.2 L 94.6,180.4 L 100.0,182.4 L 105.5,184.2 L 111.2,185.8 L 117.0,187.2 L 122.9,188.5 L 128.9,189.5 L 135.1,190.4 L 141.2,191.1 L 147.5,191.6 L 153.7,191.9 L 160.0,192.0 L 166.3,191.9 L 172.5,191.6 L 178.8,191.1 L 184.9,190.4 L 191.1,189.5 L 197.1,188.5 L 203.0,187.2 L 208.8,185.8 L 214.5,184.2 L 220.0,182.4 L 225.4,180.4 L 230.5,178.2 L 235.5,176.0 L 240.3,173.5 L 244.9,170.9 L 249.2,168.2 L 253.3,165.3 L 257.1,162.3 L 260.6,159.2 L 263.9,156.0 L 266.9,152.7 L 269.6,149.3 L 272.0,145.8 L 274.1,142.2 L 275.9,138.6 L 277.4,135.0 L 278.5,131.3 L 279.3,127.5 L 279.8,123.8 L 280.0,120.0\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "papeis": {}, "tam": [525, 334]}, "sh-elipse-v": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 230.0,120.0 L 229.9,114.5 L 229.6,109.0 L 229.1,103.6 L 228.5,98.2 L 227.6,92.8 L 226.6,87.6 L 225.4,82.4 L 223.9,77.3 L 222.4,72.3 L 220.6,67.5 L 218.7,62.8 L 216.6,58.3 L 214.4,53.9 L 212.0,49.7 L 209.5,45.8 L 206.8,42.0 L 204.1,38.4 L 201.1,35.1 L 198.1,31.9 L 195.0,29.1 L 191.8,26.4 L 188.5,24.1 L 185.1,22.0 L 181.6,20.1 L 178.1,18.6 L 174.6,17.3 L 171.0,16.3 L 167.3,15.6 L 163.7,15.1 L 160.0,15.0 L 156.3,15.1 L 152.7,15.6 L 149.0,16.3 L 145.4,17.3 L 141.9,18.6 L 138.4,20.1 L 134.9,22.0 L 131.5,24.1 L 128.2,26.4 L 125.0,29.1 L 121.9,31.9 L 118.9,35.1 L 115.9,38.4 L 113.2,42.0 L 110.5,45.8 L 108.0,49.7 L 105.6,53.9 L 103.4,58.3 L 101.3,62.8 L 99.4,67.5 L 97.6,72.3 L 96.1,77.3 L 94.6,82.4 L 93.4,87.6 L 92.4,92.8 L 91.5,98.2 L 90.9,103.6 L 90.4,109.0 L 90.1,114.5 L 90.0,120.0 L 90.1,125.5 L 90.4,131.0 L 90.9,136.4 L 91.5,141.8 L 92.4,147.2 L 93.4,152.4 L 94.6,157.6 L 96.1,162.7 L 97.6,167.7 L 99.4,172.5 L 101.3,177.2 L 103.4,181.7 L 105.6,186.1 L 108.0,190.3 L 110.5,194.2 L 113.2,198.0 L 115.9,201.6 L 118.9,204.9 L 121.9,208.1 L 125.0,210.9 L 128.2,213.6 L 131.5,215.9 L 134.9,218.0 L 138.4,219.9 L 141.9,221.4 L 145.4,222.7 L 149.0,223.7 L 152.7,224.4 L 156.3,224.9 L 160.0,225.0 L 163.7,224.9 L 167.3,224.4 L 171.0,223.7 L 174.6,222.7 L 178.1,221.4 L 181.6,219.9 L 185.1,218.0 L 188.5,215.9 L 191.8,213.6 L 195.0,210.9 L 198.1,208.1 L 201.1,204.9 L 204.1,201.6 L 206.8,198.0 L 209.5,194.2 L 212.0,190.3 L 214.4,186.1 L 216.6,181.7 L 218.7,177.2 L 220.6,172.5 L 222.4,167.7 L 223.9,162.7 L 225.4,157.6 L 226.6,152.4 L 227.6,147.2 L 228.5,141.8 L 229.1,136.4 L 229.6,131.0 L 229.9,125.5 L 230.0,120.0\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "papeis": {}, "tam": [325, 465]}, "sh-hiperbole": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 268.6,225.7 L 265.1,220.7 L 261.7,215.9 L 258.5,211.2 L 255.5,206.7 L 252.6,202.3 L 249.8,198.0 L 247.2,193.9 L 244.8,189.9 L 242.4,186.0 L 240.2,182.2 L 238.2,178.5 L 236.2,174.9 L 234.4,171.4 L 232.7,167.9 L 231.1,164.6 L 229.7,161.3 L 228.3,158.1 L 227.0,154.9 L 225.9,151.8 L 224.9,148.8 L 223.9,145.7 L 223.1,142.8 L 222.4,139.9 L 221.7,137.0 L 221.2,134.1 L 220.8,131.2 L 220.4,128.4 L 220.2,125.6 L 220.0,122.8 L 220.0,120.0 L 220.0,117.2 L 220.2,114.4 L 220.4,111.6 L 220.8,108.8 L 221.2,105.9 L 221.7,103.0 L 222.4,100.1 L 223.1,97.2 L 223.9,94.3 L 224.9,91.2 L 225.9,88.2 L 227.0,85.1 L 228.3,81.9 L 229.7,78.7 L 231.1,75.4 L 232.7,72.1 L 234.4,68.6 L 236.2,65.1 L 238.2,61.5 L 240.2,57.8 L 242.4,54.0 L 244.8,50.1 L 247.2,46.1 L 249.8,42.0 L 252.6,37.7 L 255.5,33.3 L 258.5,28.8 L 261.7,24.1 L 265.1,19.3 L 268.6,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M 51.4,225.7 L 54.9,220.7 L 58.3,215.9 L 61.5,211.2 L 64.5,206.7 L 67.4,202.3 L 70.2,198.0 L 72.8,193.9 L 75.2,189.9 L 77.6,186.0 L 79.8,182.2 L 81.8,178.5 L 83.8,174.9 L 85.6,171.4 L 87.3,167.9 L 88.9,164.6 L 90.3,161.3 L 91.7,158.1 L 93.0,154.9 L 94.1,151.8 L 95.1,148.8 L 96.1,145.7 L 96.9,142.8 L 97.6,139.9 L 98.3,137.0 L 98.8,134.1 L 99.2,131.2 L 99.6,128.4 L 99.8,125.6 L 100.0,122.8 L 100.0,120.0 L 100.0,117.2 L 99.8,114.4 L 99.6,111.6 L 99.2,108.8 L 98.8,105.9 L 98.3,103.0 L 97.6,100.1 L 96.9,97.2 L 96.1,94.3 L 95.1,91.2 L 94.1,88.2 L 93.0,85.1 L 91.7,81.9 L 90.3,78.7 L 88.9,75.4 L 87.3,72.1 L 85.6,68.6 L 83.8,65.1 L 81.8,61.5 L 79.8,57.8 L 77.6,54.0 L 75.2,50.1 L 72.8,46.1 L 70.2,42.0 L 67.4,37.7 L 64.5,33.3 L 61.5,28.8 L 58.3,24.1 L 54.9,19.3 L 51.4,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "papeis": {}, "tam": [480, 468]}, "sh-parabola": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 48.0,111.6 L 51.7,116.7 L 55.5,121.7 L 59.2,126.5 L 62.9,131.1 L 66.7,135.6 L 70.4,139.8 L 74.1,143.9 L 77.9,147.8 L 81.6,151.6 L 85.3,155.2 L 89.1,158.6 L 92.8,161.8 L 96.5,164.8 L 100.3,167.7 L 104.0,170.4 L 107.7,172.9 L 111.5,175.3 L 115.2,177.5 L 118.9,179.5 L 122.7,181.3 L 126.4,182.9 L 130.1,184.4 L 133.9,185.7 L 137.6,186.9 L 141.3,187.8 L 145.1,188.6 L 148.8,189.2 L 152.5,189.7 L 156.3,189.9 L 160.0,190.0 L 163.7,189.9 L 167.5,189.7 L 171.2,189.2 L 174.9,188.6 L 178.7,187.8 L 182.4,186.9 L 186.1,185.7 L 189.9,184.4 L 193.6,182.9 L 197.3,181.3 L 201.1,179.5 L 204.8,177.5 L 208.5,175.3 L 212.3,172.9 L 216.0,170.4 L 219.7,167.7 L 223.5,164.8 L 227.2,161.8 L 230.9,158.6 L 234.7,155.2 L 238.4,151.6 L 242.1,147.8 L 245.9,143.9 L 249.6,139.8 L 253.3,135.6 L 257.1,131.1 L 260.8,126.5 L 264.5,121.7 L 268.3,116.7 L 272.0,111.6\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "papeis": {}, "tam": [493, 203]}, "el1": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 285.0,120.0 L 284.8,115.8 L 284.3,111.6 L 283.5,107.5 L 282.3,103.4 L 280.7,99.3 L 278.9,95.3 L 276.7,91.3 L 274.2,87.5 L 271.4,83.7 L 268.3,80.0 L 264.8,76.4 L 261.1,73.0 L 257.1,69.7 L 252.9,66.5 L 248.4,63.4 L 243.6,60.5 L 238.7,57.8 L 233.5,55.3 L 228.1,52.9 L 222.5,50.7 L 216.7,48.7 L 210.8,46.9 L 204.8,45.3 L 198.6,43.9 L 192.4,42.7 L 186.0,41.7 L 179.6,41.0 L 173.1,40.4 L 166.5,40.1 L 160.0,40.0 L 153.5,40.1 L 146.9,40.4 L 140.4,41.0 L 134.0,41.7 L 127.6,42.7 L 121.4,43.9 L 115.2,45.3 L 109.2,46.9 L 103.3,48.7 L 97.5,50.7 L 91.9,52.9 L 86.5,55.3 L 81.3,57.8 L 76.4,60.5 L 71.6,63.4 L 67.1,66.5 L 62.9,69.7 L 58.9,73.0 L 55.2,76.4 L 51.7,80.0 L 48.6,83.7 L 45.8,87.5 L 43.3,91.3 L 41.1,95.3 L 39.3,99.3 L 37.7,103.4 L 36.5,107.5 L 35.7,111.6 L 35.2,115.8 L 35.0,120.0 L 35.2,124.2 L 35.7,128.4 L 36.5,132.5 L 37.7,136.6 L 39.3,140.7 L 41.1,144.7 L 43.3,148.7 L 45.8,152.5 L 48.6,156.3 L 51.7,160.0 L 55.2,163.6 L 58.9,167.0 L 62.9,170.3 L 67.1,173.5 L 71.6,176.6 L 76.4,179.5 L 81.3,182.2 L 86.5,184.7 L 91.9,187.1 L 97.5,189.3 L 103.3,191.3 L 109.2,193.1 L 115.2,194.7 L 121.4,196.1 L 127.6,197.3 L 134.0,198.3 L 140.4,199.0 L 146.9,199.6 L 153.5,199.9 L 160.0,200.0 L 166.5,199.9 L 173.1,199.6 L 179.6,199.0 L 186.0,198.3 L 192.4,197.3 L 198.6,196.1 L 204.8,194.7 L 210.8,193.1 L 216.7,191.3 L 222.5,189.3 L 228.1,187.1 L 233.5,184.7 L 238.7,182.2 L 243.6,179.5 L 248.4,176.6 L 252.9,173.5 L 257.1,170.3 L 261.1,167.0 L 264.8,163.6 L 268.3,160.0 L 271.4,156.3 L 274.2,152.5 L 276.7,148.7 L 278.9,144.7 L 280.7,140.7 L 282.3,136.6 L 283.5,132.5 L 284.3,128.4 L 284.8,124.2 L 285.0,120.0\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"256.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"256.0\" cy=\"145.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"256.0\" y=\"151.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"285.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"304.0\" cy=\"120.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"304.0\" y=\"126.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"160.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"145.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"151.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "foco", "B": "vertice", "C": "centro"}, "tam": [592, 366]}, "el2": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 285.0,120.0 L 284.8,115.8 L 284.3,111.6 L 283.5,107.5 L 282.3,103.4 L 280.7,99.3 L 278.9,95.3 L 276.7,91.3 L 274.2,87.5 L 271.4,83.7 L 268.3,80.0 L 264.8,76.4 L 261.1,73.0 L 257.1,69.7 L 252.9,66.5 L 248.4,63.4 L 243.6,60.5 L 238.7,57.8 L 233.5,55.3 L 228.1,52.9 L 222.5,50.7 L 216.7,48.7 L 210.8,46.9 L 204.8,45.3 L 198.6,43.9 L 192.4,42.7 L 186.0,41.7 L 179.6,41.0 L 173.1,40.4 L 166.5,40.1 L 160.0,40.0 L 153.5,40.1 L 146.9,40.4 L 140.4,41.0 L 134.0,41.7 L 127.6,42.7 L 121.4,43.9 L 115.2,45.3 L 109.2,46.9 L 103.3,48.7 L 97.5,50.7 L 91.9,52.9 L 86.5,55.3 L 81.3,57.8 L 76.4,60.5 L 71.6,63.4 L 67.1,66.5 L 62.9,69.7 L 58.9,73.0 L 55.2,76.4 L 51.7,80.0 L 48.6,83.7 L 45.8,87.5 L 43.3,91.3 L 41.1,95.3 L 39.3,99.3 L 37.7,103.4 L 36.5,107.5 L 35.7,111.6 L 35.2,115.8 L 35.0,120.0 L 35.2,124.2 L 35.7,128.4 L 36.5,132.5 L 37.7,136.6 L 39.3,140.7 L 41.1,144.7 L 43.3,148.7 L 45.8,152.5 L 48.6,156.3 L 51.7,160.0 L 55.2,163.6 L 58.9,167.0 L 62.9,170.3 L 67.1,173.5 L 71.6,176.6 L 76.4,179.5 L 81.3,182.2 L 86.5,184.7 L 91.9,187.1 L 97.5,189.3 L 103.3,191.3 L 109.2,193.1 L 115.2,194.7 L 121.4,196.1 L 127.6,197.3 L 134.0,198.3 L 140.4,199.0 L 146.9,199.6 L 153.5,199.9 L 160.0,200.0 L 166.5,199.9 L 173.1,199.6 L 179.6,199.0 L 186.0,198.3 L 192.4,197.3 L 198.6,196.1 L 204.8,194.7 L 210.8,193.1 L 216.7,191.3 L 222.5,189.3 L 228.1,187.1 L 233.5,184.7 L 238.7,182.2 L 243.6,179.5 L 248.4,176.6 L 252.9,173.5 L 257.1,170.3 L 261.1,167.0 L 264.8,163.6 L 268.3,160.0 L 271.4,156.3 L 274.2,152.5 L 276.7,148.7 L 278.9,144.7 L 280.7,140.7 L 282.3,136.6 L 283.5,132.5 L 284.3,128.4 L 284.8,124.2 L 285.0,120.0\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"35.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"16.0\" cy=\"120.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"16.0\" y=\"126.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"160.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"145.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"151.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"64.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"64.0\" cy=\"145.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"64.0\" y=\"151.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "vertice", "B": "centro", "C": "foco"}, "tam": [593, 366]}, "el3": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 285.0,120.0 L 284.8,115.8 L 284.3,111.6 L 283.5,107.5 L 282.3,103.4 L 280.7,99.3 L 278.9,95.3 L 276.7,91.3 L 274.2,87.5 L 271.4,83.7 L 268.3,80.0 L 264.8,76.4 L 261.1,73.0 L 257.1,69.7 L 252.9,66.5 L 248.4,63.4 L 243.6,60.5 L 238.7,57.8 L 233.5,55.3 L 228.1,52.9 L 222.5,50.7 L 216.7,48.7 L 210.8,46.9 L 204.8,45.3 L 198.6,43.9 L 192.4,42.7 L 186.0,41.7 L 179.6,41.0 L 173.1,40.4 L 166.5,40.1 L 160.0,40.0 L 153.5,40.1 L 146.9,40.4 L 140.4,41.0 L 134.0,41.7 L 127.6,42.7 L 121.4,43.9 L 115.2,45.3 L 109.2,46.9 L 103.3,48.7 L 97.5,50.7 L 91.9,52.9 L 86.5,55.3 L 81.3,57.8 L 76.4,60.5 L 71.6,63.4 L 67.1,66.5 L 62.9,69.7 L 58.9,73.0 L 55.2,76.4 L 51.7,80.0 L 48.6,83.7 L 45.8,87.5 L 43.3,91.3 L 41.1,95.3 L 39.3,99.3 L 37.7,103.4 L 36.5,107.5 L 35.7,111.6 L 35.2,115.8 L 35.0,120.0 L 35.2,124.2 L 35.7,128.4 L 36.5,132.5 L 37.7,136.6 L 39.3,140.7 L 41.1,144.7 L 43.3,148.7 L 45.8,152.5 L 48.6,156.3 L 51.7,160.0 L 55.2,163.6 L 58.9,167.0 L 62.9,170.3 L 67.1,173.5 L 71.6,176.6 L 76.4,179.5 L 81.3,182.2 L 86.5,184.7 L 91.9,187.1 L 97.5,189.3 L 103.3,191.3 L 109.2,193.1 L 115.2,194.7 L 121.4,196.1 L 127.6,197.3 L 134.0,198.3 L 140.4,199.0 L 146.9,199.6 L 153.5,199.9 L 160.0,200.0 L 166.5,199.9 L 173.1,199.6 L 179.6,199.0 L 186.0,198.3 L 192.4,197.3 L 198.6,196.1 L 204.8,194.7 L 210.8,193.1 L 216.7,191.3 L 222.5,189.3 L 228.1,187.1 L 233.5,184.7 L 238.7,182.2 L 243.6,179.5 L 248.4,176.6 L 252.9,173.5 L 257.1,170.3 L 261.1,167.0 L 264.8,163.6 L 268.3,160.0 L 271.4,156.3 L 274.2,152.5 L 276.7,148.7 L 278.9,144.7 L 280.7,140.7 L 282.3,136.6 L 283.5,132.5 L 284.3,128.4 L 284.8,124.2 L 285.0,120.0\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"160.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"145.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"151.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"35.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"16.0\" cy=\"120.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"16.0\" y=\"126.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"256.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"256.0\" cy=\"145.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"256.0\" y=\"151.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "centro", "B": "vertice", "C": "foco"}, "tam": [593, 366]}, "el4": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 285.0,120.0 L 284.8,115.8 L 284.3,111.6 L 283.5,107.5 L 282.3,103.4 L 280.7,99.3 L 278.9,95.3 L 276.7,91.3 L 274.2,87.5 L 271.4,83.7 L 268.3,80.0 L 264.8,76.4 L 261.1,73.0 L 257.1,69.7 L 252.9,66.5 L 248.4,63.4 L 243.6,60.5 L 238.7,57.8 L 233.5,55.3 L 228.1,52.9 L 222.5,50.7 L 216.7,48.7 L 210.8,46.9 L 204.8,45.3 L 198.6,43.9 L 192.4,42.7 L 186.0,41.7 L 179.6,41.0 L 173.1,40.4 L 166.5,40.1 L 160.0,40.0 L 153.5,40.1 L 146.9,40.4 L 140.4,41.0 L 134.0,41.7 L 127.6,42.7 L 121.4,43.9 L 115.2,45.3 L 109.2,46.9 L 103.3,48.7 L 97.5,50.7 L 91.9,52.9 L 86.5,55.3 L 81.3,57.8 L 76.4,60.5 L 71.6,63.4 L 67.1,66.5 L 62.9,69.7 L 58.9,73.0 L 55.2,76.4 L 51.7,80.0 L 48.6,83.7 L 45.8,87.5 L 43.3,91.3 L 41.1,95.3 L 39.3,99.3 L 37.7,103.4 L 36.5,107.5 L 35.7,111.6 L 35.2,115.8 L 35.0,120.0 L 35.2,124.2 L 35.7,128.4 L 36.5,132.5 L 37.7,136.6 L 39.3,140.7 L 41.1,144.7 L 43.3,148.7 L 45.8,152.5 L 48.6,156.3 L 51.7,160.0 L 55.2,163.6 L 58.9,167.0 L 62.9,170.3 L 67.1,173.5 L 71.6,176.6 L 76.4,179.5 L 81.3,182.2 L 86.5,184.7 L 91.9,187.1 L 97.5,189.3 L 103.3,191.3 L 109.2,193.1 L 115.2,194.7 L 121.4,196.1 L 127.6,197.3 L 134.0,198.3 L 140.4,199.0 L 146.9,199.6 L 153.5,199.9 L 160.0,200.0 L 166.5,199.9 L 173.1,199.6 L 179.6,199.0 L 186.0,198.3 L 192.4,197.3 L 198.6,196.1 L 204.8,194.7 L 210.8,193.1 L 216.7,191.3 L 222.5,189.3 L 228.1,187.1 L 233.5,184.7 L 238.7,182.2 L 243.6,179.5 L 248.4,176.6 L 252.9,173.5 L 257.1,170.3 L 261.1,167.0 L 264.8,163.6 L 268.3,160.0 L 271.4,156.3 L 274.2,152.5 L 276.7,148.7 L 278.9,144.7 L 280.7,140.7 L 282.3,136.6 L 283.5,132.5 L 284.3,128.4 L 284.8,124.2 L 285.0,120.0\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"64.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"64.0\" cy=\"145.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"64.0\" y=\"151.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"160.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"145.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"151.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"285.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"304.0\" cy=\"120.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"304.0\" y=\"126.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "foco", "B": "centro", "C": "vertice"}, "tam": [592, 366]}, "hi1": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 268.6,225.7 L 265.1,220.7 L 261.7,215.9 L 258.5,211.2 L 255.5,206.7 L 252.6,202.3 L 249.8,198.0 L 247.2,193.9 L 244.8,189.9 L 242.4,186.0 L 240.2,182.2 L 238.2,178.5 L 236.2,174.9 L 234.4,171.4 L 232.7,167.9 L 231.1,164.6 L 229.7,161.3 L 228.3,158.1 L 227.0,154.9 L 225.9,151.8 L 224.9,148.8 L 223.9,145.7 L 223.1,142.8 L 222.4,139.9 L 221.7,137.0 L 221.2,134.1 L 220.8,131.2 L 220.4,128.4 L 220.2,125.6 L 220.0,122.8 L 220.0,120.0 L 220.0,117.2 L 220.2,114.4 L 220.4,111.6 L 220.8,108.8 L 221.2,105.9 L 221.7,103.0 L 222.4,100.1 L 223.1,97.2 L 223.9,94.3 L 224.9,91.2 L 225.9,88.2 L 227.0,85.1 L 228.3,81.9 L 229.7,78.7 L 231.1,75.4 L 232.7,72.1 L 234.4,68.6 L 236.2,65.1 L 238.2,61.5 L 240.2,57.8 L 242.4,54.0 L 244.8,50.1 L 247.2,46.1 L 249.8,42.0 L 252.6,37.7 L 255.5,33.3 L 258.5,28.8 L 261.7,24.1 L 265.1,19.3 L 268.6,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M 51.4,225.7 L 54.9,220.7 L 58.3,215.9 L 61.5,211.2 L 64.5,206.7 L 67.4,202.3 L 70.2,198.0 L 72.8,193.9 L 75.2,189.9 L 77.6,186.0 L 79.8,182.2 L 81.8,178.5 L 83.8,174.9 L 85.6,171.4 L 87.3,167.9 L 88.9,164.6 L 90.3,161.3 L 91.7,158.1 L 93.0,154.9 L 94.1,151.8 L 95.1,148.8 L 96.1,145.7 L 96.9,142.8 L 97.6,139.9 L 98.3,137.0 L 98.8,134.1 L 99.2,131.2 L 99.6,128.4 L 99.8,125.6 L 100.0,122.8 L 100.0,120.0 L 100.0,117.2 L 99.8,114.4 L 99.6,111.6 L 99.2,108.8 L 98.8,105.9 L 98.3,103.0 L 97.6,100.1 L 96.9,97.2 L 96.1,94.3 L 95.1,91.2 L 94.1,88.2 L 93.0,85.1 L 91.7,81.9 L 90.3,78.7 L 88.9,75.4 L 87.3,72.1 L 85.6,68.6 L 83.8,65.1 L 81.8,61.5 L 79.8,57.8 L 77.6,54.0 L 75.2,50.1 L 72.8,46.1 L 70.2,42.0 L 67.4,37.7 L 64.5,33.3 L 61.5,28.8 L 58.3,24.1 L 54.9,19.3 L 51.4,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"220.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"193.0\" cy=\"120.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"193.0\" y=\"126.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"252.2\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"252.2\" cy=\"146.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"252.2\" y=\"152.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"160.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"94.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"100.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "vertice", "B": "foco", "C": "centro"}, "tam": [480, 468]}, "hi2": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 268.6,225.7 L 265.1,220.7 L 261.7,215.9 L 258.5,211.2 L 255.5,206.7 L 252.6,202.3 L 249.8,198.0 L 247.2,193.9 L 244.8,189.9 L 242.4,186.0 L 240.2,182.2 L 238.2,178.5 L 236.2,174.9 L 234.4,171.4 L 232.7,167.9 L 231.1,164.6 L 229.7,161.3 L 228.3,158.1 L 227.0,154.9 L 225.9,151.8 L 224.9,148.8 L 223.9,145.7 L 223.1,142.8 L 222.4,139.9 L 221.7,137.0 L 221.2,134.1 L 220.8,131.2 L 220.4,128.4 L 220.2,125.6 L 220.0,122.8 L 220.0,120.0 L 220.0,117.2 L 220.2,114.4 L 220.4,111.6 L 220.8,108.8 L 221.2,105.9 L 221.7,103.0 L 222.4,100.1 L 223.1,97.2 L 223.9,94.3 L 224.9,91.2 L 225.9,88.2 L 227.0,85.1 L 228.3,81.9 L 229.7,78.7 L 231.1,75.4 L 232.7,72.1 L 234.4,68.6 L 236.2,65.1 L 238.2,61.5 L 240.2,57.8 L 242.4,54.0 L 244.8,50.1 L 247.2,46.1 L 249.8,42.0 L 252.6,37.7 L 255.5,33.3 L 258.5,28.8 L 261.7,24.1 L 265.1,19.3 L 268.6,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M 51.4,225.7 L 54.9,220.7 L 58.3,215.9 L 61.5,211.2 L 64.5,206.7 L 67.4,202.3 L 70.2,198.0 L 72.8,193.9 L 75.2,189.9 L 77.6,186.0 L 79.8,182.2 L 81.8,178.5 L 83.8,174.9 L 85.6,171.4 L 87.3,167.9 L 88.9,164.6 L 90.3,161.3 L 91.7,158.1 L 93.0,154.9 L 94.1,151.8 L 95.1,148.8 L 96.1,145.7 L 96.9,142.8 L 97.6,139.9 L 98.3,137.0 L 98.8,134.1 L 99.2,131.2 L 99.6,128.4 L 99.8,125.6 L 100.0,122.8 L 100.0,120.0 L 100.0,117.2 L 99.8,114.4 L 99.6,111.6 L 99.2,108.8 L 98.8,105.9 L 98.3,103.0 L 97.6,100.1 L 96.9,97.2 L 96.1,94.3 L 95.1,91.2 L 94.1,88.2 L 93.0,85.1 L 91.7,81.9 L 90.3,78.7 L 88.9,75.4 L 87.3,72.1 L 85.6,68.6 L 83.8,65.1 L 81.8,61.5 L 79.8,57.8 L 77.6,54.0 L 75.2,50.1 L 72.8,46.1 L 70.2,42.0 L 67.4,37.7 L 64.5,33.3 L 61.5,28.8 L 58.3,24.1 L 54.9,19.3 L 51.4,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"67.8\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"67.8\" cy=\"146.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"67.8\" y=\"152.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"160.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"94.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"100.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"100.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"127.0\" cy=\"120.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"127.0\" y=\"126.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "foco", "B": "centro", "C": "vertice"}, "tam": [480, 468]}, "hi3": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 268.6,225.7 L 265.1,220.7 L 261.7,215.9 L 258.5,211.2 L 255.5,206.7 L 252.6,202.3 L 249.8,198.0 L 247.2,193.9 L 244.8,189.9 L 242.4,186.0 L 240.2,182.2 L 238.2,178.5 L 236.2,174.9 L 234.4,171.4 L 232.7,167.9 L 231.1,164.6 L 229.7,161.3 L 228.3,158.1 L 227.0,154.9 L 225.9,151.8 L 224.9,148.8 L 223.9,145.7 L 223.1,142.8 L 222.4,139.9 L 221.7,137.0 L 221.2,134.1 L 220.8,131.2 L 220.4,128.4 L 220.2,125.6 L 220.0,122.8 L 220.0,120.0 L 220.0,117.2 L 220.2,114.4 L 220.4,111.6 L 220.8,108.8 L 221.2,105.9 L 221.7,103.0 L 222.4,100.1 L 223.1,97.2 L 223.9,94.3 L 224.9,91.2 L 225.9,88.2 L 227.0,85.1 L 228.3,81.9 L 229.7,78.7 L 231.1,75.4 L 232.7,72.1 L 234.4,68.6 L 236.2,65.1 L 238.2,61.5 L 240.2,57.8 L 242.4,54.0 L 244.8,50.1 L 247.2,46.1 L 249.8,42.0 L 252.6,37.7 L 255.5,33.3 L 258.5,28.8 L 261.7,24.1 L 265.1,19.3 L 268.6,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M 51.4,225.7 L 54.9,220.7 L 58.3,215.9 L 61.5,211.2 L 64.5,206.7 L 67.4,202.3 L 70.2,198.0 L 72.8,193.9 L 75.2,189.9 L 77.6,186.0 L 79.8,182.2 L 81.8,178.5 L 83.8,174.9 L 85.6,171.4 L 87.3,167.9 L 88.9,164.6 L 90.3,161.3 L 91.7,158.1 L 93.0,154.9 L 94.1,151.8 L 95.1,148.8 L 96.1,145.7 L 96.9,142.8 L 97.6,139.9 L 98.3,137.0 L 98.8,134.1 L 99.2,131.2 L 99.6,128.4 L 99.8,125.6 L 100.0,122.8 L 100.0,120.0 L 100.0,117.2 L 99.8,114.4 L 99.6,111.6 L 99.2,108.8 L 98.8,105.9 L 98.3,103.0 L 97.6,100.1 L 96.9,97.2 L 96.1,94.3 L 95.1,91.2 L 94.1,88.2 L 93.0,85.1 L 91.7,81.9 L 90.3,78.7 L 88.9,75.4 L 87.3,72.1 L 85.6,68.6 L 83.8,65.1 L 81.8,61.5 L 79.8,57.8 L 77.6,54.0 L 75.2,50.1 L 72.8,46.1 L 70.2,42.0 L 67.4,37.7 L 64.5,33.3 L 61.5,28.8 L 58.3,24.1 L 54.9,19.3 L 51.4,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"160.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"94.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"100.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"100.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"127.0\" cy=\"120.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"127.0\" y=\"126.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"252.2\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"252.2\" cy=\"146.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"252.2\" y=\"152.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "centro", "B": "vertice", "C": "foco"}, "tam": [480, 468]}, "hi4": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 268.6,225.7 L 265.1,220.7 L 261.7,215.9 L 258.5,211.2 L 255.5,206.7 L 252.6,202.3 L 249.8,198.0 L 247.2,193.9 L 244.8,189.9 L 242.4,186.0 L 240.2,182.2 L 238.2,178.5 L 236.2,174.9 L 234.4,171.4 L 232.7,167.9 L 231.1,164.6 L 229.7,161.3 L 228.3,158.1 L 227.0,154.9 L 225.9,151.8 L 224.9,148.8 L 223.9,145.7 L 223.1,142.8 L 222.4,139.9 L 221.7,137.0 L 221.2,134.1 L 220.8,131.2 L 220.4,128.4 L 220.2,125.6 L 220.0,122.8 L 220.0,120.0 L 220.0,117.2 L 220.2,114.4 L 220.4,111.6 L 220.8,108.8 L 221.2,105.9 L 221.7,103.0 L 222.4,100.1 L 223.1,97.2 L 223.9,94.3 L 224.9,91.2 L 225.9,88.2 L 227.0,85.1 L 228.3,81.9 L 229.7,78.7 L 231.1,75.4 L 232.7,72.1 L 234.4,68.6 L 236.2,65.1 L 238.2,61.5 L 240.2,57.8 L 242.4,54.0 L 244.8,50.1 L 247.2,46.1 L 249.8,42.0 L 252.6,37.7 L 255.5,33.3 L 258.5,28.8 L 261.7,24.1 L 265.1,19.3 L 268.6,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M 51.4,225.7 L 54.9,220.7 L 58.3,215.9 L 61.5,211.2 L 64.5,206.7 L 67.4,202.3 L 70.2,198.0 L 72.8,193.9 L 75.2,189.9 L 77.6,186.0 L 79.8,182.2 L 81.8,178.5 L 83.8,174.9 L 85.6,171.4 L 87.3,167.9 L 88.9,164.6 L 90.3,161.3 L 91.7,158.1 L 93.0,154.9 L 94.1,151.8 L 95.1,148.8 L 96.1,145.7 L 96.9,142.8 L 97.6,139.9 L 98.3,137.0 L 98.8,134.1 L 99.2,131.2 L 99.6,128.4 L 99.8,125.6 L 100.0,122.8 L 100.0,120.0 L 100.0,117.2 L 99.8,114.4 L 99.6,111.6 L 99.2,108.8 L 98.8,105.9 L 98.3,103.0 L 97.6,100.1 L 96.9,97.2 L 96.1,94.3 L 95.1,91.2 L 94.1,88.2 L 93.0,85.1 L 91.7,81.9 L 90.3,78.7 L 88.9,75.4 L 87.3,72.1 L 85.6,68.6 L 83.8,65.1 L 81.8,61.5 L 79.8,57.8 L 77.6,54.0 L 75.2,50.1 L 72.8,46.1 L 70.2,42.0 L 67.4,37.7 L 64.5,33.3 L 61.5,28.8 L 58.3,24.1 L 54.9,19.3 L 51.4,14.3\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"252.2\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"252.2\" cy=\"146.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"252.2\" y=\"152.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"220.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"193.0\" cy=\"120.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"193.0\" y=\"126.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"160.0\" cy=\"120.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"94.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"100.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "foco", "B": "vertice", "C": "centro"}, "tam": [480, 468]}, "pa1": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 52.0,97.1 L 55.6,101.9 L 59.2,106.5 L 62.8,111.0 L 66.4,115.2 L 70.0,119.4 L 73.6,123.3 L 77.2,127.2 L 80.8,130.8 L 84.4,134.3 L 88.0,137.6 L 91.6,140.8 L 95.2,143.8 L 98.8,146.6 L 102.4,149.3 L 106.0,151.8 L 109.6,154.1 L 113.2,156.3 L 116.8,158.3 L 120.4,160.2 L 124.0,161.9 L 127.6,163.4 L 131.2,164.8 L 134.8,166.0 L 138.4,167.1 L 142.0,168.0 L 145.6,168.7 L 149.2,169.3 L 152.8,169.7 L 156.4,169.9 L 160.0,170.0 L 163.6,169.9 L 167.2,169.7 L 170.8,169.3 L 174.4,168.7 L 178.0,168.0 L 181.6,167.1 L 185.2,166.0 L 188.8,164.8 L 192.4,163.4 L 196.0,161.9 L 199.6,160.2 L 203.2,158.3 L 206.8,156.3 L 210.4,154.1 L 214.0,151.8 L 217.6,149.3 L 221.2,146.6 L 224.8,143.8 L 228.4,140.8 L 232.0,137.6 L 235.6,134.3 L 239.2,130.8 L 242.8,127.2 L 246.4,123.3 L 250.0,119.4 L 253.6,115.2 L 257.2,111.0 L 260.8,106.5 L 264.4,101.9 L 268.0,97.1\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><line x1=\"20.0\" y1=\"210.0\" x2=\"300.0\" y2=\"210.0\" stroke=\"#2a9d8f\" stroke-width=\"5\" stroke-linecap=\"round\"/><circle cx=\"160.0\" cy=\"130.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"104.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"110.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"160.0\" cy=\"170.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"192.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"198.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"292.0\" cy=\"188.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"292.0\" y=\"194.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "foco", "B": "vertice", "C": "diretriz"}, "tam": [609, 276]}, "pa2": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 52.0,97.1 L 55.6,101.9 L 59.2,106.5 L 62.8,111.0 L 66.4,115.2 L 70.0,119.4 L 73.6,123.3 L 77.2,127.2 L 80.8,130.8 L 84.4,134.3 L 88.0,137.6 L 91.6,140.8 L 95.2,143.8 L 98.8,146.6 L 102.4,149.3 L 106.0,151.8 L 109.6,154.1 L 113.2,156.3 L 116.8,158.3 L 120.4,160.2 L 124.0,161.9 L 127.6,163.4 L 131.2,164.8 L 134.8,166.0 L 138.4,167.1 L 142.0,168.0 L 145.6,168.7 L 149.2,169.3 L 152.8,169.7 L 156.4,169.9 L 160.0,170.0 L 163.6,169.9 L 167.2,169.7 L 170.8,169.3 L 174.4,168.7 L 178.0,168.0 L 181.6,167.1 L 185.2,166.0 L 188.8,164.8 L 192.4,163.4 L 196.0,161.9 L 199.6,160.2 L 203.2,158.3 L 206.8,156.3 L 210.4,154.1 L 214.0,151.8 L 217.6,149.3 L 221.2,146.6 L 224.8,143.8 L 228.4,140.8 L 232.0,137.6 L 235.6,134.3 L 239.2,130.8 L 242.8,127.2 L 246.4,123.3 L 250.0,119.4 L 253.6,115.2 L 257.2,111.0 L 260.8,106.5 L 264.4,101.9 L 268.0,97.1\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><line x1=\"20.0\" y1=\"210.0\" x2=\"300.0\" y2=\"210.0\" stroke=\"#2a9d8f\" stroke-width=\"5\" stroke-linecap=\"round\"/><circle cx=\"28.0\" cy=\"188.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"28.0\" y=\"194.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"160.0\" cy=\"130.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"104.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"110.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"160.0\" cy=\"170.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"192.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"198.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "diretriz", "B": "foco", "C": "vertice"}, "tam": [608, 276]}, "pa3": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 52.0,97.1 L 55.6,101.9 L 59.2,106.5 L 62.8,111.0 L 66.4,115.2 L 70.0,119.4 L 73.6,123.3 L 77.2,127.2 L 80.8,130.8 L 84.4,134.3 L 88.0,137.6 L 91.6,140.8 L 95.2,143.8 L 98.8,146.6 L 102.4,149.3 L 106.0,151.8 L 109.6,154.1 L 113.2,156.3 L 116.8,158.3 L 120.4,160.2 L 124.0,161.9 L 127.6,163.4 L 131.2,164.8 L 134.8,166.0 L 138.4,167.1 L 142.0,168.0 L 145.6,168.7 L 149.2,169.3 L 152.8,169.7 L 156.4,169.9 L 160.0,170.0 L 163.6,169.9 L 167.2,169.7 L 170.8,169.3 L 174.4,168.7 L 178.0,168.0 L 181.6,167.1 L 185.2,166.0 L 188.8,164.8 L 192.4,163.4 L 196.0,161.9 L 199.6,160.2 L 203.2,158.3 L 206.8,156.3 L 210.4,154.1 L 214.0,151.8 L 217.6,149.3 L 221.2,146.6 L 224.8,143.8 L 228.4,140.8 L 232.0,137.6 L 235.6,134.3 L 239.2,130.8 L 242.8,127.2 L 246.4,123.3 L 250.0,119.4 L 253.6,115.2 L 257.2,111.0 L 260.8,106.5 L 264.4,101.9 L 268.0,97.1\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><line x1=\"20.0\" y1=\"210.0\" x2=\"300.0\" y2=\"210.0\" stroke=\"#2a9d8f\" stroke-width=\"5\" stroke-linecap=\"round\"/><circle cx=\"160.0\" cy=\"170.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"192.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"198.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"292.0\" cy=\"188.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"292.0\" y=\"194.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"160.0\" cy=\"130.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"104.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"110.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "vertice", "B": "diretriz", "C": "foco"}, "tam": [609, 276]}, "pa4": {"svg": "<svg viewBox=\"0 0 320 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\"><path d=\"M 52.0,97.1 L 55.6,101.9 L 59.2,106.5 L 62.8,111.0 L 66.4,115.2 L 70.0,119.4 L 73.6,123.3 L 77.2,127.2 L 80.8,130.8 L 84.4,134.3 L 88.0,137.6 L 91.6,140.8 L 95.2,143.8 L 98.8,146.6 L 102.4,149.3 L 106.0,151.8 L 109.6,154.1 L 113.2,156.3 L 116.8,158.3 L 120.4,160.2 L 124.0,161.9 L 127.6,163.4 L 131.2,164.8 L 134.8,166.0 L 138.4,167.1 L 142.0,168.0 L 145.6,168.7 L 149.2,169.3 L 152.8,169.7 L 156.4,169.9 L 160.0,170.0 L 163.6,169.9 L 167.2,169.7 L 170.8,169.3 L 174.4,168.7 L 178.0,168.0 L 181.6,167.1 L 185.2,166.0 L 188.8,164.8 L 192.4,163.4 L 196.0,161.9 L 199.6,160.2 L 203.2,158.3 L 206.8,156.3 L 210.4,154.1 L 214.0,151.8 L 217.6,149.3 L 221.2,146.6 L 224.8,143.8 L 228.4,140.8 L 232.0,137.6 L 235.6,134.3 L 239.2,130.8 L 242.8,127.2 L 246.4,123.3 L 250.0,119.4 L 253.6,115.2 L 257.2,111.0 L 260.8,106.5 L 264.4,101.9 L 268.0,97.1\" fill=\"none\" stroke=\"#1f6feb\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><line x1=\"20.0\" y1=\"210.0\" x2=\"300.0\" y2=\"210.0\" stroke=\"#2a9d8f\" stroke-width=\"5\" stroke-linecap=\"round\"/><circle cx=\"292.0\" cy=\"188.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"292.0\" y=\"194.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">A</text><circle cx=\"160.0\" cy=\"170.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"192.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"198.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">B</text><circle cx=\"160.0\" cy=\"130.0\" r=\"6\" fill=\"#e63946\"/><circle cx=\"160.0\" cy=\"104.0\" r=\"13\" fill=\"#f2994a\"/><text x=\"160.0\" y=\"110.0\" font-size=\"17\" font-weight=\"bold\" font-family=\"Arial,sans-serif\" fill=\"#fff\" text-anchor=\"middle\">C</text></svg>", "papeis": {"A": "diretriz", "B": "vertice", "C": "foco"}, "tam": [609, 276]}};
+  function embaralhar(a){ a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+  /* ---------- álgebra de polinômios (lista: posição = expoente) ---------- */
+  const SUP = {2:'²', 3:'³', 4:'⁴', 5:'⁵'};
+  const termoStr = (c, e) => { const m = Math.abs(c); return e === 0 ? String(m) : (m === 1 ? '' : String(m)) + 'x' + (e === 1 ? '' : SUP[e]); };
+  function polyStr(cs){
+    let s = '';
+    for(let e = cs.length - 1; e >= 0; e--){
+      const c = cs[e]; if(c === 0) continue;
+      s += s === '' ? (c < 0 ? '−' : '') : (c < 0 ? ' − ' : ' + ');
+      s += termoStr(c, e);
+    }
+    return s || '0';
+  }
+  const trim = a => { a = a.slice(); while(a.length > 1 && a[a.length - 1] === 0) a.pop(); return a; };
+  const somaP = (a, b) => { const n = Math.max(a.length, b.length), r = []; for(let i = 0; i < n; i++) r.push((a[i] || 0) + (b[i] || 0)); return trim(r); };
+  const subP = (a, b) => { const n = Math.max(a.length, b.length), r = []; for(let i = 0; i < n; i++) r.push((a[i] || 0) - (b[i] || 0)); return trim(r); };
+  const multP = (a, b) => { const r = Array(a.length + b.length - 1).fill(0); a.forEach((x, i) => b.forEach((y, j) => { r[i + j] += x * y; })); return trim(r); };
+  const nTermos = cs => cs.filter(c => c !== 0).length;
+  const par = cs => nTermos(cs) > 1 ? '(' + polyStr(cs) + ')' : polyStr(cs);
+  const avalia = (cs, x) => cs.reduce((s, c, e) => s + c * Math.pow(x, e), 0);
+  function polyCor(cs){   // trem colorido: azul=coeficiente, roxo=x, laranja=expoente, verde=número sozinho
+    const t = [];
+    for(let e = cs.length - 1; e >= 0; e--){
+      const c = cs[e]; if(c === 0) continue;
+      if(e === 0) t.push('<span class="ps">' + c + '</span>');
+      else t.push((c === 1 ? '' : '<span class="pa">' + c + '</span>') + '<span class="pv">x</span>' + (e > 1 ? '<sup class="pe">' + e + '</sup>' : ''));
+    }
+    return t.join(' + ');
+  }
+  // variações de um polinômio, usadas como respostas erradas parecidas (mexe 1 número)
+  function variacoes(cs){
+    const v = [];
+    for(let i = cs.length - 1; i >= 0; i--){
+      if(cs[i] === 0) continue;
+      const a = cs.slice(); a[i] += 1; v.push(polyStr(a));
+      const b = cs.slice(); if(b[i] > 1){ b[i] -= 1; v.push(polyStr(b)); }
+    }
+    return v;
+  }
+
+  /* ---------- peças fixas da página ---------- */
+  $('tres').innerHTML = [['sh-elipse', 'ELIPSE'], ['sh-hiperbole', 'HIPÉRBOLE'], ['sh-parabola', 'PARÁBOLA']]
+    .map(([f, n]) => '<figure>' + FIG[f].svg + '<figcaption>' + n + '</figcaption></figure>').join('');
+  $('fig-rec-el').innerHTML = FIG['el1'].svg;
+  $('fig-rec-hi').innerHTML = FIG['hi1'].svg;
+  $('fig-rec-pa').innerHTML = FIG['pa1'].svg;
+
+  /* equação da elipse: x²/9 + y²/25 = 1, com centro opcional */
+  const fracH = (n, d) => '<span class="frac"><span class="n">' + n + '</span><span class="d">' + d + '</span></span>';
+  const parte = (v, h) => h === 0 ? v + '²' : '(' + v + (h > 0 ? ' − ' + h : ' + ' + (-h)) + ')²';
+  const eqElipse = (h, k, A2, B2) => fracH(parte('x', h), A2) + ' + ' + fracH(parte('y', k), B2) + ' = 1';
+  $('eq-rec').innerHTML = eqElipse(0, 0, 9, 25);
+
+  /* ================= motor dos jogos ================= */
+  const QUIZZES = {};
+
+  function criarQuiz(raizId, itens, msgFim){
+    const raiz = $(raizId);
+    raiz.innerHTML =
+      '<div class="dots"></div>' +
+      '<p class="feedback nao pedido"></p>' +
+      '<div class="quiz-area"></div>' +
+      '<div class="btnrow opcoes hidden"></div>' +
+      '<p class="feedback fb hidden"></p>' +
+      '<div class="btnrow"><button type="button" class="laranja prox hidden"></button>' +
+      '<button type="button" class="secundario rein hidden">🔁 Jogar de novo</button></div>';
+    const q = s => raiz.querySelector(s);
+    const el = {dots:q('.dots'), pedido:q('.pedido'), area:q('.quiz-area'), op:q('.opcoes'), fb:q('.fb'), prox:q('.prox'), rein:q('.rein')};
+    let i = 0, trav = false, passo = 0;
+    const feitos = [];
+
+    function desenharDots(){
+      el.dots.innerHTML = '';
+      itens.forEach((_, k) => { const d = document.createElement('div'); d.className = 'dot' + (feitos[k] ? ' certo' : ''); el.dots.appendChild(d); });
+    }
+    function msg(txt, tipo){ el.fb.textContent = txt; el.fb.className = 'feedback fb ' + tipo; }
+    function limparFb(){ el.fb.className = 'feedback fb hidden'; }
+
+    function mostrarOpcoes(p){
+      el.op.innerHTML = '';
+      embaralhar(p.opcoes).forEach(v => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'grande secundario' + (String(v).length > 9 ? ' longa' : ''); b.textContent = v;
+        b.onclick = () => {
+          if(trav) return;
+          if(String(v) === String(p.certa)){
+            passo++;
+            const it = itens[i];
+            if(passo < it.passos.length){ msg('🎉 Isso mesmo!', 'ok'); pedir(); }
+            else concluir(it.ok);
+          } else msg('😊 Quase! ' + p.dica, 'nao');
+        };
+        el.op.appendChild(b);
+      });
+      el.op.classList.remove('hidden');
+    }
+    function pedir(){ const p = itens[i].passos[passo]; el.pedido.textContent = p.texto; mostrarOpcoes(p); }
+
+    function concluir(txt){
+      trav = true; feitos[i] = true; desenharDots();
+      msg('🎉 ' + txt, 'ok');
+      el.op.classList.add('hidden');
+      el.prox.textContent = (i === itens.length - 1) ? 'Ver resultado 🏁' : 'Próxima ▶';
+      el.prox.classList.remove('hidden');
+    }
+
+    function mostrar(){
+      const it = itens[i];
+      trav = false; passo = 0;
+      limparFb();
+      el.prox.classList.add('hidden'); el.rein.classList.add('hidden');
+      el.pedido.classList.remove('hidden'); el.area.classList.remove('hidden');
+      el.area.innerHTML = ''; el.op.innerHTML = ''; el.op.classList.add('hidden');
+      desenharDots();
+      if(it.fig){ const w = document.createElement('div'); w.className = 'svgwrap'; w.innerHTML = FIG[it.fig].svg; el.area.appendChild(w); }
+      if(it.html){ const d = document.createElement('div'); d.className = it.classe || 'expr'; d.innerHTML = it.html; el.area.appendChild(d); }
+      pedir();
+    }
+    el.prox.onclick = () => { i++; if(i >= itens.length) fim(); else mostrar(); };
+    function fim(){
+      el.pedido.classList.add('hidden'); el.area.classList.add('hidden'); el.op.classList.add('hidden'); el.prox.classList.add('hidden');
+      msg('🎉 ' + msgFim, 'ok');
+      el.rein.classList.remove('hidden');
+    }
+    el.rein.onclick = () => { i = 0; feitos.length = 0; mostrar(); };
+
+    QUIZZES[raizId] = {itens};
+    mostrar();
+  }
+
+  /* ---------- fábricas de perguntas ---------- */
+  const um = (texto, opcoes, certa, ok, dica, extra) => Object.assign({passos:[{texto, opcoes, certa, dica}], ok}, extra || {});
+
+  const NOME_PAPEL = {foco:'FOCO', vertice:'VÉRTICE', centro:'CENTRO', diretriz:'DIRETRIZ'};
+  const DICA_PAPEL = {
+    el: {foco:'O foco é um pontinho mágico DENTRO da elipse.', vertice:'O vértice é a pontinha da elipse.', centro:'O centro fica bem no meio.'},
+    hi: {foco:'O foco fica um pouco mais para fora do que o vértice.', vertice:'O vértice é a pontinha de cada parte, o lugar mais pertinho do meio.', centro:'O centro fica bem no meio, entre as duas partes.'},
+    pa: {foco:'O foco é um pontinho mágico dentro do sorriso.', vertice:'O vértice é a pontinha do sorriso.', diretriz:'A diretriz é a linha reta, por fora. Ela não toca no sorriso.'}
+  };
+  const QF = (fig, papel) => {
+    const letra = Object.keys(FIG[fig].papeis).find(l => FIG[fig].papeis[l] === papel);
+    const art = papel === 'diretriz' ? 'a' : 'o';
+    return um('Qual letra mostra ' + art + ' ' + NOME_PAPEL[papel] + '?', ['A', 'B', 'C'], letra,
+              'Isso mesmo! A letra ' + letra + ' é ' + art + ' ' + NOME_PAPEL[papel] + '.', DICA_PAPEL[fig.slice(0, 2)][papel], {fig});
+  };
+  const QForma = (fig, nome) => um('Que figura é esta?', ['ELIPSE', 'HIPÉRBOLE', 'PARÁBOLA'], nome, 'Isso mesmo! É uma ' + nome + '.',
+                                  'Elipse é um ovo. Hipérbole tem duas partes. Parábola é um sorriso.', {fig});
+  const QHip = (fig, ehHip) => um('É uma HIPÉRBOLE?', ['SIM', 'NÃO'], ehHip ? 'SIM' : 'NÃO',
+                                  ehHip ? 'Isso mesmo! Tem duas partes: é uma hipérbole.' : 'Isso mesmo! Não tem duas partes: não é uma hipérbole.',
+                                  'A hipérbole tem DUAS partes separadas.', {fig});
+  const QPe = (h, k, A2, B2) => {
+    const emPe = B2 > A2;
+    return um('A elipse fica EM PÉ ou DEITADA?', ['EM PÉ', 'DEITADA'], emPe ? 'EM PÉ' : 'DEITADA',
+              'Isso mesmo! O número maior (' + Math.max(A2, B2) + ') está embaixo do ' + (emPe ? 'y' : 'x') + ': ela fica ' + (emPe ? 'EM PÉ' : 'DEITADA') + '.',
+              'Olhe o número MAIOR. Embaixo do y: em pé. Embaixo do x: deitada.', {html:eqElipse(h, k, A2, B2)});
+  };
+  const fmtPonto = (x, y) => '(' + String(x).replace('-', '−') + ', ' + String(y).replace('-', '−') + ')';
+  const QCentro = (h, k, A2, B2) => {
+    const certa = fmtPonto(h, k);
+    const outras = embaralhar([fmtPonto(-h, k), fmtPonto(h, -k), fmtPonto(-h, -k)].filter((s, ix, a) => s !== certa && a.indexOf(s) === ix)).slice(0, 2);
+    while(outras.length < 2) outras.push(fmtPonto(h + outras.length + 1, k));
+    return um('Onde fica o CENTRO?', [certa, ...outras], certa, 'Isso mesmo! O centro é ' + certa + '. O sinal troca!',
+              'O sinal TROCA: (x − 3) vira 3. (y + 2) vira −2.', {html:eqElipse(h, k, A2, B2)});
+  };
+
+  function QGrau(cs){
+    const g = cs.length - 1, ops = [g, g + 1, Math.max(0, g - 1), cs.filter(c => c).length].filter((v, ix, a) => a.indexOf(v) === ix).slice(0, 3);
+    while(ops.length < 3) ops.push(g + ops.length + 1);
+    return um('Qual é o GRAU deste polinômio?', ops.map(String), String(g), 'Isso mesmo! O grau é ' + g + ', o maior expoente.', 'O grau é o MAIOR expoente.', {html:polyCor(cs), classe:'poli-cor'});
+  }
+  const QParte = (cs, qual, certa, ops, nome) => um('Qual é ' + nome + '?', ops.map(String), String(certa), 'Isso mesmo! É o ' + certa + '.',
+    qual === 'coef' ? 'O coeficiente é o número azul, que gruda no x.' : qual === 'solo' ? 'O número sozinho é o verde, sem x.' : 'Conte os vagões.', {html:polyCor(cs), classe:'poli-cor'});
+
+  const QValor = (cs, x) => {
+    const v = avalia(cs, x), ops = [v, v + 1, v + 2, Math.max(0, v - 1)].filter((s, ix, a) => a.indexOf(s) === ix && s >= 0).slice(0, 3);
+    return um('Quanto é P(' + x + ') ?', ops.map(String), String(v), 'Isso mesmo! P(' + x + ') = ' + v + '.', 'Troque o x por ' + x + ' e faça a conta. Pode contar nos dedos!', {html:'P(x) = ' + polyStr(cs)});
+  };
+  const QRaizSN = (cs, x) => {
+    const v = avalia(cs, x);
+    return um('O ' + x + ' é RAIZ?', ['SIM', 'NÃO'], v === 0 ? 'SIM' : 'NÃO',
+              v === 0 ? 'Isso mesmo! Deu zero: ' + x + ' é raiz.' : 'Isso mesmo! Não deu zero: ' + x + ' não é raiz.',
+              'Troque o x e faça a conta. Se der ZERO, é raiz.', {html:'P(x) = ' + polyStr(cs)});
+  };
+  const QRaiz = (cs, opcoes) => {
+    const r = opcoes.find(o => avalia(cs, o) === 0);
+    return um('Qual é a RAIZ?', opcoes.map(String), String(r), 'Isso mesmo! A raiz é ' + r + '.', 'A raiz é o número que faz o resultado dar ZERO.', {html:'P(x) = ' + polyStr(cs)});
+  };
+
+  function QConta(texto, exprHtml, R, erros, ok, dica){
+    const certa = polyStr(R), ops = [certa];
+    erros.concat(variacoes(R)).forEach(s => { if(s !== certa && !ops.includes(s) && ops.length < 3) ops.push(s); });
+    return um(texto, ops, certa, ok || ('Isso mesmo! O resultado é ' + certa + '.'), dica, {html:exprHtml});
+  }
+  const Qsoma = (A, B) => QConta('Faça a SOMA.', par(A) + ' + ' + par(B), somaP(A, B), [], null, 'Junte só os vagões GÊMEOS.');
+  const Qsub = (A, B) => { const R = subP(A, B); if(R.some(c => c < 0)) throw new Error('subtração negativa'); return QConta('Faça a SUBTRAÇÃO.', par(A) + ' − ' + par(B), R, [], null, 'Tire só os vagões GÊMEOS.'); };
+  const QmultN = (n, B) => QConta('Faça a MULTIPLICAÇÃO.', n + ' × ' + par(B), multP([n], B), [], null, 'O número de fora multiplica CADA vagão.');
+  const QmultX = B => QConta('Faça a MULTIPLICAÇÃO.', 'x × ' + par(B), multP([0, 1], B), [], null, 'O x multiplica CADA vagão. x vezes x dá x².');
+  const Qjan = (A, B) => QConta('Faça a MULTIPLICAÇÃO (use a janela).', par(A) + ' × ' + par(B), multP(A, B), [], null, 'Janela: multiplique tudo e depois junte os gêmeos.');
+  function Qdiv(N, D, Qq){
+    if(JSON.stringify(trim(multP(Qq, D))) !== JSON.stringify(trim(N))) throw new Error('divisão não exata: ' + polyStr(N));
+    return QConta('Faça a DIVISÃO.', '(' + polyStr(N) + ') ÷ ' + (nTermos(D) > 1 ? '(' + polyStr(D) + ')' : polyStr(D)), Qq, [], null, 'Dividir é o contrário de multiplicar.');
+  }
+  const Qgem = (c, e, certa, e1, e2) => um('Qual vagão é GÊMEO de ' + termoStr(c, e) + '?', [certa, e1, e2], certa, 'Isso mesmo! ' + certa + ' é gêmeo de ' + termoStr(c, e) + '.', 'Gêmeos têm o mesmo x e o mesmo expoente.');
+
+  /* complexos: soma em dois passos */
+  const Qcx = (a, b, c, d) => ({passos:[
+      {texto:'Parte REAL (azul): ' + a + ' + ' + c + ' = ?', opcoes:[a + c, a + c + 1, Math.max(0, a + c - 1)].map(String), certa:String(a + c), dica:'Some só os números azuis. Pode contar nos dedos!'},
+      {texto:'Parte IMAGINÁRIA (laranja): ' + b + ' + ' + d + ' = ?', opcoes:[b + d, b + d + 1, Math.max(0, b + d - 1)].map(String), certa:String(b + d), dica:'Some só os números laranjas. Pode contar nos dedos!'}],
+    html:'<span class="pa">' + a + '</span> + <span class="pe">' + b + '</span><span class="pv">i</span> &nbsp;+&nbsp; <span class="pa">' + c + '</span> + <span class="pe">' + d + '</span><span class="pv">i</span>',
+    ok:'O resultado é ' + (a + c) + ' + ' + (b + d) + 'i.'});
+  const Qcpart = (a, b, qual) => um('Qual é a parte ' + (qual === 'real' ? 'REAL' : 'IMAGINÁRIA') + '?', [a, b, 'i'].map(String), String(qual === 'real' ? a : b),
+    'Isso mesmo! É o ' + (qual === 'real' ? a : b) + '.', qual === 'real' ? 'A parte real é o número AZUL, sem o i.' : 'A parte imaginária é o número LARANJA, o que está junto do i.',
+    {html:'<span class="pa">' + a + '</span> + <span class="pe">' + b + '</span><span class="pv">i</span>', classe:'poli-cor'});
+
+  /* ---------- as perguntas de cada seção ---------- */
+  criarQuiz('quiz1', [
+    QForma('sh-elipse', 'ELIPSE'),
+    QForma('sh-hiperbole', 'HIPÉRBOLE'),
+    QForma('sh-parabola', 'PARÁBOLA'),
+    QForma('sh-elipse-v', 'ELIPSE'),
+    QHip('sh-parabola', false),
+    QHip('sh-hiperbole', true)
+  ], 'Você conhece as três formas!');
+
+  criarQuiz('quiz2', [
+    QF('el2', 'foco'),
+    QF('el3', 'vertice'),
+    QF('el4', 'centro'),
+    QF('el2', 'vertice'),
+    um('Os dois FOCOS ficam…', ['DENTRO', 'FORA'], 'DENTRO', 'Isso mesmo! Os focos ficam DENTRO da elipse.', 'O foco é um pontinho mágico dentro da elipse.'),
+    um('No desenho com barbante, a soma das duas partes do barbante é sempre…', ['IGUAL', 'DIFERENTE'], 'IGUAL', 'Isso mesmo! A soma é sempre IGUAL.', 'O barbante tem sempre o mesmo tamanho.')
+  ], 'Você lembrou tudo da elipse!');
+
+  criarQuiz('quiz3', [
+    QPe(0, 0, 4, 16),
+    QPe(0, 0, 25, 9),
+    QCentro(2, 1, 4, 9),
+    QCentro(-3, 2, 9, 4),
+    QPe(1, -2, 4, 16),
+    QCentro(1, -2, 4, 16)
+  ], 'Você lembrou a equação da elipse!');
+
+  criarQuiz('quiz4', [
+    um('Quantas partes tem a hipérbole?', ['1', '2', '3'], '2', 'Isso mesmo! A hipérbole tem DUAS partes.', 'A hipérbole tem duas partes separadas.'),
+    QF('hi2', 'vertice'),
+    QF('hi3', 'foco'),
+    QF('hi4', 'vertice'),
+    QF('hi2', 'centro'),
+    um('O vértice é o lugar mais ___ do meio.', ['PERTINHO', 'LONGE'], 'PERTINHO', 'Isso mesmo! O vértice é o lugar mais PERTINHO do meio.', 'O vértice é a pontinha de cada parte.')
+  ], 'Você lembrou tudo da hipérbole!');
+
+  criarQuiz('quiz5', [
+    QF('pa2', 'vertice'),
+    QF('pa3', 'foco'),
+    QF('pa4', 'diretriz'),
+    QF('pa2', 'foco'),
+    QF('pa3', 'diretriz'),
+    um('A diretriz toca na parábola?', ['SIM', 'NÃO'], 'NÃO', 'Isso mesmo! A diretriz fica por fora e NÃO toca.', 'A diretriz é uma linha reta, por fora.')
+  ], 'Você lembrou tudo da parábola!');
+
+  criarQuiz('quiz6', [
+    um('i × i = ?', ['−1', '1', '0'], '−1', 'Isso mesmo! i × i = −1.', 'A mágica do i: i vezes i dá menos um.'),
+    Qcpart(5, 4, 'real'),
+    Qcpart(5, 4, 'imag'),
+    Qcpart(7, 3, 'real'),
+    Qcx(2, 3, 1, 4),
+    Qcx(4, 1, 2, 5),
+    um('Na soma, juntamos AZUL com…', ['AZUL', 'LARANJA'], 'AZUL', 'Isso mesmo! Azul com azul, laranja com laranja.', 'Cada cor soma só com a mesma cor.')
+  ], 'Você lembrou os números complexos!');
+
+  criarQuiz('quiz7', [
+    QGrau([1, 2, 4]),
+    QParte([2, 3, 5], 'coef', 5, [5, 3, 2], 'o COEFICIENTE do x²'),
+    QParte([7, 4, 1], 'solo', 7, [7, 4, 1], 'o número SOZINHO'),
+    um('Quantos TERMOS (vagões) tem este polinômio?', ['2', '3', '4'], '3', 'Isso mesmo! São 3 vagões.', 'Conte os vagões separados pelo sinal de +.', {html:polyCor([9, 1, 2]), classe:'poli-cor'}),
+    QGrau([2, 7]),
+    QGrau([1, 0, 0, 5]),
+    um('O GRAU é o ___ expoente.', ['MAIOR', 'MENOR'], 'MAIOR', 'Isso mesmo! O grau é o MAIOR expoente.', 'Procure o expoente mais alto.')
+  ], 'Você lembrou o polinômio!');
+
+  criarQuiz('quiz8', [
+    QValor([6, 1], 2),
+    QValor([1, 2], 3),
+    QValor([1, 0, 1], 3),
+    QRaizSN([-5, 1], 5),
+    QRaizSN([-7, 1], 6),
+    QRaiz([-3, 1], [2, 3, 4]),
+    um('A raiz é o x que dá…', ['ZERO', 'DEZ'], 'ZERO', 'Isso mesmo! A raiz faz o resultado ser ZERO.', 'Zero, nada, vazio.')
+  ], 'Você lembrou valor numérico e raiz!');
+
+  criarQuiz('quiz9', [
+    Qgem(3, 2, '5x²', '5x', '3'),
+    Qsoma([3, 2], [1, 3]),
+    Qsoma([0, 2, 1], [4, 1, 3]),
+    Qsub([6, 5], [1, 2]),
+    QmultN(3, [2, 1]),
+    QmultX([5, 1]),
+    Qjan([2, 1], [4, 1]),
+    Qdiv([4, 8], [4], [1, 2]),
+    Qdiv([3, 4, 1], [1, 1], [3, 1])
+  ], 'Você lembrou as quatro contas!');
+
+  criarQuiz('quiz10', [
+    QF('pa2', 'foco'),
+    QF('hi3', 'vertice'),
+    QF('el4', 'foco'),
+    QPe(0, 0, 36, 16),
+    Qcx(3, 2, 4, 5),
+    QGrau([4, 0, 3, 1]),
+    QValor([2, 3], 4),
+    QRaiz([-6, 1], [5, 6, 7]),
+    Qsoma([1, 4], [2, 1]),
+    Qjan([3, 1], [1, 1]),
+    Qdiv([0, 6, 9], [0, 3], [2, 3])
+  ], 'Você terminou a revisão toda! Parabéns, campeão! 🏆');
+</script>
+
+<!-- ============ VLIBRAS (tradutor de Libras oficial do Governo Federal) ============ -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+  new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+</body>
+</html>
